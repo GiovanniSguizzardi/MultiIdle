@@ -10,6 +10,7 @@ const APP_ID = 'com.gibas.multiidle'; // o mesmo do instalador (package.json > b
 const { eventoParaAlerta, placarNovo, contar } = require('./alertas');
 const remoto = require('./remoto');
 const { criarMesclador } = require('./estado');
+const { decidirRetry } = require('./retry');
 
 // AFK com pouca CPU: janela minimizada/na bandeja/coberta PARA de desenhar (o Chromium sabe que está
 // escondida), mas os relógios do jogo (ping de 25 s, vigia da conexão) seguem no ritmo normal — o farm é
@@ -21,6 +22,7 @@ app.setAppUserModelId(APP_ID); // necessário pras notificações do Windows apa
 
 // O jogo derruba e reconecta sozinho com 30 s sem mensagem; 3 min sem nada = travou de verdade
 const TRAVADO_MS = Number(process.env.MULTIIDLE_TRAVADO_MS) || 3 * 60 * 1000;
+const GAME_URL = 'https://pokeidle.io/app';
 const POUCAS_BOLAS = 50; // abaixo disso (somando todos os tipos) avisa "Pokébolas acabando"
 
 // Todos os pedidos de quadro do mesmo instante passam juntos (o jogo tem mais de um laço); os ids
@@ -78,14 +80,38 @@ app.on('web-contents-created', (_, wc) => {
     avisouBolas = total < POUCAS_BOLAS;
   };
 
+  // Estado do carregamento, pro retry de conta presa (regra no retry.js). 'desde' = última navegação.
+  const carga = { desde: Date.now(), tentativas: 0, falhou: false };
+  info.carga = carga;
+  wc.on('did-navigate', () => { carga.desde = Date.now(); carga.falhou = false; });
+  wc.on('did-fail-load', (_e, codigo, _desc, _url, principal) => {
+    if (principal && codigo !== -3) carga.falhou = true; // -3 = navegação cancelada (normal num reload)
+  });
+
   const recarregar = (motivo) => {
-    info.logado = false; // só volta a vigiar quando entrar de novo — evita loop de reload se deslogou
+    info.logado = false; // a partir daqui quem vigia é o retry de carregamento
     alerta(conta, 'travou', motivo);
     wc.reload();
   };
+  let ultimoCliqueVersao = 0;
   const vigia = setInterval(async () => {
     if (info.logado && Date.now() - info.ultimaMsg > TRAVADO_MS) return recarregar('3 min sem resposta do jogo');
-    // Versão nova do jogo (deploy/hotfix): aperta o "Recarregar agora" do próprio jogo (#aviso-versao-btn)
+    // Conta presa carregando/reconectando (ex.: depois de um hotfix): tenta de novo, esperando cada vez mais
+    if (!info.logado) {
+      const temSessao = await wc.executeJavaScript(`location.host === 'pokeidle.io' && !!localStorage.getItem('sessao')`).catch(() => false);
+      const r = decidirRetry({ logado: info.logado, desde: carga.desde, temSessao, falhou: carga.falhou, tentativas: carga.tentativas, agora: Date.now() });
+      if (r) {
+        carga.tentativas = r.tentativa;
+        if (r.tentativa === 1 || r.tentativa % 3 === 0) alerta(conta, 'travou', `presa carregando, tentativa ${r.tentativa}${r.limparCache ? ' (limpando cache)' : ''}`);
+        if (r.limparCache) await wc.session.clearCache().catch(() => {});
+        carga.desde = Date.now(); // conta a próxima espera a partir de agora, mesmo se a navegação nem começar
+        wc.loadURL(GAME_URL).catch(() => {}); // vai direto no jogo (se tinha caído numa página de erro, sai dela); se falhar, o did-fail-load marca e a próxima tentativa vem
+      }
+      return;
+    }
+    // Versão nova do jogo (deploy/hotfix): aperta o "Recarregar agora" do próprio jogo (#aviso-versao-btn).
+    // No máximo 1 vez a cada 5 min: durante o deploy o servidor pode oscilar entre versões e virar um ciclo.
+    if (Date.now() - ultimoCliqueVersao < 5 * 60 * 1000) return;
     const clicou = await wc.executeJavaScript(`(() => {
       const aviso = document.getElementById('aviso-versao');
       const btn = document.getElementById('aviso-versao-btn');
@@ -94,6 +120,7 @@ app.on('web-contents-created', (_, wc) => {
       return true;
     })()`).catch(() => false);
     if (clicou) {
+      ultimoCliqueVersao = Date.now();
       info.logado = false;
       alerta(conta, 'atualizou', 'cliquei em "Recarregar agora"');
     }
@@ -163,7 +190,7 @@ app.on('web-contents-created', (_, wc) => {
     if (d.length < 100 && d.includes('"pong"')) return; // o próprio jogo não conta pong como sinal de vida
     info.ultimaMsg = Date.now();
     const ehWelcome = d.includes('"t":"welcome"');
-    if (ehWelcome) info.logado = true;
+    if (ehWelcome) { info.logado = true; carga.tentativas = 0; carga.falhou = false; } // entrou: zera o retry
     // filtro barato antes do JSON.parse: só interessam batalha, estado, welcome (e erro, se há compra esperando)
     const ehErro = compraPendente && d.includes('"t":"erro"');
     if (!ehWelcome && !ehErro && !d.includes('"batalha"') && !d.includes('"t":"estado"')) return;

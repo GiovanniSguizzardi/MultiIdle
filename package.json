@@ -8,7 +8,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "testes": "node alertas.js && node estado.js",
+    "testes": "node alertas.js && node estado.js && node retry.js",
     "build": "electron-builder --win",
     "release": "electron-builder --win --publish always"
   },
@@ -20,6 +20,7 @@
       "remoto.js",
       "alertas.js",
       "estado.js",
+      "retry.js",
       "index.html",
       "painel.html",
       "tema.css",
