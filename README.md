@@ -1,3 +1,7 @@
+<div align='center'>
+  <img width="800" height="800" alt="icon" src="https://github.com/user-attachments/assets/8baeb85e-e73b-4425-bc67-6f52e8383de8" />
+</div>
+
 # MultiIdle
 
 Até 4 contas do [PokeIdle](https://pokeidle.io/app) numa janela só, para deixar AFK sem precisar de 4 abas.
