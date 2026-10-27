@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#bd6951">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>MultiIdle</title>
+<link rel="stylesheet" href="tema.css">
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" id="manifest">
+<style>
+  body { padding: 10px 10px 30px; font-size: 13px; min-height: 100vh; box-sizing: border-box; }
+  .fixo { position: sticky; top: 6px; z-index: 5; margin-bottom: 12px; }
+  header { padding: 10px 12px 12px; }
+  .linha { display: flex; align-items: center; gap: 8px; }
+  header .linha { margin-bottom: 8px; }
+  header h1 { margin: 0; font-size: 18px; flex: 1; }
+  header h1 i { font-style: normal; color: var(--ouro-luz); }
+  #conexao { font-size: 11px; padding: 3px 8px; white-space: nowrap; }
+  #btnCfg { width: 34px; padding: 0; }
+  nav { display: grid; grid-template-columns: 44px repeat(4, 1fr); gap: 5px; }
+  nav button { height: auto; min-height: 42px; padding: 9px 2px 7px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-width: 0; position: relative; font-size: 11px; letter-spacing: -.2px; white-space: nowrap; }
+  nav button small { font-size: 10px; font-weight: 400; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  nav .ponto { position: absolute; top: 4px; left: 50%; margin-left: -3px; width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 0 1px var(--mad-linha); }
+  nav .novo::after { content: ""; position: absolute; top: -3px; left: -3px; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--ouro); box-shadow: 0 0 0 2px var(--ouro-esc), 0 0 8px var(--ouro-luz); }
+  .online { background: #3f9a5c; } .quieto { background: #b57a1e; } .fora { background: var(--vao-dim); }
+
+  .bloco { padding: 12px 14px 14px; margin-bottom: 12px; }
+  details.bloco > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; }
+  details.bloco > summary::-webkit-details-marker { display: none; }
+  details.bloco > summary::after { content: "▾"; margin-left: auto; transition: transform .15s; }
+  details.bloco:not([open]) > summary::after { transform: rotate(-90deg); }
+  details.bloco[open] > summary { margin-bottom: 10px; }
+  .sub { color: var(--sobre-mad-dim); font-size: 12px; }
+  .muted { color: var(--vao-dim); }
+  .pill { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 10px; box-shadow: inset 0 0 0 2px var(--mad-linha); white-space: nowrap; }
+  .pill.fora { background: var(--vao); color: var(--vao-dim); }
+
+  /* topo da conta */
+  #c-nome { font-size: 19px; font-weight: 700; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #c-local { margin: 6px 0 10px; font-size: 14px; font-weight: 700; }
+  .nivel { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .nivel .nv { padding: 6px 10px; text-align: center; min-width: 52px; }
+  .nivel .nv b { display: block; font-size: 20px; line-height: 1; }
+  .nivel .nv small { color: var(--vao-dim); font-size: 10px; }
+  .barra { position: relative; height: 16px; border-radius: 5px; overflow: hidden; background: #1e1219; box-shadow: inset 0 0 0 2px var(--mad-linha); }
+  .barra i { position: absolute; inset: 2px auto 2px 2px; border-radius: 3px; background: linear-gradient(180deg, #6fc0f0, #4a8ab8); max-width: calc(100% - 4px); }
+  .barra span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; text-shadow: 0 1px 0 #000; }
+  .barra.hp i { background: linear-gradient(180deg, #8fe39f, #3f9a5c); }
+  .barra.hp.medio i { background: linear-gradient(180deg, #ffd166, #b57a1e); }
+  .barra.hp.baixo i { background: linear-gradient(180deg, #ff9d8a, #d8574a); }
+  .moedas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .moedas div { padding: 6px 4px; text-align: center; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .moedas small { display: block; font-weight: 400; color: var(--vao-dim); font-size: 10px; }
+
+  /* listas */
+  .lista { padding: 4px 10px; }
+  .lista > div { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--vao2); }
+  .lista > div:first-child { border-top: 0; }
+  .lista .vazio { color: var(--vao-dim); }
+  .lista .dir { margin-left: auto; font-weight: 700; white-space: nowrap; }
+  .poke { flex-wrap: wrap; }
+  .poke .nm { font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .poke .barra { flex-basis: 100%; height: 14px; }
+  .ativo-tag { color: var(--ouro-luz); }
+
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+  .kpis div { padding: 8px 4px; text-align: center; }
+  .kpis b { display: block; font-size: 17px; }
+  .kpis small { display: block; color: var(--vao-dim); font-size: 10px; }
+  .kpis em { display: block; font-style: normal; font-size: 10px; color: var(--ouro-luz); }
+
+  #c-tela { padding: 3px; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: zoom-in; }
+  #c-tela img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+  #c-tela span { color: var(--vao-dim); font-size: 12px; text-align: center; padding: 0 10px; }
+  .acoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .acoes button, .grande { height: 38px; font-size: 13px; padding: 0 4px; white-space: nowrap; }
+  .chips { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .chips button { height: 28px; font-size: 11px; }
+  .confirmar { filter: hue-rotate(150deg) saturate(1.3); }
+  time { color: var(--vao-dim); margin-right: 6px; font-size: 11px; }
+
+  /* geral */
+  .mini { padding: 10px 12px 12px; margin-bottom: 8px; cursor: pointer; }
+  .mini .linha { margin-bottom: 4px; }
+  .mini .nm { font-weight: 700; font-size: 15px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mini .dados { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; margin-top: 6px; }
+
+  /* sobreposições: tela ao vivo e ajustes */
+  .sobre { display: none; position: fixed; inset: 0; z-index: 20; background: rgba(20, 8, 14, .92); padding: 12px; box-sizing: border-box; flex-direction: column; gap: 10px; }
+  .sobre.aberto { display: flex; }
+  #vivo img { flex: 1; min-height: 0; width: 100%; object-fit: contain; }
+  #vivo .linha span { flex: 1; font-weight: 700; }
+  #ajustes .caixa { padding: 14px 16px 18px; margin: auto 0; }
+  #ajustes label { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+  #ajustes select { background: var(--vao); color: var(--sobre-mad); border: 0; border-radius: 6px; padding: 6px 8px; box-shadow: inset 0 0 0 2px var(--mad-linha); font: inherit; margin-left: auto; }
+  .oculto { display: none !important; }
+
+  /* loja */
+  .prod { flex-direction: column; align-items: stretch !important; gap: 6px !important; }
+  .prod .nm { font-weight: 700; }
+  .prod .nm small { display: block; font-weight: 400; color: var(--vao-dim); font-size: 11px; }
+  .prod .qtd { display: flex; gap: 4px; align-items: center; }
+  .prod .qtd input { flex: 1; min-width: 0; height: 30px; text-align: center; background: #1e1219; color: var(--sobre-mad); border: 0; border-radius: 6px;
+    box-shadow: inset 0 0 0 2px var(--mad-linha); font: 700 14px Tahoma, sans-serif; }
+  .prod .qtd button { height: 30px; min-width: 38px; padding: 0 6px; font-size: 12px; }
+  .prod .comprar { height: 36px; }
+  #l-msg { margin-bottom: 8px; font-weight: 700; }
+  #l-msg:empty { display: none; }
+  #l-msg.ok { color: #8fe39f; } #l-msg.erro { color: var(--ouro-luz); }
+</style>
+</head>
+<body>
+<div class="fixo">
+  <header class="madeira">
+    <div class="linha">
+      <h1 class="contorno">Multi<i>Idle</i></h1>
+      <span id="conexao" class="vao">…</span>
+      <button id="btnCfg" title="Ajustes">⚙️</button>
+    </div>
+    <nav id="nav"></nav>
+  </header>
+</div>
+
+<!-- ===== página de uma conta ===== -->
+<main id="pgConta">
+  <section class="bloco madeira">
+    <div class="linha"><span id="c-nome" class="contorno"></span><span id="c-status" class="pill"></span></div>
+    <div id="c-local"></div>
+    <div id="c-treinador"></div>
+    <div class="sub" id="c-sinal"></div>
+  </section>
+
+  <details class="bloco madeira" data-sec="equipe" open>
+    <summary class="contorno">⚔️ Equipe</summary>
+    <div id="c-equipe" class="lista vao"></div>
+  </details>
+
+  <details class="bloco madeira" data-sec="sessao" open>
+    <summary class="contorno">📈 Sessão <span class="sub" id="c-tempo"></span></summary>
+    <div id="c-kpis" class="kpis"></div>
+    <button class="grande" id="btnZerar" style="width:100%">↺ Zerar sessão</button>
+  </details>
+
+  <details class="bloco madeira" data-sec="tela" open>
+    <summary class="contorno">📺 Tela</summary>
+    <div id="c-tela" class="vao" title="Toque para ver ao vivo"><span>carregando imagem…</span></div>
+    <div class="sub" style="margin:6px 0 10px">Toque na imagem para ver ao vivo em tela cheia.</div>
+    <div class="acoes" id="acoes">
+      <button data-acao="reload">⟳ Recarregar</button>
+      <button data-acao="eco">🍃 Eco</button>
+      <button data-acao="home">🏠 Início</button>
+    </div>
+  </details>
+
+  <details class="bloco madeira" data-sec="bolas" open>
+    <summary class="contorno">🔴 Pokébolas <span class="sub" id="c-bolas-total"></span></summary>
+    <div id="c-bolas" class="lista vao"></div>
+    <button class="grande" id="btnIrLoja" style="width:100%;margin-top:8px">🛒 Comprar mais</button>
+  </details>
+
+  <details class="bloco madeira" data-sec="loja" id="secLoja">
+    <summary class="contorno">🛒 Loja <span class="sub" id="l-gold"></span></summary>
+    <div class="chips" id="l-abas">
+      <button data-l="bolas">🔴 Pokébolas</button><button data-l="heal">🧪 Poções</button><button data-l="revive">💖 Revives</button>
+    </div>
+    <div id="l-msg"></div>
+    <div id="l-lista" class="lista vao"></div>
+    <div class="sub" style="margin-top:8px">Compra na loja do jogo com o ouro desta conta. Toque duas vezes em Comprar para confirmar.</div>
+  </details>
+
+  <details class="bloco madeira" data-sec="capturas">
+    <summary class="contorno">🎯 Últimas capturas</summary>
+    <div id="c-capturas" class="lista vao"></div>
+  </details>
+
+  <details class="bloco madeira" data-sec="drops">
+    <summary class="contorno">🎁 Achados da sessão</summary>
+    <div id="c-drops" class="lista vao"></div>
+  </details>
+
+  <details class="bloco madeira" data-sec="alertas" open>
+    <summary class="contorno">🔔 Alertas desta conta</summary>
+    <div class="chips" data-filtro></div>
+    <div id="c-log" class="lista vao"></div>
+  </details>
+</main>
+
+<!-- ===== visão geral ===== -->
+<main id="pgGeral" class="oculto">
+  <section class="bloco madeira">
+    <div class="linha" style="margin-bottom:10px"><span class="contorno" style="font-size:17px;font-weight:700;flex:1">📊 Todas as contas</span><span class="sub" id="g-tempo"></span></div>
+    <div id="g-kpis" class="kpis"></div>
+  </section>
+  <div id="g-contas"></div>
+  <details class="bloco madeira" data-sec="g-alertas" open>
+    <summary class="contorno">🔔 Alertas de todas</summary>
+    <div class="chips" data-filtro></div>
+    <div id="g-log" class="lista vao"></div>
+  </details>
+</main>
+
+<!-- tela ao vivo -->
+<div id="vivo" class="sobre">
+  <div class="linha"><span class="contorno" id="vivoNome"></span><button id="vivoFechar">✕ Fechar</button></div>
+  <img id="vivoImg" alt="">
+  <div class="sub" style="text-align:center">Atualiza a cada 2 s enquanto aberta.</div>
+</div>
+
+<!-- ajustes -->
+<div id="ajustes" class="sobre">
+  <div class="caixa madeira">
+    <div class="linha"><span class="contorno" style="font-size:16px;font-weight:700;flex:1">⚙️ Ajustes</span><button id="cfgFechar">✕</button></div>
+    <label><input type="checkbox" id="cfgVibrar"> Vibrar com shiny e venda no Market (Android)</label>
+    <label>Atualizar dados a cada
+      <select id="cfgDados"><option value="2000">2 s</option><option value="3000">3 s</option><option value="10000">10 s</option></select></label>
+    <label>Miniatura da tela
+      <select id="cfgPrint"><option value="5000">a cada 5 s</option><option value="10000">a cada 10 s</option><option value="30000">a cada 30 s</option><option value="0">desligada</option></select></label>
+    <div class="sub">Os ajustes ficam salvos neste celular. A miniatura só é tirada enquanto o painel está aberto.</div>
+    <div class="sub" id="cfgVersao" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<script>
+  const T = location.search; // ?t=token (vai em toda chamada)
+  document.getElementById('manifest').href = 'manifest.json' + T;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmt = (v) => (Number(v) || 0).toLocaleString('pt-BR');
+  const compacto = (v) => Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(Number(v) || 0);
+  const doisDig = (n) => String(n).padStart(2, '0');
+  const hora = (ms) => new Date(ms).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  function duracao(ms) {
+    const m = Math.floor(ms / 60000), h = Math.floor(m / 60);
+    return h ? `${h}h ${doisDig(m % 60)}min` : `${m}min`;
+  }
+  const porHora = (v, ms) => ms > 60000 ? (v / (ms / 3600000)) : 0;
+  const STATUS = { online: '🟢 caçando', quieto: '🟡 parado', fora: '⚪ fora do jogo' };
+  const IMPORTANTES = ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas', 'desmaiou', 'atualizou', 'vendido'];
+  const POUCAS = 50;
+
+  // ---- ajustes (salvos neste celular) ----
+  const cfg = { vibrar: true, dados: 3000, print: 10000, filtro: 'todos', ...JSON.parse(localStorage.getItem('cfg') ?? '{}') };
+  const salvarCfg = () => localStorage.setItem('cfg', JSON.stringify(cfg));
+  $('cfgVibrar').checked = cfg.vibrar;
+  $('cfgDados').value = cfg.dados;
+  $('cfgPrint').value = cfg.print;
+  $('cfgVibrar').onchange = (e) => { cfg.vibrar = e.target.checked; salvarCfg(); };
+  $('cfgDados').onchange = (e) => { cfg.dados = Number(e.target.value); salvarCfg(); agendar(); };
+  $('cfgPrint').onchange = (e) => { cfg.print = Number(e.target.value); salvarCfg(); agendar(); };
+  $('btnCfg').onclick = () => $('ajustes').classList.add('aberto');
+  $('cfgFechar').onclick = () => $('ajustes').classList.remove('aberto');
+
+  // seções abertas/fechadas lembradas
+  const secoes = JSON.parse(localStorage.getItem('secoes') ?? '{}');
+  document.querySelectorAll('details[data-sec]').forEach((d) => {
+    if (d.dataset.sec in secoes) d.open = secoes[d.dataset.sec];
+    d.addEventListener('toggle', () => { secoes[d.dataset.sec] = d.open; localStorage.setItem('secoes', JSON.stringify(secoes)); });
+  });
+
+  // filtro de alertas (vale pras duas páginas)
+  document.querySelectorAll('[data-filtro]').forEach((c) => {
+    c.innerHTML = '<button data-f="todos">Todos</button><button data-f="importantes">Só importantes</button>';
+    c.onclick = (e) => { if (e.target.dataset.f) { cfg.filtro = e.target.dataset.f; salvarCfg(); desenhar(); } };
+  });
+
+  // ---- navegação: 📊 Geral + uma aba por conta ----
+  let atual = location.hash === '#geral' ? 0 : Number(location.hash.slice(1)) || Number(localStorage.getItem('contaAtual') ?? 1);
+  let dados = null;
+  const vistoAte = JSON.parse(localStorage.getItem('vistoAte') ?? '{}');
+  let ultimoAlertaVisto = Number(localStorage.getItem('ultimoAlerta')) || Date.now();
+
+  $('nav').innerHTML = `<button data-c="0" title="Todas as contas">📊</button>` + [1, 2, 3, 4].map((n) =>
+    `<button data-c="${n}"><span class="ponto fora"></span>Conta ${doisDig(n)}<small>—</small></button>`).join('');
+  $('nav').onclick = (e) => { const b = e.target.closest('button'); if (b) selecionar(Number(b.dataset.c)); };
+
+  function selecionar(n) {
+    atual = n;
+    localStorage.setItem('contaAtual', n);
+    history.replaceState(null, '', T + (n ? '#' + n : '#geral'));
+    $('pgConta').classList.toggle('oculto', !n);
+    $('pgGeral').classList.toggle('oculto', !!n);
+    $('c-tela').innerHTML = '<span>carregando imagem…</span>';
+    zerarConfirm();
+    desenhar();
+    print();
+    $('l-msg').textContent = '';
+    loja = null;
+    carregarLoja?.();
+    scrollTo({ top: 0 });
+  }
+
+  // ---- desenho ----
+  function linhaAlerta(a, comNome) {
+    return `<div><time>${hora(a.em)}</time><span>${comNome ? `<b>${esc(a.nome)}</b> · ` : ''}${esc(dados.tipos[a.tipo] ?? a.tipo)}${a.texto ? ': ' + esc(a.texto) : ''}</span></div>`;
+  }
+  function alertasFiltrados(conta) {
+    return dados.alertas.filter((a) => (!conta || a.conta === conta) && (cfg.filtro === 'todos' || IMPORTANTES.includes(a.tipo)));
+  }
+  function kpis(p, ms) {
+    const item = (v, rot, h, form = fmt) => `<div class="vao"><b>${form(v)}</b><small>${rot}</small>${h ? `<em>${form(Math.round(porHora(v, ms)))}/h</em>` : ''}</div>`;
+    return item(p.abates, '⚔️ abates', true) + item(p.capturas, '🎯 capturas', true) + item(p.shinies, '✨ shinies')
+      + item(p.xp, '⭐ XP ganho', true, compacto) + item(p.gold, '💰 ouro ganho', true, compacto) + item(p.desmaios, '💀 desmaios');
+  }
+  function barraHp(p) {
+    const pct = p.maxHp ? Math.max(0, Math.min(100, (p.hp / p.maxHp) * 100)) : 0;
+    return `<div class="barra hp ${pct < 25 ? 'baixo' : pct < 50 ? 'medio' : ''}"><i style="width:${pct}%"></i><span>${fmt(p.hp)} / ${fmt(p.maxHp)}</span></div>`;
+  }
+
+  function desenharNav() {
+    document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('ativo', Number(b.dataset.c) === atual));
+    for (const c of dados.contas) {
+      const b = document.querySelector(`#nav [data-c="${c.conta}"]`);
+      if (!b) continue;
+      b.querySelector('.ponto').className = 'ponto ' + c.status;
+      b.querySelector('small').textContent = c.nome.startsWith('Conta ') ? '—' : c.nome;
+      const ultimo = dados.alertas.find((a) => a.conta === c.conta)?.em ?? 0;
+      if (c.conta === atual && ultimo) vistoAte[c.conta] = ultimo;
+      b.classList.toggle('novo', ultimo > (vistoAte[c.conta] ?? 0));
+    }
+    localStorage.setItem('vistoAte', JSON.stringify(vistoAte));
+    document.querySelectorAll('[data-filtro] button').forEach((b) => b.classList.toggle('ativo', b.dataset.f === cfg.filtro));
+  }
+
+  function desenharConta() {
+    const c = dados.contas.find((x) => x.conta === atual);
+    if (!c) { $('c-nome').textContent = `Conta ${doisDig(atual)}`; $('c-status').textContent = 'sem dados'; return; }
+    const j = c.jogo;
+    $('c-nome').textContent = c.nome;
+    $('c-status').className = 'pill ' + c.status;
+    $('c-status').textContent = STATUS[c.status];
+    $('c-local').textContent = j ? j.local : 'Conta não está logada no jogo';
+    $('c-sinal').textContent = c.status === 'fora' ? '' : `Última mensagem do jogo há ${Math.round(c.semMsgHa / 1000)} s`;
+    $('c-treinador').innerHTML = !j ? '' : `
+      <div class="nivel"><div class="nv vao"><b>${j.level}</b><small>nível</small></div>
+        <div style="flex:1"><div class="barra"><i style="width:${j.xpPct}%"></i><span>${fmt(j.xpDentro)} / ${fmt(j.xpFaixa)} xp · ${j.xpPct.toFixed(1)}%</span></div></div></div>
+      <div class="moedas">
+        <div class="vao">${compacto(j.gold)}<small>💰 ouro</small></div>
+        <div class="vao">${fmt(j.diamonds)}<small>💎 diamantes</small></div>
+        <div class="vao">${fmt(j.orbs)}<small>🔮 orbs</small></div>
+        <div class="vao">${fmt(j.colecao)}<small>📦 pokémon</small></div>
+      </div>`;
+
+    $('c-equipe').innerHTML = !j?.equipe.length ? '<div class="vazio">Sem dados da equipe (conta fora do jogo).</div>'
+      : j.equipe.map((p) => `<div class="poke"><span class="nm">${p.ativo ? '<span class="ativo-tag">★</span> ' : ''}${p.shiny ? '✨ ' : ''}${esc(p.nome)}</span>
+          <span class="dir">Nv ${p.level}</span>${barraHp(p)}</div>`).join('');
+
+    const ms = dados.agora - c.placar.inicio;
+    $('c-tempo').textContent = '· ' + duracao(ms);
+    $('c-kpis').innerHTML = kpis(c.placar, ms);
+
+    $('c-bolas-total').textContent = j ? `· ${fmt(j.totalBolas)} no total` : '';
+    $('c-bolas').innerHTML = !j ? '<div class="vazio">Sem dados.</div>'
+      : (j.totalBolas < POUCAS ? `<div style="color:var(--ouro-luz);font-weight:700">⚠️ Estoque baixo — reabasteça!</div>` : '')
+        + (j.bolas.length ? j.bolas.map((b) => `<div><span>${esc(b.nome)}</span><span class="dir">${fmt(b.qtd)}</span></div>`).join('') : '<div class="vazio">Nenhuma pokébola!</div>');
+
+    $('c-capturas').innerHTML = c.placar.ultimas.length
+      ? c.placar.ultimas.map((u) => `<div><time>${hora(u.em)}</time><span>${u.shiny ? '✨ ' : ''}<b>${esc(u.nome)}</b></span><span class="dir">Nv ${u.level}</span></div>`).join('')
+      : '<div class="vazio">Nenhuma captura nesta sessão.</div>';
+
+    const drops = Object.entries(c.placar.drops).sort((a, b) => b[1] - a[1]).slice(0, 15);
+    $('c-drops').innerHTML = drops.length
+      ? drops.map(([nome, q]) => `<div><span>${esc(nome)}</span><span class="dir">× ${fmt(q)}</span></div>`).join('')
+      : '<div class="vazio">Nenhum achado nesta sessão.</div>';
+
+    document.querySelector('[data-acao="eco"]').classList.toggle('ativo', !!c.eco);
+    const meus = alertasFiltrados(atual);
+    $('c-log').innerHTML = meus.length ? meus.map((a) => linhaAlerta(a, false)).join('') : '<div class="vazio">Nenhum alerta.</div>';
+  }
+
+  function desenharGeral() {
+    const soma = { abates: 0, capturas: 0, shinies: 0, xp: 0, gold: 0, desmaios: 0 };
+    let ms = 0;
+    for (const c of dados.contas) {
+      for (const k in soma) soma[k] += c.placar[k];
+      ms = Math.max(ms, dados.agora - c.placar.inicio);
+    }
+    $('g-tempo').textContent = duracao(ms);
+    $('g-kpis').innerHTML = kpis(soma, ms);
+    $('g-contas').innerHTML = dados.contas.map((c) => {
+      const j = c.jogo;
+      const ativo = j?.equipe.find((p) => p.ativo);
+      const cms = dados.agora - c.placar.inicio;
+      return `<section class="mini madeira" data-ir="${c.conta}">
+        <div class="linha"><span class="nm contorno">${esc(c.nome)}</span><span class="pill ${c.status}">${STATUS[c.status]}</span></div>
+        <div class="sub">${j ? `${esc(j.local)} · Nv ${j.level}` : 'fora do jogo'}</div>
+        ${ativo ? `<div style="margin-top:6px">${ativo.shiny ? '✨ ' : ''}<b>${esc(ativo.nome)}</b> Nv ${ativo.level}${barraHp(ativo)}</div>` : ''}
+        <div class="dados"><span>⚔️ ${fmt(Math.round(porHora(c.placar.abates, cms)))}/h</span><span>🎯 ${fmt(c.placar.capturas)}</span>
+          <span>✨ ${fmt(c.placar.shinies)}</span><span>🔴 ${j ? fmt(j.totalBolas) : '—'}</span></div>
+      </section>`;
+    }).join('');
+    const todos = alertasFiltrados(0);
+    $('g-log').innerHTML = todos.length ? todos.map((a) => linhaAlerta(a, true)).join('') : '<div class="vazio">Nenhum alerta.</div>';
+  }
+  $('g-contas').onclick = (e) => { const s = e.target.closest('[data-ir]'); if (s) selecionar(Number(s.dataset.ir)); };
+
+  function desenhar() {
+    document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('ativo', Number(b.dataset.c) === atual));
+    if (!dados) return;
+    desenharNav();
+    atual ? desenharConta() : desenharGeral();
+  }
+
+  // ---- dados ----
+  async function atualizar() {
+    try {
+      const r = await fetch('api/estado' + T, { cache: 'no-store' });
+      if (r.status === 403) { $('conexao').textContent = '🔒 link inválido'; return; }
+      dados = await r.json();
+      $('conexao').textContent = '🟢 ' + hora(dados.agora);
+      $('cfgVersao').textContent = dados.versao ? 'MultiIdle v' + dados.versao + ' (no PC)' : '';
+    } catch {
+      $('conexao').textContent = '🔴 PC fora do ar';
+      return;
+    }
+    // vibra uma vez por shiny novo (o navegador só deixa vibrar com a página aberta)
+    const novos = dados.alertas.filter((a) => a.em > ultimoAlertaVisto);
+    if (novos.length) {
+      ultimoAlertaVisto = novos[0].em;
+      localStorage.setItem('ultimoAlerta', ultimoAlertaVisto);
+      if (cfg.vibrar && novos.some((a) => a.tipo.startsWith('shiny'))) navigator.vibrate?.([250, 120, 250, 120, 400]);
+      else if (cfg.vibrar && novos.some((a) => a.tipo === 'vendido')) navigator.vibrate?.([80, 60, 80]); // "ka-ching" curtinho
+    }
+    desenhar();
+  }
+
+  async function buscarPrint(conta, largura) {
+    const r = await fetch(`api/print/${conta}${T}&w=${largura}`, { cache: 'no-store' }).catch(() => null);
+    if (r?.status === 200) return URL.createObjectURL(await r.blob());
+    return r?.status === 204 ? 'escondida' : null;
+  }
+  async function print() {
+    if (!atual || !cfg.print || !$('pgConta').querySelector('[data-sec="tela"]').open) return;
+    const pedida = atual;
+    const url = await buscarPrint(pedida, 640);
+    if (pedida !== atual || !url) return;
+    if (url === 'escondida') {
+      $('c-tela').innerHTML = '<span>Sem imagem: a janela do MultiIdle está minimizada ou na bandeja. Os números continuam valendo.</span>';
+      return;
+    }
+    const img = $('c-tela').querySelector('img') ?? document.createElement('img');
+    const antiga = img.src;
+    img.src = url;
+    if (!img.parentNode) $('c-tela').replaceChildren(img);
+    if (antiga.startsWith('blob:')) URL.revokeObjectURL(antiga);
+  }
+
+  // ---- tela ao vivo ----
+  let vivoTimer = null;
+  async function vivoQuadro() {
+    const url = await buscarPrint(atual, 1000);
+    if (!url || url === 'escondida') { $('vivoNome').textContent = 'Sem imagem (janela escondida no PC)'; return; }
+    const antiga = $('vivoImg').src;
+    $('vivoImg').src = url;
+    if (antiga.startsWith('blob:')) URL.revokeObjectURL(antiga);
+  }
+  $('c-tela').onclick = () => {
+    $('vivoNome').textContent = $('c-nome').textContent;
+    $('vivo').classList.add('aberto');
+    vivoQuadro();
+    vivoTimer = setInterval(vivoQuadro, 2000);
+  };
+  $('vivoFechar').onclick = () => { $('vivo').classList.remove('aberto'); clearInterval(vivoTimer); };
+
+  // ---- ações ----
+  const acao = (conta, nome) => fetch('api/acao' + T, { method: 'POST', body: JSON.stringify({ conta, acao: nome }) }).catch(() => {});
+  $('acoes').onclick = async (e) => {
+    const nome = e.target.dataset.acao;
+    if (!nome) return;
+    e.target.disabled = true;
+    await acao(atual, nome);
+    setTimeout(() => { e.target.disabled = false; atualizar(); print(); }, 2500);
+  };
+  // zerar pede um segundo toque (sem caixa de diálogo)
+  let zerarArmado = null;
+  function zerarConfirm() {
+    clearTimeout(zerarArmado);
+    zerarArmado = null;
+    $('btnZerar').textContent = '↺ Zerar sessão';
+    $('btnZerar').classList.remove('confirmar');
+  }
+  $('btnZerar').onclick = async () => {
+    if (!zerarArmado) {
+      $('btnZerar').textContent = 'Toque de novo para zerar';
+      $('btnZerar').classList.add('confirmar');
+      zerarArmado = setTimeout(zerarConfirm, 4000);
+      return;
+    }
+    zerarConfirm();
+    await acao(atual, 'zerar');
+    atualizar();
+  };
+
+  // ---- loja (compra na loja NPC do jogo, com confirmação em dois toques) ----
+  let lojaAba = localStorage.getItem('lojaAba') ?? 'bolas';
+  let loja = null;
+  async function carregarLoja() {
+    if (!atual || !$('secLoja').open) return;
+    const pedida = atual;
+    const r = await fetch(`api/loja${T}&conta=${pedida}`, { cache: 'no-store' }).catch(() => null);
+    if (pedida !== atual) return;
+    loja = r?.ok ? await r.json() : null;
+    desenharLoja();
+  }
+  function desenharLoja() {
+    document.querySelectorAll('#l-abas button').forEach((b) => b.classList.toggle('ativo', b.dataset.l === lojaAba));
+    if (!loja) {
+      $('l-gold').textContent = '';
+      $('l-lista').innerHTML = '<div class="vazio">A loja só abre com a conta logada no jogo.</div>';
+      return;
+    }
+    $('l-gold').textContent = `· 💰 ${fmt(loja.gold)} disponível`;
+    const itens = lojaAba === 'bolas' ? loja.bolas.map((b) => ({ ...b, kind: 'ball' }))
+      : loja.itens.filter((i) => i.cat === lojaAba).map((i) => ({ ...i, kind: 'item' }));
+    $('l-lista').innerHTML = itens.length ? itens.map((p) => {
+      const max = Math.min(loja.max, Math.floor(loja.gold / p.preco));
+      const extra = p.kind === 'ball' ? (p.captura ? ` · captura ${p.captura}` : '') : p.cura ? ` · cura ${fmt(p.cura)} HP` : p.revive ? ` · revive com ${p.revive}%` : '';
+      const ini = Math.min(max, 10) || 1;
+      return `<div class="prod" data-kind="${p.kind}" data-id="${p.id}" data-preco="${p.preco}" data-max="${max}" data-nome="${esc(p.nome)}">
+        <div class="nm">${esc(p.nome)}<small>você tem ${fmt(p.tem)} · ${fmt(p.preco)} 💰 cada${extra}</small></div>
+        <div class="qtd"><button data-q="-1">−</button><input type="number" inputmode="numeric" min="1" max="${Math.max(1, max)}" value="${ini}">
+          <button data-q="+1">+</button><button data-set="10">10</button><button data-set="100">100</button><button data-set="${max}">Máx</button></div>
+        <button class="comprar" ${max < 1 ? 'disabled' : ''}>${max < 1 ? 'Ouro insuficiente' : ''}</button>
+      </div>`;
+    }).join('') : '<div class="vazio">Nada à venda nesta categoria.</div>';
+    $('l-lista').querySelectorAll('.prod').forEach(rotuloCompra);
+  }
+  const qtdDe = (prod) => {
+    const max = Number(prod.dataset.max);
+    const inp = prod.querySelector('input');
+    const q = Math.max(1, Math.min(max, Math.floor(Number(inp.value) || 1)));
+    inp.value = q;
+    return q;
+  };
+  function rotuloCompra(prod) {
+    const b = prod.querySelector('.comprar');
+    if (b.disabled) return;
+    b.classList.remove('confirmar');
+    delete b.dataset.armado;
+    b.textContent = `Comprar · ${fmt(qtdDe(prod) * Number(prod.dataset.preco))} 💰`;
+  }
+  $('l-abas').onclick = (e) => {
+    if (!e.target.dataset.l) return;
+    lojaAba = e.target.dataset.l;
+    localStorage.setItem('lojaAba', lojaAba);
+    desenharLoja();
+  };
+  $('l-lista').addEventListener('input', (e) => { const p = e.target.closest('.prod'); if (p) rotuloCompra(p); });
+  $('l-lista').addEventListener('change', (e) => { const p = e.target.closest('.prod'); if (p) rotuloCompra(p); });
+  $('l-lista').onclick = async (e) => {
+    const prod = e.target.closest('.prod');
+    if (!prod) return;
+    const inp = prod.querySelector('input');
+    if (e.target.dataset.q) { inp.value = (Number(inp.value) || 0) + Number(e.target.dataset.q); return rotuloCompra(prod); }
+    if (e.target.dataset.set) { inp.value = e.target.dataset.set; return rotuloCompra(prod); }
+    if (!e.target.classList.contains('comprar') || e.target.disabled) return;
+    const b = e.target;
+    const qty = qtdDe(prod);
+    if (!b.dataset.armado) { // 1º toque: arma a confirmação
+      b.dataset.armado = '1';
+      b.classList.add('confirmar');
+      b.textContent = `Confirmar ${fmt(qty)} × ${prod.dataset.nome}?`;
+      setTimeout(() => b.dataset.armado && rotuloCompra(prod), 4000);
+      return;
+    }
+    b.disabled = true;
+    b.textContent = 'Comprando…';
+    $('l-msg').className = '';
+    $('l-msg').textContent = '';
+    const r = await fetch('api/comprar' + T, {
+      method: 'POST', body: JSON.stringify({ conta: atual, kind: prod.dataset.kind, id: Number(prod.dataset.id), qty }),
+    }).then((x) => x.json()).catch(() => ({ ok: false, erro: 'sem conexão com o PC' }));
+    $('l-msg').className = r.ok ? 'ok' : 'erro';
+    $('l-msg').textContent = r.ok ? `✅ Comprou ${fmt(r.qtd ?? qty)} × ${r.nome ?? prod.dataset.nome} por ${fmt(r.gasto)} 💰` : `⚠️ ${r.erro}`;
+    setTimeout(() => { carregarLoja(); atualizar(); }, 700); // o estado novo (ouro, estoque) chega logo atrás
+  };
+  $('secLoja').addEventListener('toggle', () => $('secLoja').open && carregarLoja());
+  $('btnIrLoja').onclick = () => {
+    $('secLoja').open = true;
+    lojaAba = 'bolas';
+    carregarLoja();
+    $('secLoja').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  // ---- ritmo ----
+  const visivel = () => document.visibilityState === 'visible';
+  let tDados, tPrint;
+  function agendar() {
+    clearInterval(tDados); clearInterval(tPrint);
+    tDados = setInterval(() => visivel() && atualizar(), cfg.dados);
+    if (cfg.print) tPrint = setInterval(() => visivel() && print(), cfg.print);
+  }
+  document.querySelector('[data-sec="tela"]').addEventListener('toggle', (e) => e.target.open && print());
+  document.addEventListener('visibilitychange', () => { if (visivel()) { atualizar(); print(); } });
+  selecionar(atual);
+  atualizar();
+  agendar();
+</script>
+</body>
+</html>

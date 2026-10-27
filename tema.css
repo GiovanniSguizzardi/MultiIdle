@@ -1,0 +1,53 @@
+/* Tema copiado do estilo.css do PokeIdle: xadrez azul, madeira, botão roxo, vão escuro */
+:root {
+  --xadrez-esc: #3357e3; --xadrez-clr: #587aff;
+  --mad-linha: #480e1e; --mad-luz: #f1d3b7; --mad-luz2: #e7a86d; --mad: #bd6951;
+  --mad-esc: #914850; --mad-quente: #df824c; --mad-base: #722c3f;
+  --rx-luz: #ffdef0; --rx-esc: #8d49b8; --rx: #ba5ad1; --rx-clr: #e77ad2; --rx-rosa: #ffa7d7;
+  --vao: #33202b; --vao2: #462b39;
+  --sobre-mad: #fff6ef; --sobre-mad-dim: #f5cdb9; --vao-dim: #c9a9b4;
+  --ouro-luz: #ffe9a3; --ouro: #e2a93f; --ouro-esc: #7d5313;
+}
+html, body { margin: 0; }
+body {
+  font: 12px/1.4 Tahoma, Verdana, "Segoe UI", sans-serif; color: var(--sobre-mad);
+  background-color: var(--xadrez-esc);
+  background-image: conic-gradient(var(--xadrez-clr) 0 25%, var(--xadrez-esc) 0 50%, var(--xadrez-clr) 0 75%, var(--xadrez-esc) 0);
+  background-size: 64px 64px;
+}
+/* madeira: mesma moldura do .painel / .menu-topo do jogo */
+.madeira {
+  background: linear-gradient(180deg, var(--mad-esc) 0 10px, var(--mad) 10px calc(100% - 14px),
+    var(--mad-quente) calc(100% - 14px) calc(100% - 7px), var(--mad) calc(100% - 7px) 100%);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 2px var(--mad-linha), inset 0 0 0 4px var(--mad-luz), inset 0 0 0 6px var(--mad),
+    0 4px 0 var(--mad-base), 0 6px 0 var(--mad-linha);
+}
+.vao { background: var(--vao); border-radius: 6px; box-shadow: inset 0 0 0 2px var(--mad-linha), 0 1px 0 var(--mad-luz2); }
+/* botão pixel roxo (receita do jogo, faixas ajustadas pra altura de 26px) */
+button {
+  height: 26px; padding: 0 10px; border: 0; border-radius: 6px; cursor: pointer;
+  font: 700 12px Tahoma, Verdana, sans-serif; color: #fff;
+  text-shadow: -1px -1px 0 var(--rx-esc), 1px -1px 0 var(--rx-esc), -1px 1px 0 var(--rx-esc), 1px 1px 0 var(--rx-esc);
+  background: linear-gradient(180deg, var(--rx-luz) 0 6px, var(--rx-esc) 6px 8px, var(--rx) 8px calc(100% - 8px),
+    var(--rx-clr) calc(100% - 8px) calc(100% - 6px), var(--rx-rosa) calc(100% - 6px) 100%);
+  box-shadow: inset 0 0 0 2px var(--mad-linha), inset 0 0 0 4px var(--mad-luz2), inset 0 0 0 5px var(--mad), 0 2px 0 var(--mad-base);
+  transition: filter .1s, transform .06s;
+}
+button:hover { filter: brightness(1.1); }
+button:active { transform: translateY(1px); box-shadow: inset 0 0 0 2px var(--mad-linha), inset 0 0 0 4px var(--mad-luz2), inset 0 0 0 5px var(--mad); }
+/* interruptor liga/desliga igual ao do jogo */
+input[type="checkbox"] {
+  appearance: none; position: relative; flex: none; cursor: pointer; width: 46px; height: 24px; margin: 0;
+  border-radius: 6px; background: var(--vao); box-shadow: inset 0 0 0 2px var(--mad-linha), 0 2px 0 var(--mad-base);
+}
+input[type="checkbox"]::before {
+  content: ""; position: absolute; top: 4px; left: 4px; width: 16px; height: 16px; border-radius: 4px;
+  background: linear-gradient(180deg, var(--mad-luz2) 0 4px, var(--mad) 4px calc(100% - 3px), var(--mad-base) calc(100% - 3px) 100%);
+  box-shadow: inset 0 0 0 2px var(--mad-linha); transition: left .12s;
+}
+input[type="checkbox"]:checked { background: var(--rx-esc); }
+input[type="checkbox"]:checked::before {
+  left: 26px; background: linear-gradient(180deg, var(--rx-luz) 0 4px, var(--rx) 4px calc(100% - 3px), var(--rx-rosa) calc(100% - 3px) 100%);
+}
+.contorno { color: #fff; text-shadow: -1px -1px 0 var(--mad-linha), 1px -1px 0 var(--mad-linha), -1px 1px 0 var(--mad-linha), 1px 1px 0 var(--mad-linha), 0 2px 0 var(--mad-linha); }

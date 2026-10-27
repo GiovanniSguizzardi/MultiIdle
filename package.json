@@ -1,0 +1,41 @@
+{
+  "name": "multi-idle-by-gibas",
+  "productName": "MultiIdle",
+  "version": "1.0.0",
+  "description": "4 contas do PokeIdle numa janela só, com alertas, painel no celular e updates automáticos",
+  "author": "Gibas",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "testes": "node alertas.js && node estado.js",
+    "build": "electron-builder --win",
+    "release": "electron-builder --win --publish always"
+  },
+  "build": {
+    "appId": "com.gibas.multiidle",
+    "productName": "MultiIdle",
+    "files": [
+      "main.js", "remoto.js", "alertas.js", "estado.js",
+      "index.html", "painel.html", "tema.css", "icon.png", "package.json"
+    ],
+    "directories": { "output": "dist", "buildResources": "build" },
+    "win": { "target": "nsis", "icon": "build/icon.png" },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "MultiIdle",
+      "artifactName": "MultiIdle-Setup-${version}.exe"
+    },
+    "publish": [{ "provider": "github", "owner": "GiovanniSguizzardi", "repo": "MultiIdle", "releaseType": "release" }]
+  },
+  "devDependencies": {
+    "electron": "^38.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9",
+    "qrcode": "^1.5.4"
+  }
+}

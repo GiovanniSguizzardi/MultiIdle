@@ -1,0 +1,410 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MultiIdle by Gibas</title>
+<link rel="stylesheet" href="tema.css">
+<style>
+  html, body { height: 100%; }
+  body { display: flex; flex-direction: column; gap: 10px; padding: 8px 8px 14px; box-sizing: border-box; overflow: hidden; }
+
+  #top { display: flex; gap: 8px; align-items: center; padding: 9px 12px 11px; position: relative; flex: none; }
+  #logo { font-size: 16px; font-weight: 700; letter-spacing: .5px; margin-right: 6px; }
+  #logo i { font-style: normal; color: var(--ouro-luz); }
+  #ultimo { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 4px 10px; color: var(--sobre-mad-dim); }
+  #painel, #celular { display: none; position: absolute; top: calc(100% + 8px); left: 0; z-index: 10; width: 440px; max-height: 80vh; overflow: auto; padding: 14px 16px 18px; box-sizing: border-box; }
+  #celular { left: auto; right: 0; width: 460px; }
+  #painel.aberto, #celular.aberto { display: block; }
+  #painel h3, #celular h3 { margin: 0 0 6px; font-size: 13px; }
+  #tipos { display: grid; grid-template-columns: 1fr auto auto; gap: 6px 14px; align-items: center; margin-bottom: 12px; }
+  #tipos .cab { font-weight: 700; color: var(--sobre-mad-dim); text-align: center; }
+  #celular p { margin: 4px 0 10px; }
+  #celular .qr { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+  #celular .qr img { border-radius: 6px; box-shadow: 0 0 0 2px var(--mad-linha); }
+  #celular code { display: block; padding: 6px 8px; margin: 4px 0; word-break: break-all; user-select: all; font: 11px Consolas, monospace; }
+  #celular label { display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 6px 0 10px; }
+  #celular .erro { color: var(--ouro-luz); font-weight: 700; }
+  .oculto { display: none !important; }
+  #versao { font-size: 10px; color: var(--sobre-mad-dim); margin: 0 4px 0 -8px; cursor: pointer; align-self: flex-end; padding-bottom: 3px; }
+  #btnUpdate { box-shadow: inset 0 0 0 2px var(--ouro-esc), inset 0 0 0 4px var(--ouro-luz), inset 0 0 0 5px var(--ouro), 0 2px 0 var(--mad-base);
+    animation: pulsa 1.2s infinite alternate; }
+  #btnUpdate:disabled { animation: none; filter: saturate(.5); cursor: default; }
+  @keyframes pulsa { to { filter: brightness(1.25); } }
+  #painel .titulo-log { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  #log { padding: 4px 8px; min-height: 40px; }
+  #log div { padding: 3px 0; border-top: 1px solid var(--vao2); }
+  #log div:first-child { border-top: 0; }
+  #log time { color: var(--vao-dim); margin-right: 6px; }
+
+  #grid { position: relative; display: grid; grid-template-columns: var(--x, 50%) 1fr; grid-template-rows: var(--y, 50%) 1fr; gap: 12px; flex: 1; min-height: 0; }
+  /* layouts: 1 grande + 3 pequenas, e 4 lado a lado */
+  #grid.l13 { grid-template-columns: var(--x3, 65%) 1fr; grid-template-rows: repeat(3, 1fr); }
+  #grid.l13 #sx { left: var(--x3, 65%); }
+  #grid.l13:not(.solo) .pane.grande { grid-row: span 3; order: -1; }
+  #grid.l14 { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; }
+  #grid.l13 #sy, #grid.l14 .split { display: none; }
+  .bar [data-a="grande"] { display: none; }
+  #grid.l13 .pane:not(.grande) [data-a="grande"] { display: inline-block; }
+  #layouts { display: flex; gap: 4px; }
+  button.ativo { box-shadow: inset 0 0 0 2px var(--ouro-esc), inset 0 0 0 4px var(--ouro-luz), inset 0 0 0 5px var(--ouro), 0 2px 0 var(--mad-base); }
+  #grid.solo { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+  #grid.solo .pane:not(.max), #grid.solo .split { display: none; }
+  .split { position: absolute; z-index: 1; border-radius: 6px; }
+  .split:hover, .dragging .split { background: var(--rx); box-shadow: inset 0 0 0 2px var(--mad-linha); }
+  #sx { top: 0; bottom: 0; left: var(--x, 50%); width: 12px; cursor: col-resize; }
+  #sy { left: 0; right: 0; top: var(--y, 50%); height: 12px; cursor: row-resize; }
+  .dragging webview { pointer-events: none; } /* senão a webview "rouba" o mouse durante o arraste */
+  .pane { display: flex; flex-direction: column; min-height: 0; min-width: 0; padding: 8px 9px 12px; }
+  .bar { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 0 2px 7px; }
+  .som-linha { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .bar .nome { font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .bar .placar { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--sobre-mad); font-weight: 700; margin-left: 4px; }
+  .bar [data-a="zreset"] { min-width: 52px; }
+  .tela { flex: 1; display: flex; min-height: 0; padding: 3px; }
+  webview { flex: 1; border-radius: 4px; overflow: hidden; }
+  /* alerta: a madeira do painel ganha anel dourado piscando (o "dourado da conquista" do jogo) */
+  .pane.alerta { animation: pisca 0.9s infinite alternate; }
+  @keyframes pisca { to { box-shadow: inset 0 0 0 2px var(--ouro-esc), inset 0 0 0 5px var(--ouro), inset 0 0 0 7px var(--ouro-luz), 0 4px 0 var(--mad-base), 0 6px 0 var(--mad-linha), 0 0 18px var(--ouro-luz); } }
+</style>
+</head>
+<body>
+<div id="top" class="madeira">
+  <span id="logo" class="contorno">Multi<i>Idle</i></span>
+  <span id="versao" title="Versão do MultiIdle — clique para procurar atualização"></span>
+  <button id="btnUpdate" class="oculto"></button>
+  <button id="sino">🔔 Alertas <span id="naoLidos"></span></button>
+  <span id="layouts">
+    <button data-l="g22" title="2 × 2">▦ 2×2</button>
+    <button data-l="l13" title="1 grande + 3 pequenas (⭐ escolhe a grande)">◧ 1+3</button>
+    <button data-l="l14" title="4 lado a lado">▥ 4</button>
+  </span>
+  <button id="ecoTodas" title="Liga/desliga o Modo Economia do jogo em todas as contas (para de desenhar a cena; o farm continua)">🍃 Eco: todas</button>
+  <span id="ultimo" class="vao"></span>
+  <button id="btnCelular" title="Acompanhar pelo celular">📱 Celular</button>
+  <div id="celular" class="madeira">
+    <label><input type="checkbox" id="painelLigado"> <b>Painel do celular ligado</b> (abre a porta 7777 na rede deste PC)</label>
+    <div id="painelOn">
+      <h3 class="contorno">1. Em casa (mesmo Wi-Fi)</h3>
+      <div class="qr"><img id="qrPainel" width="160" height="160" alt="">
+        <div>Aponte a câmera do celular pro QR code. Depois, no navegador do celular, use
+          <b>"Adicionar à tela inicial"</b> pra virar um app.<br><br>O link tem uma senha: não compartilhe.</div></div>
+      <div id="linksPainel"></div>
+      <h3 class="contorno">2. Fora de casa (Tailscale)</h3>
+      <div id="tsOn" class="qr"><img id="qrTs" width="160" height="160" alt="">
+        <div>Tailscale detectado ✅. Com o Tailscale ligado no celular, este QR abre o painel <b>de qualquer lugar</b> (4G, outro Wi-Fi).
+          <code id="linkTs" class="vao"></code></div></div>
+      <div id="tsOff">
+        <p>O <b>Tailscale</b> cria uma rede privada entre o seu PC e o seu celular: o painel funciona fora de casa sem ficar aberto na internet.</p>
+        <p>1. Instale no PC e no celular: <code class="vao">tailscale.com/download</code>
+          2. Entre com a <b>mesma conta</b> nos dois. 3. Volte aqui: o QR de "fora de casa" aparece sozinho.</p>
+      </div>
+      <p class="erro" id="erroPainel"></p>
+    </div>
+    <h3 class="contorno">3. Notificações em qualquer lugar (ntfy)</h3>
+    <p>Instale o app <b>ntfy</b> (Play Store / App Store), toque em <b>+</b> e assine o tópico abaixo
+      (ou leia o QR). Escolha quais alertas vão pro celular na coluna 📱 do 🔔 Alertas.</p>
+    <div class="qr"><img id="qrNtfy" width="120" height="120" alt=""><code id="topico" class="vao"></code></div>
+    <label><input type="checkbox" id="ntfyLigado"> Enviar alertas pro celular pelo ntfy.sh</label>
+    <button id="ntfyTeste">Mandar notificação de teste</button>
+  </div>
+  <div id="painel" class="madeira">
+    <h3 class="contorno">Alertar quando:</h3>
+    <div id="tipos"></div>
+    <label class="som-linha"><input type="checkbox" id="somShiny"> 🔊 Som especial quando aparecer/capturar shiny <button id="testarSom" type="button">Testar</button></label>
+    <label class="som-linha"><input type="checkbox" id="somVenda"> 💰 Som de caixa registradora quando vender no Market <button id="testarVenda" type="button">Testar</button></label>
+    <div class="titulo-log"><h3 class="contorno">Histórico</h3><button id="limpar">Limpar</button></div>
+    <div id="log" class="vao"></div>
+  </div>
+</div>
+<div id="grid"><div class="split" id="sx"></div><div class="split" id="sy"></div></div>
+<script>
+  const GAME_URL = 'https://pokeidle.io/app';
+  const grid = document.getElementById('grid');
+
+  for (let i = 1; i <= 4; i++) {
+    const pane = document.createElement('div');
+    pane.className = 'pane madeira';
+    pane.innerHTML = `
+      <div class="bar">
+        <span class="contorno nome">Conta ${i}</span><span class="placar" title="Desde que o app abriu: capturas · shinies · abates · desmaios"></span>
+        <button data-a="grande" title="Deixar esta conta grande">⭐</button>
+        <button data-a="back" title="Voltar">←</button>
+        <button data-a="home" title="Voltar ao PokeIdle">🏠</button>
+        <button data-a="zout" title="Diminuir zoom">−</button>
+        <button data-a="zreset" title="Zoom padrão (100%)">100%</button>
+        <button data-a="zin" title="Aumentar zoom">+</button>
+        <button data-a="eco" title="Modo Economia do jogo: para de desenhar a cena (bem mais leve); o farm continua">🍃</button>
+        <button data-a="mute">🔊</button>
+        <button data-a="reload">⟳</button>
+        <button data-a="max">⛶</button>
+      </div>
+      <div class="tela vao"><webview src="${GAME_URL}" partition="persist:conta${i}"
+               webpreferences="backgroundThrottling=no" allowpopups></webview></div>`;
+    grid.appendChild(pane);
+
+    const wv = pane.querySelector('webview');
+    const zLabel = pane.querySelector('[data-a="zreset"]');
+    let zoom = Number(localStorage.getItem('zoom' + i)) || 1;
+    const setZoom = (z) => {
+      zoom = Math.round(Math.min(3, Math.max(0.25, z)) * 100) / 100;
+      wv.setZoomFactor(zoom);
+      zLabel.textContent = Math.round(zoom * 100) + '%';
+      localStorage.setItem('zoom' + i, zoom);
+    };
+    wv.addEventListener('dom-ready', () => {
+      setZoom(zoom); // reaplica a cada carregamento
+      lerEco(pane);
+    });
+
+    pane.querySelector('.bar').onclick = (e) => {
+      const a = e.target.dataset.a;
+      if (a === 'zin') setZoom(zoom + 0.1);
+      if (a === 'zout') setZoom(zoom - 0.1);
+      if (a === 'zreset') setZoom(1);
+      if (a === 'grande') setGrande(i);
+      if (a === 'eco') setEco(pane, !pane.eco);
+      if (a === 'reload') wv.reload();
+      if (a === 'back' && wv.canGoBack()) wv.goBack();
+      if (a === 'home') wv.loadURL(GAME_URL);
+      if (a === 'mute') {
+        wv.setAudioMuted(!wv.isAudioMuted());
+        e.target.textContent = wv.isAudioMuted() ? '🔇' : '🔊';
+      }
+      if (a === 'max') {
+        const on = !pane.classList.contains('max');
+        document.querySelectorAll('.pane').forEach(p => p.classList.remove('max'));
+        pane.classList.toggle('max', on);
+        grid.classList.toggle('solo', on);
+      }
+    };
+  }
+
+  // Modo Economia do próprio jogo (preferência 'cfg-economia' do preferencias.mjs dele). Ligado, a cena
+  // para de ser desenhada e o servidor para de mandar o campo; o farm continua. O jogo aplica a
+  // preferência ao carregar, então: grava e recarrega a conta.
+  const ECO_JS = (on) => `location.host === 'pokeidle.io' && (localStorage.setItem('cfg-economia', '${on ? 1 : 0}'), true)`;
+  async function lerEco(pane) {
+    const wv = pane.querySelector('webview');
+    pane.eco = await wv.executeJavaScript(`localStorage.getItem('cfg-economia') === '1'`).catch(() => false);
+    pane.querySelector('[data-a="eco"]').classList.toggle('ativo', pane.eco);
+    const todas = [...document.querySelectorAll('.pane')].every(p => p.eco);
+    document.getElementById('ecoTodas').classList.toggle('ativo', todas);
+  }
+  async function setEco(pane, on) {
+    const wv = pane.querySelector('webview');
+    if (await wv.executeJavaScript(ECO_JS(on)).catch(() => false)) wv.reload(); // dom-ready chama lerEco
+  }
+  document.getElementById('ecoTodas').onclick = () => {
+    const panes = [...document.querySelectorAll('.pane')];
+    const ligar = !panes.every(p => p.eco);
+    panes.filter(p => !!p.eco !== ligar).forEach(p => setEco(p, ligar));
+  };
+
+  // layouts (salvos entre aberturas)
+  const LAYOUTS = ['g22', 'l13', 'l14'];
+  let layout = localStorage.getItem('layout') || 'g22';
+  const setLayout = (l) => {
+    layout = l;
+    grid.classList.remove(...LAYOUTS);
+    grid.classList.add(l);
+    document.querySelectorAll('#layouts button').forEach(b => b.classList.toggle('ativo', b.dataset.l === l));
+    localStorage.setItem('layout', l);
+  };
+  function setGrande(i) {
+    document.querySelectorAll('.pane').forEach((p, j) => p.classList.toggle('grande', j === i - 1));
+    localStorage.setItem('grande', i);
+  }
+  document.getElementById('layouts').onclick = (e) => { if (e.target.dataset.l) setLayout(e.target.dataset.l); };
+  setLayout(layout);
+  setGrande(Number(localStorage.getItem('grande')) || 1);
+
+  // divisórias arrastáveis; tamanho salvo entre aberturas. No 1+3 a vertical tem posição própria (x3).
+  const PADRAO = { x: '50%', y: '50%', x3: '65%' };
+  for (const k in PADRAO) {
+    const v = localStorage.getItem(k);
+    if (v) grid.style.setProperty('--' + k, v);
+  }
+  const chave = (s) => s.id === 'sy' ? 'y' : layout === 'l13' ? 'x3' : 'x';
+  let drag = null;
+  document.querySelectorAll('.split').forEach(s => s.onmousedown = () => { drag = chave(s); document.body.classList.add('dragging'); });
+  window.onmousemove = (e) => {
+    if (!drag) return;
+    const r = grid.getBoundingClientRect();
+    const pct = drag === 'y' ? (e.clientY - r.top) / r.height : (e.clientX - r.left) / r.width;
+    grid.style.setProperty('--' + drag, Math.min(90, Math.max(10, pct * 100)) + '%');
+  };
+  window.onmouseup = () => {
+    if (!drag) return;
+    localStorage.setItem(drag, grid.style.getPropertyValue('--' + drag));
+    drag = null;
+    document.body.classList.remove('dragging');
+  };
+  // duplo clique numa divisória volta ao padrão
+  document.querySelectorAll('.split').forEach(s => s.ondblclick = () => {
+    const k = chave(s);
+    grid.style.setProperty('--' + k, PADRAO[k]);
+    localStorage.setItem(k, PADRAO[k]);
+  });
+
+  // ---- alertas (eventos vêm do main.js, que escuta o WebSocket de cada conta) ----
+  const { ipcRenderer } = require('electron');
+  const { TIPOS } = require('./alertas');
+  const $ = (id) => document.getElementById(id);
+  const ligados = {
+    ...Object.fromEntries(Object.keys(TIPOS).map(k => [k, k !== 'fugiu'])), // "fugiu" vem desligado: é muito frequente
+    ...JSON.parse(localStorage.getItem('alertasLigados') ?? '{}'), // tipo novo que não estava salvo pega o padrão
+  };
+  // 📱 = vai pro celular pelo ntfy (só os importantes vêm ligados)
+  const push = {
+    ...Object.fromEntries(Object.keys(TIPOS).map(k => [k, ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas', 'vendido'].includes(k)])),
+    ...JSON.parse(localStorage.getItem('alertasPush') ?? '{}'),
+  };
+  const enviarPrefs = () => ipcRenderer.send('prefs', { ligados, push, ntfy: $('ntfyLigado').checked });
+  $('tipos').innerHTML = '<span></span><span class="cab">PC</span><span class="cab">📱</span>' +
+    Object.entries(TIPOS).map(([k, nome]) => `<span>${nome}</span>
+      <input type="checkbox" data-g="ligados" data-k="${k}" ${ligados[k] ? 'checked' : ''} title="Alertar no PC">
+      <input type="checkbox" data-g="push" data-k="${k}" ${push[k] ? 'checked' : ''} title="Mandar pro celular (ntfy)">`).join('');
+  $('tipos').onchange = (e) => {
+    const grupo = e.target.dataset.g === 'push' ? push : ligados;
+    grupo[e.target.dataset.k] = e.target.checked;
+    localStorage.setItem('alertasLigados', JSON.stringify(ligados));
+    localStorage.setItem('alertasPush', JSON.stringify(push));
+    enviarPrefs();
+  };
+
+  // ---- celular: painel na rede de casa + ntfy (servidor fica no remoto.js) ----
+  $('ntfyLigado').checked = localStorage.getItem('ntfyLigado') === '1'; // desligado até a pessoa ligar
+  $('ntfyLigado').onchange = (e) => { localStorage.setItem('ntfyLigado', e.target.checked ? '1' : '0'); enviarPrefs(); };
+  $('ntfyTeste').onclick = () => ipcRenderer.invoke('ntfy-teste');
+  enviarPrefs();
+  async function pintarCelular() {
+    const r = await ipcRenderer.invoke('remoto-info');
+    $('painelLigado').checked = r.painel;
+    $('painelOn').classList.toggle('oculto', !r.painel);
+    $('tsOn').classList.toggle('oculto', !r.tailscale);
+    $('tsOff').classList.toggle('oculto', !!r.tailscale);
+    $('qrTs').src = r.qrTailscale ?? '';
+    $('linkTs').textContent = r.tailscale ?? '';
+    $('qrPainel').src = r.qr ?? '';
+    $('qrNtfy').src = r.qrNtfy;
+    $('topico').textContent = r.topico;
+    $('linksPainel').innerHTML = '';
+    for (const l of r.links) {
+      const c = document.createElement('code');
+      c.className = 'vao';
+      c.textContent = l;
+      $('linksPainel').append(c);
+    }
+    $('erroPainel').textContent = r.erro ? `Painel fora do ar: ${r.erro}` : r.links.length || r.tailscale ? '' : 'PC sem rede local.';
+  }
+  $('btnCelular').onclick = () => $('celular').classList.toggle('aberto') && pintarCelular();
+  $('painelLigado').onchange = async (e) => {
+    await ipcRenderer.invoke('painel-ligar', e.target.checked);
+    setTimeout(pintarCelular, 300); // dá tempo do servidor subir (ou acusar porta ocupada)
+  };
+  // ---- atualização do MultiIdle (a lógica fica no main.js) ----
+  function pintarUpdate(u) {
+    if (u.atual) $('versao').textContent = 'v' + u.atual;
+    const b = $('btnUpdate');
+    b.classList.toggle('oculto', !['baixando', 'pronto'].includes(u.estado));
+    b.disabled = u.estado !== 'pronto';
+    if (u.estado === 'baixando') b.textContent = `⬇️ Baixando v${u.versao ?? ''}${u.pct ? ` (${u.pct}%)` : ''}`;
+    if (u.estado === 'pronto') b.textContent = `🔄 Atualizar para v${u.versao}`;
+    const msg = { 'em-dia': '✅ Você já está na versão mais recente do MultiIdle', procurando: '🔎 Procurando atualização…',
+      dev: 'ℹ️ Rodando pelo MultiIdle.bat (modo desenvolvimento): atualização automática só no app instalado',
+      erro: u.manual ? `⚠️ Não deu pra procurar atualização: ${u.erro ?? ''}` : null }[u.estado];
+    if (msg) $('ultimo').textContent = msg;
+  }
+  ipcRenderer.invoke('update-info').then(pintarUpdate);
+  ipcRenderer.on('update', (_, u) => pintarUpdate(u));
+  $('versao').onclick = () => ipcRenderer.send('update-checar');
+  $('btnUpdate').onclick = () => {
+    $('btnUpdate').disabled = true;
+    $('btnUpdate').textContent = '🔄 Atualizando… o MultiIdle já volta';
+    ipcRenderer.send('update-instalar');
+  };
+
+  // ações vindas do celular: aperta o mesmo botão do painel da conta
+  ipcRenderer.on('acao', (_, { conta, acao }) => panes[conta - 1]?.querySelector(`[data-a="${acao}"]`)?.click());
+
+  let naoLidos = 0;
+  $('sino').onclick = () => {
+    $('painel').classList.toggle('aberto');
+    naoLidos = 0;
+    $('naoLidos').textContent = '';
+  };
+  $('limpar').onclick = () => { $('log').innerHTML = ''; };
+
+  const panes = [...document.querySelectorAll('.pane')];
+  const nomes = [null, 'Conta 1', 'Conta 2', 'Conta 3', 'Conta 4'];
+  // nick e placar de cada conta, vindos do main.js
+  ipcRenderer.on('conta', (_, c) => {
+    const pane = panes[c.conta - 1];
+    if (!pane) return;
+    if (c.nick) nomes[c.conta] = c.nick;
+    pane.querySelector('.nome').textContent = nomes[c.conta];
+    const p = c.placar;
+    pane.querySelector('.placar').textContent = `🎯 ${p.capturas}  ✨ ${p.shinies}  ⚔️ ${p.abates}  💀 ${p.desmaios}`;
+  });
+  panes.forEach(p => {
+    const limpa = () => p.classList.remove('alerta');
+    p.querySelector('.bar').addEventListener('click', limpa);
+    p.querySelector('webview').addEventListener('focus', limpa);
+  });
+
+  // sons sintetizados (sem arquivo de áudio). VOLUME é o botão de ajuste.
+  // nota: [frequência Hz, início s, duração s, forma da onda]
+  const VOLUME = 0.25;
+  const SONS = {
+    // arpejo "brilhante"
+    shiny: [1319, 1568, 2093, 2637, 3136].map((f, n) => [f, n * 0.08, 0.6, 'triangle']),
+    // caixa registradora: "ka-" "ching" (dois toques curtos e um sino)
+    venda: [[1047, 0, 0.08, 'square'], [1568, 0.07, 0.09, 'square'], [2093, 0.17, 0.8, 'triangle'], [2637, 0.17, 0.8, 'triangle'], [3520, 0.2, 0.5, 'sine']],
+  };
+  let audio;
+  function tocar(som, vezes = 1, intervalo = 0.7) {
+    audio ??= new AudioContext();
+    const t0 = audio.currentTime;
+    for (let v = 0; v < vezes; v++) {
+      for (const [freq, ini, dur, onda] of SONS[som]) {
+        const t = t0 + v * intervalo + ini;
+        const o = audio.createOscillator();
+        const g = audio.createGain();
+        o.type = onda;
+        o.frequency.value = freq;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(onda === 'square' ? VOLUME * 0.4 : VOLUME, t + 0.015); // quadrada soa mais alta
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        o.connect(g).connect(audio.destination);
+        o.start(t);
+        o.stop(t + dur + 0.05);
+      }
+    }
+  }
+  for (const [id, chave] of [['somShiny', 'somShiny'], ['somVenda', 'somVenda']]) {
+    $(id).checked = localStorage.getItem(chave) !== '0';
+    $(id).onchange = (e) => localStorage.setItem(chave, e.target.checked ? '1' : '0');
+  }
+  $('testarSom').onclick = (e) => { e.preventDefault(); tocar('shiny', 2); };
+  $('testarVenda').onclick = (e) => { e.preventDefault(); tocar('venda', 2, 1.1); };
+
+  ipcRenderer.on('alerta', (_, a) => {
+    if (!ligados[a.tipo]) return;
+    if ($('somShiny').checked && a.tipo === 'shinyCap') tocar('shiny', 2); // capturado: toca duas vezes
+    if ($('somShiny').checked && a.tipo === 'shinyVisto') tocar('shiny');
+    if ($('somVenda').checked && a.tipo === 'vendido') tocar('venda', 2, 1.1);
+    const linha = `${nomes[a.conta]} · ${TIPOS[a.tipo]}${a.texto ? ': ' + a.texto : ''}`;
+    const hora = new Date(a.em).toLocaleTimeString();
+    const div = document.createElement('div');
+    div.innerHTML = `<time>${hora}</time>`;
+    div.append(linha); // texto vem do servidor do jogo: append (não innerHTML) pra não injetar HTML
+    $('log').prepend(div);
+    while ($('log').children.length > 200) $('log').lastChild.remove();
+    $('ultimo').textContent = `${hora} — ${linha}`;
+    if (!$('painel').classList.contains('aberto')) $('naoLidos').textContent = `(${++naoLidos})`;
+    panes[a.conta - 1]?.classList.add('alerta');
+    new Notification(`MultiIdle — ${nomes[a.conta]}`, { body: `${TIPOS[a.tipo]}${a.texto ? ': ' + a.texto : ''}` });
+  });
+</script>
+</body>
+</html>
