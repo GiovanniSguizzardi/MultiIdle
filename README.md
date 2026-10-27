@@ -1,5 +1,5 @@
 <div align='center'>
-  <img width="800" height="800" alt="icon" src="https://github.com/user-attachments/assets/8baeb85e-e73b-4425-bc67-6f52e8383de8" />
+  <img width="600" height="600" alt="icon" src="https://github.com/user-attachments/assets/8baeb85e-e73b-4425-bc67-6f52e8383de8" />
 </div>
 
 # MultiIdle
