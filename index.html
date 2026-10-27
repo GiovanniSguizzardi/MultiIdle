@@ -63,7 +63,8 @@
   .tela { flex: 1; display: flex; min-height: 0; padding: 3px; }
   webview { flex: 1; border-radius: 4px; overflow: hidden; }
   /* alerta: a madeira do painel ganha anel dourado piscando (o "dourado da conquista" do jogo) */
-  .pane.alerta { animation: pisca 0.9s infinite alternate; }
+  /* pisca 7 vezes e o anel dourado fica parado (pisca infinito gastava CPU da janela até alguém clicar) */
+  .pane.alerta { animation: pisca 0.9s 7 alternate forwards; }
   @keyframes pisca { to { box-shadow: inset 0 0 0 2px var(--ouro-esc), inset 0 0 0 5px var(--ouro), inset 0 0 0 7px var(--ouro-luz), 0 4px 0 var(--mad-base), 0 6px 0 var(--mad-linha), 0 0 18px var(--ouro-luz); } }
 </style>
 </head>
@@ -78,6 +79,7 @@
     <button data-l="l13" title="1 grande + 3 pequenas (⭐ escolhe a grande)">◧ 1+3</button>
     <button data-l="l14" title="4 lado a lado">▥ 4</button>
   </span>
+  <button id="btnFps" title="Quadros por segundo da cena de cada conta. Menos = menos CPU/GPU (o farm é no servidor, não muda nada no jogo). Contas escondidas ou com a janela minimizada já caem pra 1 fps sozinhas."></button>
   <button id="ecoTodas" title="Liga/desliga o Modo Economia do jogo em todas as contas (para de desenhar a cena; o farm continua)">🍃 Eco: todas</button>
   <span id="ultimo" class="vao"></span>
   <button id="btnCelular" title="Acompanhar pelo celular">📱 Celular</button>
@@ -147,6 +149,7 @@
     };
     wv.addEventListener('dom-ready', () => {
       setZoom(zoom); // reaplica a cada carregamento
+      aplicarFps();
       lerEco(pane);
     });
 
@@ -169,6 +172,7 @@
         document.querySelectorAll('.pane').forEach(p => p.classList.remove('max'));
         pane.classList.toggle('max', on);
         grid.classList.toggle('solo', on);
+        aplicarFps();
       }
     };
   }
@@ -297,6 +301,30 @@
   }
   ipcRenderer.invoke('update-info').then(pintarUpdate);
   ipcRenderer.on('update', (_, u) => pintarUpdate(u));
+
+  // ---- limite de FPS da cena (o limitador roda dentro de cada página do jogo, ver main.js) ----
+  const OPCOES_FPS = [60, 30, 20, 10];
+  let fpsEscolhido = Number(localStorage.getItem('fps')) || 30;
+  let janelaVisivel = true;
+  function fpsDaConta(pane) {
+    if (!janelaVisivel) return 1; // minimizada ou na bandeja: ninguém vendo
+    if (grid.classList.contains('solo') && !pane.classList.contains('max')) return 1; // escondida atrás do ⛶
+    return fpsEscolhido;
+  }
+  function aplicarFps() {
+    $('btnFps').textContent = `🎞️ ${fpsEscolhido} fps`;
+    document.querySelectorAll('.pane').forEach((pane) => {
+      // antes do dom-ready a webview ainda não aceita executeJavaScript; ela recebe o ajuste quando carregar
+      try { pane.querySelector('webview').executeJavaScript(`window.__miFps && (window.__miFps.alvo = ${fpsDaConta(pane)})`).catch(() => {}); } catch {}
+    });
+  }
+  $('btnFps').onclick = () => {
+    fpsEscolhido = OPCOES_FPS[(OPCOES_FPS.indexOf(fpsEscolhido) + 1) % OPCOES_FPS.length];
+    localStorage.setItem('fps', fpsEscolhido);
+    aplicarFps();
+  };
+  ipcRenderer.on('janela-visivel', (_, v) => { janelaVisivel = v; aplicarFps(); });
+  aplicarFps();
   $('versao').onclick = () => ipcRenderer.send('update-checar');
   $('btnUpdate').onclick = () => {
     $('btnUpdate').disabled = true;
@@ -382,7 +410,8 @@
     while ($('log').children.length > 200) $('log').lastChild.remove();
     $('ultimo').textContent = `${hora} — ${linha}`;
     if (!$('painel').classList.contains('aberto')) $('naoLidos').textContent = `(${++naoLidos})`;
-    panes[a.conta - 1]?.classList.add('alerta');
+    const pAlerta = panes[a.conta - 1];
+    if (pAlerta) { pAlerta.classList.remove('alerta'); void pAlerta.offsetWidth; pAlerta.classList.add('alerta'); } // reinicia o pisca
     new Notification(`MultiIdle — ${nomes[a.conta]}`, { body: `${TIPOS[a.tipo]}${a.texto ? ': ' + a.texto : ''}` });
   });
 </script>

@@ -21,8 +21,37 @@ app.setAppUserModelId(APP_ID); // necessário pras notificações do Windows apa
 const TRAVADO_MS = Number(process.env.MULTIIDLE_TRAVADO_MS) || 3 * 60 * 1000;
 const POUCAS_BOLAS = 50; // abaixo disso (somando todos os tipos) avisa "Pokébolas acabando"
 
+// Todos os pedidos de quadro do mesmo instante passam juntos (o jogo tem mais de um laço); os ids
+// devolvidos são estáveis, então o cancelAnimationFrame do jogo continua funcionando.
+const LIMITADOR_FPS = `(() => {
+  if (window.__miFps) return; // já instalado nesta página
+  const pedir = window.requestAnimationFrame.bind(window);
+  const cancelar = window.cancelAnimationFrame.bind(window);
+  // limite SEMPRE ativo: janela coberta/minimizada sem o freio do Chromium desenhava a 200+ fps
+  const st = { alvo: 30, ult: -1e9, aberto: -1 };
+  const pendentes = new Map();
+  let seq = 0;
+  window.__miFps = st;
+  window.requestAnimationFrame = (cb) => {
+    const id = ++seq;
+    const passo = (t) => {
+      if (t !== st.aberto) {
+        if (t - st.ult < 1000 / st.alvo - 2) return pendentes.set(id, pedir(passo));
+        st.ult = st.aberto = t;
+      }
+      pendentes.delete(id);
+      cb(t);
+    };
+    pendentes.set(id, pedir(passo));
+    return id;
+  };
+  window.cancelAnimationFrame = (id) => {
+    if (pendentes.has(id)) { cancelar(pendentes.get(id)); pendentes.delete(id); }
+  };
+})();`;
+
 let win;
-const enviar = (canal, dados) => win?.webContents.send(canal, dados);
+const enviar =(canal, dados) => win?.webContents.send(canal, dados);
 const alerta = (conta, tipo, texto) => {
   const a = { conta, tipo, texto, em: Date.now() };
   enviar('alerta', a);
@@ -108,6 +137,12 @@ app.on('web-contents-created', (_, wc) => {
   };
 
   try { wc.debugger.attach('1.3'); } catch { return; }
+  // Limitador de FPS: roda antes dos scripts do jogo em toda página. Só segura o ritmo do
+  // requestAnimationFrame (a cena do jogo é desenhada por ele e anima por tempo, então não fica lenta);
+  // o farm é no servidor. O index.html ajusta window.__miFps.alvo por conta.
+  wc.debugger.sendCommand('Page.addScriptToEvaluateOnNewDocument', { source: LIMITADOR_FPS }).catch(() => {});
+  // a primeira página já estava carregando quando o registro acima entrou: instala nela também
+  wc.on('dom-ready', () => wc.executeJavaScript(LIMITADOR_FPS).catch(() => {}));
   // buffers mínimos: só queremos os frames do WebSocket, não guardar cópia de tudo que a página baixa
   wc.debugger.sendCommand('Network.enable', { maxTotalBufferSize: 1024, maxResourceBufferSize: 1024 }).catch(() => {});
   wc.debugger.on('message', (_, method, p) => {
@@ -188,6 +223,9 @@ app.whenReady().then(() => {
   });
   win.loadFile(`${__dirname}/index.html`);
   remoto.iniciar(win);
+  // janela minimizada/na bandeja = ninguém vendo: o index.html baixa as contas pra 1 quadro por segundo
+  const visibilidade = () => enviar('janela-visivel', win.isVisible() && !win.isMinimized());
+  for (const ev of ['hide', 'show', 'minimize', 'restore']) win.on(ev, visibilidade);
   iniciarUpdates();
 
   // fechar (X) esconde na bandeja; as contas continuam rodando. Sair de verdade é pelo menu da bandeja.
