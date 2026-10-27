@@ -1,7 +1,7 @@
 {
   "name": "multi-idle-by-gibas",
   "productName": "MultiIdle",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "4 contas do PokeIdle numa janela só, com alertas, painel no celular e updates automáticos",
   "author": "Gibas",
   "license": "MIT",
@@ -16,11 +16,24 @@
     "appId": "com.gibas.multiidle",
     "productName": "MultiIdle",
     "files": [
-      "main.js", "remoto.js", "alertas.js", "estado.js",
-      "index.html", "painel.html", "tema.css", "icon.png", "package.json"
+      "main.js",
+      "remoto.js",
+      "alertas.js",
+      "estado.js",
+      "index.html",
+      "painel.html",
+      "tema.css",
+      "icon.png",
+      "package.json"
     ],
-    "directories": { "output": "dist", "buildResources": "build" },
-    "win": { "target": "nsis", "icon": "build/icon.png" },
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.png"
+    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
@@ -28,7 +41,14 @@
       "shortcutName": "MultiIdle",
       "artifactName": "MultiIdle-Setup-${version}.exe"
     },
-    "publish": [{ "provider": "github", "owner": "GiovanniSguizzardi", "repo": "MultiIdle", "releaseType": "release" }]
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "GiovanniSguizzardi",
+        "repo": "MultiIdle",
+        "releaseType": "release"
+      }
+    ]
   },
   "devDependencies": {
     "electron": "^38.0.0",
