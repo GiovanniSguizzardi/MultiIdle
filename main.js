@@ -11,10 +11,12 @@ const { eventoParaAlerta, placarNovo, contar } = require('./alertas');
 const remoto = require('./remoto');
 const { criarMesclador } = require('./estado');
 
-// AFK: não deixa o Chromium desacelerar timers/render quando a janela está minimizada ou coberta
+// AFK com pouca CPU: janela minimizada/na bandeja/coberta PARA de desenhar (o Chromium sabe que está
+// escondida), mas os relógios do jogo (ping de 25 s, vigia da conexão) seguem no ritmo normal — o farm é
+// no servidor, a conta só precisa manter a conexão viva. Antes o app fingia "sempre visível" e o Chromium
+// desenhava as 4 cenas sem parar, sem vsync, mesmo na bandeja (~60% de CPU).
 app.commandLine.appendSwitch('disable-background-timer-throttling');
-app.commandLine.appendSwitch('disable-renderer-backgrounding');
-app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
+app.commandLine.appendSwitch('disable-features', 'IntensiveWakeUpThrottling'); // o freio extra depois de 5 min escondido
 app.setAppUserModelId(APP_ID); // necessário pras notificações do Windows aparecerem (e bate com o atalho do instalador)
 
 // O jogo derruba e reconecta sozinho com 30 s sem mensagem; 3 min sem nada = travou de verdade
@@ -219,7 +221,7 @@ app.whenReady().then(() => {
     icon: icone,
     autoHideMenuBar: true,
     // a janela principal só carrega o index.html local; as webviews do jogo não herdam isso
-    webPreferences: { webviewTag: true, backgroundThrottling: false, nodeIntegration: true, contextIsolation: false },
+    webPreferences: { webviewTag: true, nodeIntegration: true, contextIsolation: false },
   });
   win.loadFile(`${__dirname}/index.html`);
   remoto.iniciar(win);
