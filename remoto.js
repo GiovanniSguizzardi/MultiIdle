@@ -1,5 +1,5 @@
-// Acompanhar pelo celular: painel web (porta 7777) na rede de casa e, com o Tailscale, de qualquer lugar;
-// + push opcional pelo ntfy.sh. Acesso protegido por um token aleatório no link (o QR code já leva ele).
+// Acompanhar pelo celular: painel web (porta 7777) na rede de casa e, com o Tailscale, de qualquer lugar.
+// Acesso protegido por um token aleatório no link (o QR code já leva ele).
 // O painel começa DESLIGADO em instalação nova: abrir uma porta na rede é escolha de quem usa.
 const http = require('http');
 const fs = require('fs');
@@ -12,11 +12,10 @@ const { resumir } = require('./estado');
 
 const PORTA = Number(process.env.MULTIIDLE_PORTA) || 7777;
 const ACOES = ['reload', 'eco', 'home', 'zerar']; // zerar é feito aqui; as outras o index.html executa
-const PRIORIDADE_ALTA = ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas'];
 
 const contas = {};    // conta -> { info, wc } (info vem do main.js: nick, placar, logado, ultimaMsg)
 const historico = []; // últimos alertas, já filtrados pelas mesmas preferências do PC
-let prefs = { ligados: {}, push: {}, ntfy: false }; // vem do index.html (localStorage de lá)
+let prefs = { ligados: {} }; // vem do index.html (localStorage de lá)
 let cfg;
 let win;
 let erroServidor = null;
@@ -24,14 +23,14 @@ let servidor = null;
 const arqConfig = () => `${app.getPath('userData')}/remoto.json`;
 const salvarConfig = () => fs.writeFileSync(arqConfig(), JSON.stringify(cfg));
 
-// token e tópico do ntfy ficam salvos: o link no celular continua valendo entre aberturas
+// o token fica salvo: o link no celular continua valendo entre aberturas
 function lerConfig() {
   try {
     const c = JSON.parse(fs.readFileSync(arqConfig(), 'utf8'));
     c.painel ??= true; // config de antes desta opção existir = quem já usava o painel
     return c;
   } catch {}
-  const c = { token: crypto.randomBytes(12).toString('hex'), topico: 'multiidle-' + crypto.randomBytes(8).toString('hex'), painel: false };
+  const c = { token: crypto.randomBytes(12).toString('hex'), painel: false };
   fs.writeFileSync(arqConfig(), JSON.stringify(c));
   return c;
 }
@@ -52,21 +51,10 @@ function status(info) {
   return Date.now() - info.ultimaMsg < 60000 ? 'online' : 'quieto';
 }
 
-function push(titulo, mensagem, prioridade = 3) {
-  // JSON no corpo (e não headers) porque header HTTP não aceita emoji
-  return fetch('https://ntfy.sh', {
-    method: 'POST',
-    body: JSON.stringify({ topic: cfg.topico, title: titulo, message: mensagem, priority: prioridade, tags: ['video_game'] }),
-  }).catch(() => {});
-}
-
 function alerta(a) {
   if (!prefs.ligados[a.tipo]) return;
   historico.unshift({ ...a, nome: nomeDa(a.conta) });
   historico.length = Math.min(historico.length, 100);
-  if (prefs.ntfy && prefs.push[a.tipo]) {
-    push(`${nomeDa(a.conta)} · ${TIPOS[a.tipo]}`, a.texto || TIPOS[a.tipo], PRIORIDADE_ALTA.includes(a.tipo) ? 4 : 3);
-  }
 }
 
 async function lerJson(req) {
@@ -216,13 +204,11 @@ function iniciar(janela) {
     const ts = ipv4s().find(ehTailscale);
     const qr = (texto, width) => QRCode.toDataURL(texto, { margin: 1, width });
     return {
-      painel: cfg.painel, erro: erroServidor, topico: cfg.topico,
+      painel: cfg.painel, erro: erroServidor,
       links: casa, qr: casa[0] ? await qr(casa[0], 220) : null,
       tailscale: ts ? link(ts) : null, qrTailscale: ts ? await qr(link(ts), 220) : null,
-      qrNtfy: await qr(`https://ntfy.sh/${cfg.topico}`, 160),
     };
   });
-  ipcMain.handle('ntfy-teste', () => push('MultiIdle ✨', 'Teste: se você está vendo isto, as notificações no celular estão funcionando!', 4));
 }
 
 const registrarConta = (conta, info, wc) => { contas[conta] = { info, wc }; };

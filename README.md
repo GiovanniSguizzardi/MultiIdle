@@ -21,7 +21,6 @@ O MultiIdle procura versão nova sozinho (ao abrir e a cada 3 horas) e baixa em 
 - **📱 Painel no celular:** nível, equipe com HP, sessão por hora, pokébolas, loja, tela ao vivo e alertas. Ele vem **desligado**. Para ligar, clique em **📱 Celular** no topo.
   - Em casa, leia o QR code com o celular.
   - Fora de casa, instale o [Tailscale](https://tailscale.com/download) no PC e no celular, com a mesma conta. O QR de "fora de casa" aparece sozinho.
-  - Para receber alertas no celular em qualquer lugar, use o app **ntfy**.
 
 ## O que ele NÃO faz
 Ele não joga por você: não captura, não ataca e não joga pokébolas sozinho. Ele só mostra as contas e lê o que o jogo informa. A única coisa que ele envia ao jogo é a **compra na loja**, quando **você** confirma no celular, e é a mesma mensagem que o botão da loja do jogo manda.

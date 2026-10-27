@@ -16,7 +16,7 @@
   #celular { left: auto; right: 0; width: 460px; }
   #painel.aberto, #celular.aberto { display: block; }
   #painel h3, #celular h3 { margin: 0 0 6px; font-size: 13px; }
-  #tipos { display: grid; grid-template-columns: 1fr auto auto; gap: 6px 14px; align-items: center; margin-bottom: 12px; }
+  #tipos { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center; margin-bottom: 12px; }
   #tipos .cab { font-weight: 700; color: var(--sobre-mad-dim); text-align: center; }
   #celular p { margin: 4px 0 10px; }
   #celular .qr { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
@@ -100,12 +100,6 @@
       </div>
       <p class="erro" id="erroPainel"></p>
     </div>
-    <h3 class="contorno">3. Notificações em qualquer lugar (ntfy)</h3>
-    <p>Instale o app <b>ntfy</b> (Play Store / App Store), toque em <b>+</b> e assine o tópico abaixo
-      (ou leia o QR). Escolha quais alertas vão pro celular na coluna 📱 do 🔔 Alertas.</p>
-    <div class="qr"><img id="qrNtfy" width="120" height="120" alt=""><code id="topico" class="vao"></code></div>
-    <label><input type="checkbox" id="ntfyLigado"> Enviar alertas pro celular pelo ntfy.sh</label>
-    <button id="ntfyTeste">Mandar notificação de teste</button>
   </div>
   <div id="painel" class="madeira">
     <h3 class="contorno">Alertar quando:</h3>
@@ -254,28 +248,16 @@
     ...Object.fromEntries(Object.keys(TIPOS).map(k => [k, k !== 'fugiu'])), // "fugiu" vem desligado: é muito frequente
     ...JSON.parse(localStorage.getItem('alertasLigados') ?? '{}'), // tipo novo que não estava salvo pega o padrão
   };
-  // 📱 = vai pro celular pelo ntfy (só os importantes vêm ligados)
-  const push = {
-    ...Object.fromEntries(Object.keys(TIPOS).map(k => [k, ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas', 'vendido'].includes(k)])),
-    ...JSON.parse(localStorage.getItem('alertasPush') ?? '{}'),
-  };
-  const enviarPrefs = () => ipcRenderer.send('prefs', { ligados, push, ntfy: $('ntfyLigado').checked });
-  $('tipos').innerHTML = '<span></span><span class="cab">PC</span><span class="cab">📱</span>' +
-    Object.entries(TIPOS).map(([k, nome]) => `<span>${nome}</span>
-      <input type="checkbox" data-g="ligados" data-k="${k}" ${ligados[k] ? 'checked' : ''} title="Alertar no PC">
-      <input type="checkbox" data-g="push" data-k="${k}" ${push[k] ? 'checked' : ''} title="Mandar pro celular (ntfy)">`).join('');
+  const enviarPrefs = () => ipcRenderer.send('prefs', { ligados });
+  $('tipos').innerHTML = Object.entries(TIPOS).map(([k, nome]) => `<span>${nome}</span>
+      <input type="checkbox" data-k="${k}" ${ligados[k] ? 'checked' : ''} title="Alertar no PC (e no painel do celular)">`).join('');
   $('tipos').onchange = (e) => {
-    const grupo = e.target.dataset.g === 'push' ? push : ligados;
-    grupo[e.target.dataset.k] = e.target.checked;
+    ligados[e.target.dataset.k] = e.target.checked;
     localStorage.setItem('alertasLigados', JSON.stringify(ligados));
-    localStorage.setItem('alertasPush', JSON.stringify(push));
     enviarPrefs();
   };
 
-  // ---- celular: painel na rede de casa + ntfy (servidor fica no remoto.js) ----
-  $('ntfyLigado').checked = localStorage.getItem('ntfyLigado') === '1'; // desligado até a pessoa ligar
-  $('ntfyLigado').onchange = (e) => { localStorage.setItem('ntfyLigado', e.target.checked ? '1' : '0'); enviarPrefs(); };
-  $('ntfyTeste').onclick = () => ipcRenderer.invoke('ntfy-teste');
+  // ---- celular: painel na rede de casa e pelo Tailscale (servidor fica no remoto.js) ----
   enviarPrefs();
   async function pintarCelular() {
     const r = await ipcRenderer.invoke('remoto-info');
@@ -286,8 +268,6 @@
     $('qrTs').src = r.qrTailscale ?? '';
     $('linkTs').textContent = r.tailscale ?? '';
     $('qrPainel').src = r.qr ?? '';
-    $('qrNtfy').src = r.qrNtfy;
-    $('topico').textContent = r.topico;
     $('linksPainel').innerHTML = '';
     for (const l of r.links) {
       const c = document.createElement('code');
