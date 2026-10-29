@@ -14,6 +14,21 @@
   #ultimo { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 4px 10px; color: var(--sobre-mad-dim); }
   #painel, #celular { display: none; position: absolute; top: calc(100% + 8px); left: 0; z-index: 10; width: 440px; max-height: 80vh; overflow: auto; padding: 14px 16px 18px; box-sizing: border-box; }
   #celular { left: auto; right: 0; width: 460px; }
+  #precos { display: none; position: absolute; top: calc(100% + 8px); right: 0; z-index: 10; width: 480px; max-height: 80vh; overflow: auto; padding: 14px 16px 18px; box-sizing: border-box; }
+  #precos.aberto { display: block; }
+  #precos h3 { margin: 0 0 6px; font-size: 13px; }
+  #precos p { margin: 6px 0 10px; }
+  #regras { padding: 4px 10px; margin-bottom: 12px; }
+  #regras div { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-top: 1px solid var(--vao2); }
+  #regras div:first-child { border-top: 0; }
+  #regras span { flex: 1; }
+  #regras .vazio { color: var(--vao-dim); }
+  .form-regra { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+  .form-regra input:not([type="checkbox"]), .form-regra select { height: 28px; background: var(--vao); color: var(--sobre-mad); border: 0; border-radius: 6px; padding: 0 8px;
+    box-shadow: inset 0 0 0 2px var(--mad-linha); font: 12px Tahoma, sans-serif; min-width: 0; }
+  .form-regra .largo { grid-column: 1 / -1; }
+  .form-regra label { display: flex; align-items: center; gap: 8px; }
+  #rErro { color: var(--ouro-luz); font-weight: 700; min-height: 1em; }
   #painel.aberto, #celular.aberto { display: block; }
   #painel h3, #celular h3 { margin: 0 0 6px; font-size: 13px; }
   #tipos { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center; margin-bottom: 12px; }
@@ -82,7 +97,27 @@
   <button id="btnFps" title="Quadros por segundo da cena de cada conta. Menos = menos CPU/GPU (o farm é no servidor, não muda nada no jogo). Contas escondidas ou com a janela minimizada já caem pra 1 fps sozinhas."></button>
   <button id="ecoTodas" title="Liga/desliga o Modo Economia do jogo em todas as contas (para de desenhar a cena; o farm continua)">🍃 Eco: todas</button>
   <span id="ultimo" class="vao"></span>
+  <button id="btnPrecos" title="Aviso de preço bom no Mercado">💸 Preços</button>
   <button id="btnCelular" title="Acompanhar pelo celular">📱 Celular</button>
+  <div id="precos" class="madeira">
+    <h3 class="contorno">💸 Avisar quando aparecer no Mercado:</h3>
+    <div id="regras" class="vao"></div>
+    <h3 class="contorno">Nova regra</h3>
+    <div class="form-regra">
+      <select id="rTipo"><option value="item">Item</option><option value="pokemon">Pokémon</option></select>
+      <select id="rMoeda"><option value="gold">em coins</option><option value="orb">em orbs</option></select>
+      <input id="rAlvo" class="largo" list="listaItens" placeholder="nome do item (ou * para qualquer item)">
+      <datalist id="listaItens"></datalist>
+      <select id="rCond"><option value="max">até o preço (por unidade)</option><option value="pct">abaixo de % da média 7 dias</option></select>
+      <input id="rValor" type="number" min="1" placeholder="preço máximo">
+      <label id="rShinyLinha" class="largo"><input type="checkbox" id="rShiny"> só shiny</label>
+      <button id="rAdd" class="largo">➕ Adicionar regra</button>
+    </div>
+    <div id="rErro"></div>
+    <p class="sub" id="rInfo"></p>
+    <p>De onde vêm os avisos: os anúncios com <b>alto-falante</b> (chegam ao vivo pelo chat) e o <b>menor preço</b> de cada item quando você abre o Mercado de itens em qualquer conta. O MultiIdle <b>só avisa</b>: a compra é sua, pelo jogo.</p>
+    <label class="som-linha"><input type="checkbox" id="somPreco"> 🔊 Som quando aparecer preço bom <button id="testarPreco" type="button">Testar</button></label>
+  </div>
   <div id="celular" class="madeira">
     <label><input type="checkbox" id="painelLigado"> <b>Painel do celular ligado</b> (abre a porta 7777 na rede deste PC)</label>
     <div id="painelOn">
@@ -281,7 +316,7 @@
     }
     $('erroPainel').textContent = r.erro ? `Painel fora do ar: ${r.erro}` : r.links.length || r.tailscale ? '' : 'PC sem rede local.';
   }
-  $('btnCelular').onclick = () => $('celular').classList.toggle('aberto') && pintarCelular();
+  $('btnCelular').onclick = () => { $('precos').classList.remove('aberto'); if ($('celular').classList.toggle('aberto')) pintarCelular(); };
   $('painelLigado').onchange = async (e) => {
     await ipcRenderer.invoke('painel-ligar', e.target.checked);
     setTimeout(pintarCelular, 300); // dá tempo do servidor subir (ou acusar porta ocupada)
@@ -301,6 +336,83 @@
   }
   ipcRenderer.invoke('update-info').then(pintarUpdate);
   ipcRenderer.on('update', (_, u) => pintarUpdate(u));
+
+  // ---- aviso de preço bom no Mercado (a regra é avaliada no main.js / precos.js) ----
+  let regrasPreco = JSON.parse(localStorage.getItem('regrasPreco') ?? '[]');
+  let catalogoItens = []; // [{ id, nome }] do Mercado, vem do jogo
+  const nomeDoItem = (id) => id === '*' ? 'qualquer item' : (catalogoItens.find((i) => i.id === Number(id))?.nome ?? `item #${id}`);
+  const salvarRegras = () => {
+    localStorage.setItem('regrasPreco', JSON.stringify(regrasPreco));
+    ipcRenderer.send('regras-preco', regrasPreco);
+  };
+  function textoDaRegra(r) {
+    const alvo = r.tipo === 'pokemon' ? `${r.soShiny ? '✨ ' : ''}${r.alvo} (Pokémon)` : nomeDoItem(r.alvo);
+    const moeda = r.moeda === 'orb' ? 'orbs' : 'coins';
+    return r.max != null ? `${alvo} até ${Number(r.max).toLocaleString('pt-BR')} ${moeda}` : `${alvo} abaixo de ${r.pctMedia}% da média (${moeda})`;
+  }
+  function pintarRegras() {
+    $('regras').innerHTML = '';
+    if (!regrasPreco.length) $('regras').innerHTML = '<div class="vazio">Nenhuma regra ainda.</div>';
+    regrasPreco.forEach((r, i) => {
+      const linha = document.createElement('div');
+      const span = document.createElement('span');
+      span.textContent = textoDaRegra(r); // nome pode vir do jogo/digitado: textContent
+      const rm = document.createElement('button');
+      rm.textContent = '✕';
+      rm.title = 'Remover regra';
+      rm.onclick = () => { regrasPreco.splice(i, 1); salvarRegras(); pintarRegras(); };
+      linha.append(span, rm);
+      $('regras').append(linha);
+    });
+  }
+  function ajustarFormRegra() {
+    const poke = $('rTipo').value === 'pokemon';
+    $('rShinyLinha').classList.toggle('oculto', !poke);
+    $('rAlvo').placeholder = poke ? 'nome da espécie (ex.: Pikachu)' : 'nome do item (ou * para qualquer item)';
+    $('rAlvo').setAttribute('list', poke ? '' : 'listaItens');
+    if (poke) $('rCond').value = 'max'; // média de 7 dias só existe pra item
+    $('rCond').querySelector('[value="pct"]').disabled = poke;
+    $('rValor').placeholder = $('rCond').value === 'pct' ? '% da média (ex.: 70)' : 'preço máximo';
+  }
+  $('rTipo').onchange = ajustarFormRegra;
+  $('rCond').onchange = ajustarFormRegra;
+  $('rAdd').onclick = () => {
+    $('rErro').textContent = '';
+    const tipo = $('rTipo').value;
+    const txt = $('rAlvo').value.trim();
+    const valor = Number($('rValor').value);
+    if (!txt) return ($('rErro').textContent = 'Escreva o nome do item ou do Pokémon.');
+    if (!(valor > 0)) return ($('rErro').textContent = 'Coloque um valor maior que zero.');
+    let alvo = txt;
+    if (tipo === 'item' && txt !== '*') {
+      const item = catalogoItens.find((i) => i.nome.toLowerCase() === txt.toLowerCase());
+      if (!item) return ($('rErro').textContent = catalogoItens.length ? 'Item não encontrado: escolha um da lista.' : 'Entre no jogo com alguma conta para carregar a lista de itens.');
+      alvo = item.id;
+    }
+    if ($('rCond').value === 'pct' && valor >= 100) return ($('rErro').textContent = 'Use uma porcentagem abaixo de 100 (ex.: 70 = 30% mais barato que a média).');
+    const r = { tipo, alvo, moeda: $('rMoeda').value };
+    if ($('rCond').value === 'pct') r.pctMedia = valor; else r.max = valor;
+    if (tipo === 'pokemon' && $('rShiny').checked) r.soShiny = true;
+    if (regrasPreco.some((x) => JSON.stringify(x) === JSON.stringify(r))) return ($('rErro').textContent = 'Essa regra já existe.');
+    regrasPreco.push(r);
+    salvarRegras();
+    pintarRegras();
+    $('rAlvo').value = '';
+    $('rValor').value = '';
+  };
+  $('btnPrecos').onclick = async () => {
+    if (!$('precos').classList.toggle('aberto')) return;
+    $('celular').classList.remove('aberto'); // os dois abrem no mesmo canto
+    const info = await ipcRenderer.invoke('mercado-info');
+    catalogoItens = info.itens;
+    $('listaItens').innerHTML = '';
+    for (const i of catalogoItens) { const o = document.createElement('option'); o.value = i.nome; $('listaItens').append(o); }
+    $('rInfo').textContent = `Médias de preço conhecidas: ${info.medias} itens. Elas vêm do jogo sempre que você abre o Mercado > Itens em alguma conta; regras de "% da média" só valem para itens com média.`;
+    ajustarFormRegra();
+    pintarRegras();
+  };
+  ipcRenderer.invoke('mercado-info').then((info) => { catalogoItens = info.itens; });
+  salvarRegras(); // manda as regras salvas pro main ao abrir
 
   // ---- limite de FPS da cena (o limitador roda dentro de cada página do jogo, ver main.js) ----
   const OPCOES_FPS = [60, 30, 20, 10];
@@ -367,6 +479,8 @@
     // arpejo "brilhante"
     shiny: [1319, 1568, 2093, 2637, 3136].map((f, n) => [f, n * 0.08, 0.6, 'triangle']),
     // caixa registradora: "ka-" "ching" (dois toques curtos e um sino)
+    // "ding-ding-ding" subindo: preço bom no Mercado
+    preco: [[1760, 0, 0.18, 'sine'], [2349, 0.12, 0.25, 'sine'], [2793, 0.24, 0.45, 'sine']],
     venda: [[1047, 0, 0.08, 'square'], [1568, 0.07, 0.09, 'square'], [2093, 0.17, 0.8, 'triangle'], [2637, 0.17, 0.8, 'triangle'], [3520, 0.2, 0.5, 'sine']],
   };
   let audio;
@@ -389,18 +503,20 @@
       }
     }
   }
-  for (const [id, chave] of [['somShiny', 'somShiny'], ['somVenda', 'somVenda']]) {
+  for (const [id, chave] of [['somShiny', 'somShiny'], ['somVenda', 'somVenda'], ['somPreco', 'somPreco']]) {
     $(id).checked = localStorage.getItem(chave) !== '0';
     $(id).onchange = (e) => localStorage.setItem(chave, e.target.checked ? '1' : '0');
   }
   $('testarSom').onclick = (e) => { e.preventDefault(); tocar('shiny', 2); };
   $('testarVenda').onclick = (e) => { e.preventDefault(); tocar('venda', 2, 1.1); };
+  $('testarPreco').onclick = (e) => { e.preventDefault(); tocar('preco', 2, 0.9); };
 
   ipcRenderer.on('alerta', (_, a) => {
     if (!ligados[a.tipo]) return;
     if ($('somShiny').checked && a.tipo === 'shinyCap') tocar('shiny', 2); // capturado: toca duas vezes
     if ($('somShiny').checked && a.tipo === 'shinyVisto') tocar('shiny');
     if ($('somVenda').checked && a.tipo === 'vendido') tocar('venda', 2, 1.1);
+    if ($('somPreco').checked && a.tipo === 'preco') tocar('preco', 2, 0.9);
     const linha = `${nomes[a.conta]} · ${TIPOS[a.tipo]}${a.texto ? ': ' + a.texto : ''}`;
     const hora = new Date(a.em).toLocaleTimeString();
     const div = document.createElement('div');

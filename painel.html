@@ -239,7 +239,7 @@
   }
   const porHora = (v, ms) => ms > 60000 ? (v / (ms / 3600000)) : 0;
   const STATUS = { online: '🟢 caçando', quieto: '🟡 parado', fora: '⚪ fora do jogo' };
-  const IMPORTANTES = ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas', 'desmaiou', 'atualizou', 'vendido'];
+  const IMPORTANTES = ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas', 'desmaiou', 'atualizou', 'vendido', 'preco'];
   const POUCAS = 50;
 
   // ---- ajustes (salvos neste celular) ----
@@ -422,7 +422,7 @@
       ultimoAlertaVisto = novos[0].em;
       localStorage.setItem('ultimoAlerta', ultimoAlertaVisto);
       if (cfg.vibrar && novos.some((a) => a.tipo.startsWith('shiny'))) navigator.vibrate?.([250, 120, 250, 120, 400]);
-      else if (cfg.vibrar && novos.some((a) => a.tipo === 'vendido')) navigator.vibrate?.([80, 60, 80]); // "ka-ching" curtinho
+      else if (cfg.vibrar && novos.some((a) => a.tipo === 'vendido' || a.tipo === 'preco')) navigator.vibrate?.([80, 60, 80]); // "ka-ching" curtinho
     }
     desenhar();
   }

@@ -11,6 +11,7 @@ const TIPOS = {
   atualizou: '🔄 Jogo atualizado (recarregado)',
   poucasBolas: '🔴 Pokébolas acabando',
   vendido: '💰 Item vendido no Market',
+  preco: '💸 Preço bom no Mercado',
 };
 
 // placar da sessão de cada conta (desde que o app abriu ou desde o último "zerar")

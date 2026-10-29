@@ -20,6 +20,7 @@ O MultiIdle procura versão nova sozinho (ao abrir e a cada 3 horas) e baixa em 
 - **4 contas, cada uma com login próprio.** O layout pode ser 2×2, 1 grande + 3 pequenas ou 4 lado a lado, com divisórias ajustáveis e zoom por conta.
 - **Não deixa o jogo desacelerar** quando a janela está minimizada. O X esconde o app na bandeja, e as contas continuam rodando.
 - **Alertas:** shiny visto ou capturado, capturas, desmaio, boss, item vendido no Market, pokébolas acabando e conta travada. Os alertas aparecem como notificação do Windows, com sons próprios.
+- **💸 Aviso de preço bom no Mercado:** você cria regras ("Fire Stone até 500", "qualquer item abaixo de 70% da média", "Pikachu shiny até 10.000") e o MultiIdle avisa quando aparecer, pelos anúncios com alto-falante e pelo menor preço da vitrine. Ele só avisa: a compra é sua, pelo jogo.
 - **Recarrega sozinho** a conta que travar e aperta o "Recarregar agora" quando o jogo atualiza.
 - **🍃 Modo Economia** do próprio jogo, numa conta ou em todas, para pesar menos no PC.
 - **📱 Painel no celular:** nível, equipe com HP, sessão por hora, pokébolas, loja, tela ao vivo e alertas. Ele vem **desligado**. Para ligar, clique em **📱 Celular** no topo.

@@ -11,6 +11,7 @@ const { eventoParaAlerta, placarNovo, contar } = require('./alertas');
 const remoto = require('./remoto');
 const { criarMesclador } = require('./estado');
 const { decidirRetry } = require('./retry');
+const { avaliar, ofertaDoChat, ofertasDoResumo, textoDaOferta } = require('./precos');
 
 // AFK com pouca CPU: janela minimizada/na bandeja/coberta PARA de desenhar (o Chromium sabe que está
 // escondida), mas os relógios do jogo (ping de 25 s, vigia da conexão) seguem no ritmo normal — o farm é
@@ -56,6 +57,40 @@ const LIMITADOR_FPS = `(() => {
 
 let win;
 const enviar =(canal, dados) => win?.webContents.send(canal, dados);
+// ---- aviso de preço bom no Mercado (regras no precos.js; quem compra é a pessoa, pelo jogo) ----
+// Regras vêm do index.html; médias de 7 dias e nomes dos itens vêm do jogo e ficam salvos em disco.
+let regrasPreco = [];
+const mercado = { medias: {}, nomes: {} };
+const arqMercado = () => path.join(app.getPath('userData'), 'mercado.json');
+try { Object.assign(mercado, JSON.parse(require('fs').readFileSync(arqMercado(), 'utf8'))); } catch {}
+let salvarMercadoTimer = null;
+const salvarMercado = () => {
+  clearTimeout(salvarMercadoTimer);
+  salvarMercadoTimer = setTimeout(() => require('fs').writeFile(arqMercado(), JSON.stringify(mercado), () => {}), 2000);
+};
+const anunciosVistos = new Set(); // o mesmo alto-falante chega nas 4 contas: avisa uma vez
+const resumosAvisados = new Map(); // item:moeda:preço do resumo -> quando avisou (não repete por 30 min)
+function conferirOferta(conta, oferta) {
+  const r = avaliar(oferta, regrasPreco, mercado.medias);
+  if (!r) return;
+  if (oferta.id != null) {
+    if (anunciosVistos.has(oferta.id)) return;
+    anunciosVistos.add(oferta.id);
+    if (anunciosVistos.size > 2000) anunciosVistos.delete(anunciosVistos.values().next().value);
+  } else {
+    const chave = `${oferta.itemId}:${oferta.moeda}:${oferta.preco}`;
+    if (Date.now() - (resumosAvisados.get(chave) ?? 0) < 30 * 60 * 1000) return;
+    resumosAvisados.set(chave, Date.now());
+  }
+  const onde = oferta.resumo ? 'menor preço no Mercado' : `anúncio #${oferta.id}`;
+  alerta(conta, 'preco', `${textoDaOferta(oferta, mercado.nomes)} · ${r.motivo} · ${onde}`);
+}
+ipcMain.on('regras-preco', (_, r) => { regrasPreco = Array.isArray(r) ? r : []; });
+ipcMain.handle('mercado-info', () => ({
+  itens: Object.entries(mercado.nomes).map(([id, nome]) => ({ id: Number(id), nome })).sort((a, b) => a.nome.localeCompare(b.nome)),
+  medias: Object.keys(mercado.medias).length,
+}));
+
 const alerta = (conta, tipo, texto) => {
   const a = { conta, tipo, texto, em: Date.now() };
   enviar('alerta', a);
@@ -193,13 +228,24 @@ app.on('web-contents-created', (_, wc) => {
     if (ehWelcome) { info.logado = true; carga.tentativas = 0; carga.falhou = false; } // entrou: zera o retry
     // filtro barato antes do JSON.parse: só interessam batalha, estado, welcome (e erro, se há compra esperando)
     const ehErro = compraPendente && d.includes('"t":"erro"');
-    if (!ehWelcome && !ehErro && !d.includes('"batalha"') && !d.includes('"t":"estado"')) return;
+    // alto-falante do Mercado (chat ao vivo) e vitrine de itens (resumo + médias) alimentam o aviso de preço
+    const ehMercado = d.includes('"anuncioChat"') || (d.includes('"t":"market"') && d.includes('"aba":"itens"'));
+    if (!ehWelcome && !ehErro && !ehMercado && !d.includes('"batalha"') && !d.includes('"t":"estado"')) return;
     let m;
     try { m = JSON.parse(d); } catch { return; }
     if (m.t === 'erro') return fimCompra({ ok: false, erro: m.msg ?? m.chave ?? 'recusada pelo jogo' });
+    // só o chat AO VIVO ('chat'); o 'chat.historico' do login traz anúncios velhos
+    if (m.t === 'chat') { const o = ofertaDoChat(m.anuncioChat); if (o) conferirOferta(conta, o); return; }
+    if (m.t === 'market' && m.aba === 'itens') {
+      if (m.medias) { Object.assign(mercado.medias, m.medias); salvarMercado(); }
+      for (const o of ofertasDoResumo(m.resumo, mercado.nomes)) conferirOferta(conta, o);
+      return;
+    }
     if (m.t === 'welcome' || m.t === 'estado') {
       if (m.t === 'welcome') {
         info.mesclar = criarMesclador(); // conexão nova = quadro novo
+        const catalogo = m.mercado?.catalogo ?? [];
+        if (catalogo.length) { mercado.nomes = Object.fromEntries(catalogo.map((i) => [i.id, i.nome])); salvarMercado(); }
         info.ctx = {
           hunts: Object.fromEntries((m.hunts ?? []).map((h) => [h.slug, h.nome])),
           bolas: Object.fromEntries((m.catalogoBolas ?? []).map((b) => [b.id, b.nome])),
