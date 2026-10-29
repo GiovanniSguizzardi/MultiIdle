@@ -8,9 +8,9 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "testes": "node alertas.js && node estado.js && node retry.js && node precos.js",
+    "testes": "node alertas.js && node estado.js && node retry.js && node precos.js && node build/notas.js",
     "build": "electron-builder --win",
-    "release": "electron-builder --win --publish always"
+    "release": "node build/publicar.js"
   },
   "build": {
     "appId": "com.gibas.multiidle",

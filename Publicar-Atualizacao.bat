@@ -27,6 +27,18 @@ if "%TIPO%"=="2" set NIVEL=minor
 if "%TIPO%"=="3" set NIVEL=major
 
 echo.
+echo == Conferindo as novidades da versao no CHANGELOG.md ==
+call node build\notas.js --proxima %NIVEL%
+if errorlevel 1 (
+  echo.
+  echo Abrindo o CHANGELOG.md: escreva o titulo e as novidades da versao nova, salve, feche e rode este arquivo de novo.
+  notepad CHANGELOG.md
+  pause & exit /b 1
+)
+git add CHANGELOG.md
+git commit -q -m "Novidades da proxima versao" 2>nul
+
+echo.
 echo == Rodando os auto-testes ==
 call npm run testes || (echo [ERRO] Teste falhou, nada foi publicado. & pause & exit /b 1)
 
