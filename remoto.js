@@ -47,6 +47,7 @@ const link = (ip) => `http://${ip}:${PORTA}/?t=${cfg.token}`;
 
 const nomeDa = (conta) => contas[conta]?.info.nick ?? `Conta ${conta}`;
 function status(info) {
+  if (info.bloqueio) return 'pausada';
   if (!info.logado) return 'fora';
   return Date.now() - info.ultimaMsg < 60000 ? 'online' : 'quieto';
 }

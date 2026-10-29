@@ -3,6 +3,20 @@
 Cada versão nova entra no topo, no formato `## vX.Y.Z — Título`. O texto da seção vira a descrição
 do Release no GitHub. Sem a seção, a publicação não roda.
 
+## v1.1.1 — 🐛 Caça aos bugs: o MultiIdle não "rouba" mais a sua conta
+
+### 🔧 Correções
+- **Abriu a conta no celular ou no navegador? O MultiIdle não toma mais ela de volta.** Antes, quando o jogo mostrava o aviso de "sessão tomada", o MultiIdle recarregava aquela conta depois de 3 minutos e derrubava você de onde estava jogando. Agora a conta fica **⏸️ pausada**: você recebe um aviso e, quando quiser voltar, é só clicar em **"Jogar aqui"** na tela dela.
+- **Conta com aviso de bloqueio** (banimento, rede bloqueada) também fica pausada, sem o MultiIdle insistir em recarregar.
+- **Página do jogo travando em sequência:** o app recarrega com espera crescente e, se ela fechar 4 vezes em 10 minutos, para e avisa, em vez de ficar em ciclo.
+- **Um evento de captura sem os dados do Pokémon** não faz mais o app perder os outros eventos que vieram junto (abates, XP, drops).
+- **A notificação "MultiIdle vX pronto"** aparece uma vez só, em vez de repetir a cada 3 horas.
+- **Correção de um pequeno vazamento de memória** nos avisos de preço, em sessões muito longas.
+
+### ✨ Novidades
+- **O 🔇 de cada conta agora é lembrado** quando o MultiIdle abre de novo.
+- **Novo alerta "⏸️ Conta pausada"** no PC e no celular, onde a conta aparece com o status "⏸️ pausada".
+
 ## v1.1.0 — 💸 Aviso de preço bom no Mercado
 
 ### ✨ Novidades

@@ -182,8 +182,15 @@
       zLabel.textContent = Math.round(zoom * 100) + '%';
       localStorage.setItem('zoom' + i, zoom);
     };
+    const botaoMudo = pane.querySelector('[data-a="mute"]');
+    const setMudo = (m) => {
+      wv.setAudioMuted(m);
+      botaoMudo.textContent = m ? '🔇' : '🔊';
+      localStorage.setItem('mudo' + i, m ? '1' : '0');
+    };
     wv.addEventListener('dom-ready', () => {
       setZoom(zoom); // reaplica a cada carregamento
+      setMudo(localStorage.getItem('mudo' + i) === '1');
       aplicarFps();
       lerEco(pane);
     });
@@ -198,10 +205,7 @@
       if (a === 'reload') wv.reload();
       if (a === 'back' && wv.canGoBack()) wv.goBack();
       if (a === 'home') wv.loadURL(GAME_URL);
-      if (a === 'mute') {
-        wv.setAudioMuted(!wv.isAudioMuted());
-        e.target.textContent = wv.isAudioMuted() ? '🔇' : '🔊';
-      }
+      if (a === 'mute') setMudo(!wv.isAudioMuted());
       if (a === 'max') {
         const on = !pane.classList.contains('max');
         document.querySelectorAll('.pane').forEach(p => p.classList.remove('max'));
@@ -478,9 +482,9 @@
   const SONS = {
     // arpejo "brilhante"
     shiny: [1319, 1568, 2093, 2637, 3136].map((f, n) => [f, n * 0.08, 0.6, 'triangle']),
-    // caixa registradora: "ka-" "ching" (dois toques curtos e um sino)
     // "ding-ding-ding" subindo: preço bom no Mercado
     preco: [[1760, 0, 0.18, 'sine'], [2349, 0.12, 0.25, 'sine'], [2793, 0.24, 0.45, 'sine']],
+    // caixa registradora: "ka-" "ching" (dois toques curtos e um sino)
     venda: [[1047, 0, 0.08, 'square'], [1568, 0.07, 0.09, 'square'], [2093, 0.17, 0.8, 'triangle'], [2637, 0.17, 0.8, 'triangle'], [3520, 0.2, 0.5, 'sine']],
   };
   let audio;

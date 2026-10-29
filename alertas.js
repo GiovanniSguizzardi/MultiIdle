@@ -12,6 +12,7 @@ const TIPOS = {
   poucasBolas: '🔴 Pokébolas acabando',
   vendido: '💰 Item vendido no Market',
   preco: '💸 Preço bom no Mercado',
+  pausada: '⏸️ Conta pausada',
 };
 
 // placar da sessão de cada conta (desde que o app abriu ou desde o último "zerar")
@@ -49,6 +50,7 @@ function eventoParaAlerta(e) {
   const p = e.pokemon;
   switch (e.k) {
     case 'capturado':
+      if (!p) return ['captura', ''];
       return p.shiny ? ['shinyCap', `${p.nome} Nv ${p.level}`] : ['captura', `${p.nome} Nv ${p.level}`];
     case 'bola':
       return e.shiny ? ['shinyVisto', e.nome ?? ''] : null;
@@ -76,6 +78,7 @@ if (require.main === module) {
   assert.equal(eventoParaAlerta({ k: 'morte', quem: 'selvagem' }), null);
   assert.equal(eventoParaAlerta({ k: 'morte', quem: 'jogador' })[0], 'desmaiou');
   assert.equal(eventoParaAlerta({ k: 'ataque' }), null);
+  assert.deepEqual(eventoParaAlerta({ k: 'capturado' }), ['captura', '']); // sem pokemon: não quebra
   assert.deepEqual(eventoParaAlerta({ k: 'marketVendido', descricao: 'Charizard Nv 50', valor: 15000, moeda: 'gold' }), ['vendido', 'Charizard Nv 50 por 15.000 coins']);
   assert.deepEqual(eventoParaAlerta({ k: 'marketVendido', descricao: 'Pena', valor: 3, moeda: 'orb' }), ['vendido', 'Pena por 3 orbs']);
   assert.equal(eventoParaAlerta({ k: 'venda', nome: 'Pena', ganho: 10 }), null); // venda pra loja NPC não é anúncio

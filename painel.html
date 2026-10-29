@@ -26,7 +26,7 @@
   nav .ponto { position: absolute; top: 4px; left: 50%; margin-left: -3px; width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 0 1px var(--mad-linha); }
   nav .novo::after { content: ""; position: absolute; top: -3px; left: -3px; width: 12px; height: 12px; border-radius: 50%;
     background: var(--ouro); box-shadow: 0 0 0 2px var(--ouro-esc), 0 0 8px var(--ouro-luz); }
-  .online { background: #3f9a5c; } .quieto { background: #b57a1e; } .fora { background: var(--vao-dim); }
+  .online { background: #3f9a5c; } .quieto { background: #b57a1e; } .fora { background: var(--vao-dim); } .pausada { background: #5865f2; }
 
   .bloco { padding: 12px 14px 14px; margin-bottom: 12px; }
   details.bloco > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; }
@@ -238,8 +238,8 @@
     return h ? `${h}h ${doisDig(m % 60)}min` : `${m}min`;
   }
   const porHora = (v, ms) => ms > 60000 ? (v / (ms / 3600000)) : 0;
-  const STATUS = { online: '🟢 caçando', quieto: '🟡 parado', fora: '⚪ fora do jogo' };
-  const IMPORTANTES = ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas', 'desmaiou', 'atualizou', 'vendido', 'preco'];
+  const STATUS = { online: '🟢 caçando', quieto: '🟡 parado', fora: '⚪ fora do jogo', pausada: '⏸️ pausada' };
+  const IMPORTANTES = ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas', 'desmaiou', 'atualizou', 'vendido', 'preco', 'pausada'];
   const POUCAS = 50;
 
   // ---- ajustes (salvos neste celular) ----

@@ -81,6 +81,7 @@ function conferirOferta(conta, oferta) {
     const chave = `${oferta.itemId}:${oferta.moeda}:${oferta.preco}`;
     if (Date.now() - (resumosAvisados.get(chave) ?? 0) < 30 * 60 * 1000) return;
     resumosAvisados.set(chave, Date.now());
+    if (resumosAvisados.size > 500) for (const [k, em] of resumosAvisados) if (Date.now() - em > 30 * 60 * 1000) resumosAvisados.delete(k);
   }
   const onde = oferta.resumo ? 'menor preço no Mercado' : `anúncio #${oferta.id}`;
   alerta(conta, 'preco', `${textoDaOferta(oferta, mercado.nomes)} · ${r.motivo} · ${onde}`);
@@ -130,6 +131,22 @@ app.on('web-contents-created', (_, wc) => {
   };
   let ultimoCliqueVersao = 0;
   const vigia = setInterval(async () => {
+    // O jogo mostra um aviso e PARA de reconectar quando a conta foi aberta em outro aparelho/aba (fechamento
+    // 4001, "#sessao-tomada") ou foi bloqueada (ban, rede cheia: "#alerta-conta"). Pelo jogo, "tomar a conta
+    // tem de ser sempre um gesto de alguém": aqui o MultiIdle só avisa e espera, sem recarregar.
+    const bloqueio = await wc.executeJavaScript(`(() => {
+      const visivel = (id) => { const e = document.getElementById(id); return !!e && !e.classList.contains('hidden'); };
+      return visivel('sessao-tomada') ? 'tomada' : visivel('alerta-conta') ? 'conta' : null;
+    })()`).catch(() => null);
+    if (bloqueio) {
+      if (info.bloqueio !== bloqueio) {
+        alerta(conta, 'pausada', bloqueio === 'tomada'
+          ? 'a conta foi aberta em outro aparelho ou aba; clique em "Jogar aqui" nela pra voltar'
+          : 'o jogo mostrou um aviso na conta (veja na tela dela)');
+      }
+      info.bloqueio = bloqueio;
+      return;
+    }
     if (info.logado && Date.now() - info.ultimaMsg > TRAVADO_MS) return recarregar('3 min sem resposta do jogo');
     // Conta presa carregando/reconectando (ex.: depois de um hotfix): tenta de novo, esperando cada vez mais
     if (!info.logado) {
@@ -161,7 +178,18 @@ app.on('web-contents-created', (_, wc) => {
     }
   }, Math.min(30000, TRAVADO_MS / 2));
   wc.on('destroyed', () => clearInterval(vigia));
-  wc.on('render-process-gone', () => recarregar('a página do jogo fechou'));
+  // Página do jogo fechando sozinha: recarrega, mas se fechar 3 vezes em 10 min, para e avisa (sem laço infinito)
+  const quedas = [];
+  wc.on('render-process-gone', () => {
+    const agora = Date.now();
+    while (quedas.length && agora - quedas[0] > 10 * 60 * 1000) quedas.shift();
+    quedas.push(agora);
+    if (quedas.length > 3) {
+      if (quedas.length === 4) alerta(conta, 'pausada', 'a página do jogo fechou 4 vezes em 10 min; parei de recarregar (clique em ⟳ nela pra tentar de novo)');
+      return;
+    }
+    setTimeout(() => recarregar('a página do jogo fechou'), quedas.length * 5000);
+  });
 
   // Compra pedida pelo celular: manda pela conexão aberta do jogo a MESMA mensagem que o botão
   // "Comprar" da loja manda ({t:'shop.buy'}), e espera a resposta do servidor (evento 'compra' ou 'erro').
@@ -225,7 +253,7 @@ app.on('web-contents-created', (_, wc) => {
     if (d.length < 100 && d.includes('"pong"')) return; // o próprio jogo não conta pong como sinal de vida
     info.ultimaMsg = Date.now();
     const ehWelcome = d.includes('"t":"welcome"');
-    if (ehWelcome) { info.logado = true; carga.tentativas = 0; carga.falhou = false; } // entrou: zera o retry
+    if (ehWelcome) { info.logado = true; info.bloqueio = null; carga.tentativas = 0; carga.falhou = false; } // entrou: zera o retry
     // filtro barato antes do JSON.parse: só interessam batalha, estado, welcome (e erro, se há compra esperando)
     const ehErro = compraPendente && d.includes('"t":"erro"');
     // alto-falante do Mercado (chat ao vivo) e vitrine de itens (resumo + médias) alimentam o aviso de preço
@@ -344,8 +372,11 @@ function iniciarUpdates() {
   autoUpdater.on('update-available', (i) => avisarUpdate({ estado: 'baixando', versao: i.version, pct: 0 }));
   autoUpdater.on('update-not-available', () => avisarUpdate({ estado: 'em-dia' }));
   autoUpdater.on('download-progress', (p) => avisarUpdate({ estado: 'baixando', pct: Math.round(p.percent) }));
+  let notificouVersao = null;
   autoUpdater.on('update-downloaded', (i) => {
     avisarUpdate({ estado: 'pronto', versao: i.version });
+    if (notificouVersao === i.version) return; // a checagem de 3 em 3 h acha o mesmo download: não repete
+    notificouVersao = i.version;
     new Notification({ title: `MultiIdle v${i.version} pronto`, body: 'Clique em "Atualizar" no topo do MultiIdle (leva uns segundos e as contas voltam sozinhas).', icon: `${__dirname}/icon.png` }).show();
   });
   autoUpdater.on('error', (e) => avisarUpdate({ estado: 'erro', erro: e.message }));
