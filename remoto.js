@@ -68,11 +68,12 @@ async function lerJson(req) {
 // jogo carrega (categoria heal/revive com npcPrice > 0 — o filtro da aba Compra do jogo).
 const MAX_COMPRA = 9999; // o mesmo teto do botão "Máx" da loja do jogo
 let catalogoItens = null; // { em, itens }
-async function itensDaLoja() {
+// Poções e revives do jogo (categoria heal/revive). Com preço de loja = à venda; os outros (drops) só contam no estoque.
+async function consumiveis() {
   if (catalogoItens && Date.now() - catalogoItens.em < 6 * 3600 * 1000) return catalogoItens.itens;
   try {
     const { items } = await (await fetch('https://pokeidle.io/assets/items.json')).json();
-    const itens = items.filter((i) => (i.category === 'heal' || i.category === 'revive') && i.npcPrice > 0)
+    const itens = items.filter((i) => i.category === 'heal' || i.category === 'revive')
       .sort((a, b) => a.npcPrice - b.npcPrice)
       .map((i) => ({ id: i.id, nome: i.name, preco: i.npcPrice, cat: i.category, cura: i.healAmount ?? null, revive: i.revivePct ?? null }));
     catalogoItens = { em: Date.now(), itens };
@@ -80,6 +81,25 @@ async function itensDaLoja() {
     if (!catalogoItens) return [];
   }
   return catalogoItens.itens;
+}
+const itensDaLoja = async () => (await consumiveis()).filter((i) => i.preco > 0);
+
+// O que a conta tem de bolas, poções e revives — o que o painel do celular mostra sempre no topo
+async function estoque(info) {
+  const eu = info.eu;
+  if (!eu) return null;
+  const grupo = (lista) => {
+    const itens = lista.filter((x) => x.qtd > 0).sort((a, b) => b.qtd - a.qtd);
+    return { total: itens.reduce((s, x) => s + x.qtd, 0), itens };
+  };
+  const cat = await consumiveis();
+  const de = (c) => cat.filter((i) => i.cat === c).map((i) => ({ nome: i.nome, qtd: Number(eu.items?.[i.id]) || 0 }));
+  const nomesBolas = info.ctx?.bolas ?? {};
+  return {
+    bolas: grupo(Object.entries(eu.balls ?? {}).map(([id, q]) => ({ nome: nomesBolas[id] ?? `Ball #${id}`, qtd: Number(q) || 0 }))),
+    pocoes: grupo(de('heal')),
+    revives: grupo(de('revive')),
+  };
 }
 async function vitrine(info) {
   const eu = info.eu;
@@ -121,6 +141,7 @@ async function rota(req, res) {
       conta: Number(n), nome: nomeDa(n), placar: info.placar, status: status(info),
       semMsgHa: Date.now() - info.ultimaMsg,
       jogo: info.logado ? resumir(info.eu, info.ctx ?? { hunts: {}, bolas: {} }) : null,
+      estoque: info.logado ? await estoque(info) : null,
       eco: await wc.executeJavaScript(`localStorage.getItem('cfg-economia') === '1'`).catch(() => null),
     })));
     return json(res, { versao: app.getVersion(), agora: Date.now(), contas: lista.sort((a, b) => a.conta - b.conta), alertas: historico.slice(0, 100), tipos: TIPOS });

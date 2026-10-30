@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#bd6951">
+<meta name="theme-color" content="#1f151c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>MultiIdle</title>
 <link rel="stylesheet" href="tema.css">
@@ -11,144 +11,189 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" id="manifest">
 <style>
-  body { padding: 10px 10px 30px; font-size: 13px; min-height: 100vh; box-sizing: border-box; }
-  .fixo { position: sticky; top: 6px; z-index: 5; margin-bottom: 12px; }
-  header { padding: 10px 12px 12px; }
-  .linha { display: flex; align-items: center; gap: 8px; }
-  header .linha { margin-bottom: 8px; }
-  header h1 { margin: 0; font-size: 18px; flex: 1; }
-  header h1 i { font-style: normal; color: var(--ouro-luz); }
-  #conexao { font-size: 11px; padding: 3px 8px; white-space: nowrap; }
-  #btnCfg { width: 34px; padding: 0; }
-  nav { display: grid; grid-template-columns: 44px repeat(4, 1fr); gap: 5px; }
-  nav button { height: auto; min-height: 42px; padding: 9px 2px 7px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-width: 0; position: relative; font-size: 11px; letter-spacing: -.2px; white-space: nowrap; }
-  nav button small { font-size: 10px; font-weight: 400; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  nav .ponto { position: absolute; top: 4px; left: 50%; margin-left: -3px; width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 0 1px var(--mad-linha); }
-  nav .novo::after { content: ""; position: absolute; top: -3px; left: -3px; width: 12px; height: 12px; border-radius: 50%;
-    background: var(--ouro); box-shadow: 0 0 0 2px var(--ouro-esc), 0 0 8px var(--ouro-luz); }
-  .online { background: #3f9a5c; } .quieto { background: #b57a1e; } .fora { background: var(--vao-dim); } .pausada { background: #5865f2; }
-
-  .bloco { padding: 12px 14px 14px; margin-bottom: 12px; }
-  details.bloco > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; }
-  details.bloco > summary::-webkit-details-marker { display: none; }
-  details.bloco > summary::after { content: "▾"; margin-left: auto; transition: transform .15s; }
-  details.bloco:not([open]) > summary::after { transform: rotate(-90deg); }
-  details.bloco[open] > summary { margin-bottom: 10px; }
-  .sub { color: var(--sobre-mad-dim); font-size: 12px; }
-  .muted { color: var(--vao-dim); }
-  .pill { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 10px; box-shadow: inset 0 0 0 2px var(--mad-linha); white-space: nowrap; }
-  .pill.fora { background: var(--vao); color: var(--vao-dim); }
-
-  /* topo da conta */
-  #c-nome { font-size: 19px; font-weight: 700; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  #c-local { margin: 6px 0 10px; font-size: 14px; font-weight: 700; }
-  .nivel { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .nivel .nv { padding: 6px 10px; text-align: center; min-width: 52px; }
-  .nivel .nv b { display: block; font-size: 20px; line-height: 1; }
-  .nivel .nv small { color: var(--vao-dim); font-size: 10px; }
-  .barra { position: relative; height: 16px; border-radius: 5px; overflow: hidden; background: #1e1219; box-shadow: inset 0 0 0 2px var(--mad-linha); }
-  .barra i { position: absolute; inset: 2px auto 2px 2px; border-radius: 3px; background: linear-gradient(180deg, #6fc0f0, #4a8ab8); max-width: calc(100% - 4px); }
-  .barra span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; text-shadow: 0 1px 0 #000; }
-  .barra.hp i { background: linear-gradient(180deg, #8fe39f, #3f9a5c); }
-  .barra.hp.medio i { background: linear-gradient(180deg, #ffd166, #b57a1e); }
-  .barra.hp.baixo i { background: linear-gradient(180deg, #ff9d8a, #d8574a); }
-  .moedas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-  .moedas div { padding: 6px 4px; text-align: center; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .moedas small { display: block; font-weight: 400; color: var(--vao-dim); font-size: 10px; }
-
-  /* listas */
-  .lista { padding: 4px 10px; }
-  .lista > div { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--vao2); }
-  .lista > div:first-child { border-top: 0; }
-  .lista .vazio { color: var(--vao-dim); }
-  .lista .dir { margin-left: auto; font-weight: 700; white-space: nowrap; }
-  .poke { flex-wrap: wrap; }
-  .poke .nm { font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .poke .barra { flex-basis: 100%; height: 14px; }
-  .ativo-tag { color: var(--ouro-luz); }
-
-  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
-  .kpis div { padding: 8px 4px; text-align: center; }
-  .kpis b { display: block; font-size: 17px; }
-  .kpis small { display: block; color: var(--vao-dim); font-size: 10px; }
-  .kpis em { display: block; font-style: normal; font-size: 10px; color: var(--ouro-luz); }
-
-  #c-tela { padding: 3px; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: zoom-in; }
-  #c-tela img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
-  #c-tela span { color: var(--vao-dim); font-size: 12px; text-align: center; padding: 0 10px; }
-  .acoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .acoes button, .grande { height: 38px; font-size: 13px; padding: 0 4px; white-space: nowrap; }
-  .chips { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
-  .chips button { height: 28px; font-size: 11px; }
-  .confirmar { filter: hue-rotate(150deg) saturate(1.3); }
-  time { color: var(--vao-dim); margin-right: 6px; font-size: 11px; }
-
-  /* geral */
-  .mini { padding: 10px 12px 12px; margin-bottom: 8px; cursor: pointer; }
-  .mini .linha { margin-bottom: 4px; }
-  .mini .nm { font-weight: 700; font-size: 15px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .mini .dados { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; margin-top: 6px; }
-
-  /* sobreposições: tela ao vivo e ajustes */
-  .sobre { display: none; position: fixed; inset: 0; z-index: 20; background: rgba(20, 8, 14, .92); padding: 12px; box-sizing: border-box; flex-direction: column; gap: 10px; }
-  .sobre.aberto { display: flex; }
-  #vivo img { flex: 1; min-height: 0; width: 100%; object-fit: contain; }
-  #vivo .linha span { flex: 1; font-weight: 700; }
-  #ajustes .caixa { padding: 14px 16px 18px; margin: auto 0; }
-  #ajustes label { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
-  #ajustes select { background: var(--vao); color: var(--sobre-mad); border: 0; border-radius: 6px; padding: 6px 8px; box-shadow: inset 0 0 0 2px var(--mad-linha); font: inherit; margin-left: auto; }
+  /* Visual limpo: fundo liso, cartões simples, as cores do jogo só nos detalhes (roxo, dourado, verde). */
+  :root {
+    --fundo: #1f151c; --cartao: #2c1e27; --cartao2: #36252f; --borda: #45303b; --texto: #f6ece6; --apagado: #b49aa6;
+    --roxo: #9b59d0; --roxo2: #b67de6; --verde: #4fd18b; --amarelo: #f2b84b; --vermelho: #ef6a5a;
+  }
+  html, body { background: var(--fundo); background-image: none; }
+  body { overflow-x: hidden; margin: 0; padding: 0 12px 32px; font: 14px/1.4 "Segoe UI", system-ui, Tahoma, sans-serif; color: var(--texto); min-height: 100vh; box-sizing: border-box; }
+  button { /* botão chapado no lugar do pixel-art do tema */
+    height: auto; padding: 9px 12px; border: 0; border-radius: 10px; background: var(--cartao2); color: var(--texto);
+    font: 600 13px "Segoe UI", system-ui, sans-serif; text-shadow: none; box-shadow: none; cursor: pointer;
+  }
+  button:active { transform: scale(.98); box-shadow: none; }
+  button.principal { background: var(--roxo); }
+  button.ativo { background: var(--roxo); color: #fff; box-shadow: none; }
+  button:disabled { opacity: .5; }
   .oculto { display: none !important; }
+  .apagado { color: var(--apagado); }
+
+  /* ---- topo fixo: barra, abas e (na conta) os recursos ---- */
+  .fixo { position: sticky; top: 0; z-index: 5; background: var(--fundo); margin: 0 -12px 12px; padding: 10px 12px 10px; box-shadow: 0 6px 12px -8px #000a; }
+  .topo { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .topo h1 { margin: 0; font: 800 17px "Segoe UI", sans-serif; flex: 1; letter-spacing: .2px; }
+  .topo h1 i { font-style: normal; color: var(--amarelo); }
+  #conexao { font-size: 12px; color: var(--apagado); display: flex; align-items: center; gap: 6px; }
+  #conexao::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--apagado); }
+  #conexao.ok::before { background: var(--verde); } #conexao.erro::before { background: var(--vermelho); }
+  #btnCfg { padding: 6px 9px; background: transparent; font-size: 17px; }
+
+  nav { display: grid; grid-template-columns: 46px repeat(4, 1fr); gap: 4px; background: var(--cartao); padding: 4px; border-radius: 12px; }
+  nav button { position: relative; padding: 7px 2px; border-radius: 9px; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0; }
+  nav button.ativo { background: var(--roxo); }
+  nav button b { font-size: 12px; }
+  nav button small { font: 400 10px "Segoe UI", sans-serif; color: var(--apagado); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  nav button.ativo small { color: #eadcf5; }
+  nav .ponto { position: absolute; top: 5px; right: 6px; width: 7px; height: 7px; border-radius: 50%; }
+  nav .novo::after { content: ""; position: absolute; top: 3px; left: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--amarelo); box-shadow: 0 0 6px var(--amarelo); }
+  .online { background: var(--verde); } .quieto { background: var(--amarelo); } .fora { background: #6d5862; } .pausada { background: #6f7cf2; }
+
+  /* recursos: sempre visíveis no topo da conta */
+  #recursos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+  #recursos button { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 8px 8px; min-width: 0; background: var(--cartao); border: 1px solid var(--borda); text-align: left; overflow: hidden; }
+  #recursos b { font-size: 17px; line-height: 1.1; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #recursos small { font: 500 10.5px "Segoe UI", sans-serif; color: var(--apagado); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* estoque baixo: borda e número vermelhos, ⚠ antes do número e uma faixa embaixo */
+  #recursos button.baixo { border-color: var(--vermelho); background: #3a1f22; box-shadow: inset 0 -3px 0 var(--vermelho); }
+  #recursos button.baixo b { color: var(--vermelho); }
+  #recursos button.baixo b::before { content: "⚠ "; font-size: 13px; }
+
+  /* ---- cartões ---- */
+  .cartao { background: var(--cartao); border: 1px solid var(--borda); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+  .rotulo { font: 700 11px "Segoe UI", sans-serif; letter-spacing: .8px; text-transform: uppercase; color: var(--apagado); margin: 0 0 10px; display: flex; align-items: center; gap: 6px; }
+  details.cartao > summary { list-style: none; cursor: pointer; margin: 0; }
+  details.cartao > summary::-webkit-details-marker { display: none; }
+  details.cartao > summary::after { content: "›"; margin-left: auto; font-size: 18px; line-height: 1; transition: transform .15s; }
+  details.cartao[open] > summary { margin-bottom: 12px; }
+  details.cartao[open] > summary::after { transform: rotate(90deg); }
+  .linha { display: flex; align-items: center; gap: 8px; }
+  .chip { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--cartao2); white-space: nowrap; }
+  .chip .ponto-st { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: 1px; }
+
+  /* conta: cabeçalho */
+  #c-nome { font: 800 20px "Segoe UI", sans-serif; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #c-local { margin: 4px 0 12px; color: var(--apagado); font-size: 13px; }
+  .nivel { display: flex; align-items: center; gap: 10px; }
+  .nivel .nv { font-weight: 800; font-size: 13px; background: var(--cartao2); border-radius: 8px; padding: 4px 8px; white-space: nowrap; }
+  .xp { flex: 1; }
+  .xp small { display: flex; justify-content: space-between; color: var(--apagado); font-size: 11px; margin-bottom: 3px; }
+  .trilho { height: 6px; border-radius: 99px; background: #1a1117; overflow: hidden; }
+  .trilho i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #4a8ab8, #6fc0f0); }
+  .moedas { display: flex; gap: 14px; margin-top: 12px; font-size: 13px; color: var(--apagado); flex-wrap: wrap; }
+  .moedas b { color: var(--texto); }
+  #c-sinal { margin-top: 10px; font-size: 11.5px; color: var(--apagado); }
+
+  /* equipe */
+  .poke { padding: 8px 0; border-top: 1px solid var(--borda); }
+  .poke:first-child { border-top: 0; padding-top: 0; }
+  .poke .linha { margin-bottom: 5px; font-size: 13.5px; }
+  .poke .nm { flex: 1; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .poke .hp { font-size: 11.5px; color: var(--apagado); }
+  .poke .trilho i { background: var(--verde); }
+  .poke .trilho.medio i { background: var(--amarelo); } .poke .trilho.baixo i { background: var(--vermelho); }
+  .estrela { color: var(--amarelo); }
+
+  /* sessão */
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .kpis div { background: var(--cartao2); border-radius: 10px; padding: 9px 8px; }
+  .kpis b { display: block; font-size: 17px; }
+  .kpis small { color: var(--apagado); font-size: 11px; }
+  .kpis em { display: block; font-style: normal; font-size: 11px; color: var(--amarelo); margin-top: 1px; }
+  #btnZerar { width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--borda); color: var(--apagado); }
+  .confirmar { background: var(--vermelho) !important; color: #fff !important; border-color: var(--vermelho) !important; }
+
+  /* listas simples */
+  .lista > div { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid var(--borda); font-size: 13.5px; }
+  .lista > div:first-child { border-top: 0; padding-top: 0; }
+  .lista .dir { margin-left: auto; font-weight: 700; white-space: nowrap; }
+  .lista .vazio { color: var(--apagado); }
+  time { color: var(--apagado); font-size: 11.5px; min-width: 38px; }
+
+  /* tela */
+  #c-tela { aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: #140d12; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
+  #c-tela img { width: 100%; height: 100%; object-fit: contain; }
+  #c-tela span { color: var(--apagado); font-size: 12.5px; text-align: center; padding: 0 14px; }
+  .acoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
 
   /* loja */
-  .prod { flex-direction: column; align-items: stretch !important; gap: 6px !important; }
+  .chips { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .chips button { padding: 6px 12px; border-radius: 999px; font-size: 12px; }
+  .prod { flex-direction: column; align-items: stretch !important; gap: 8px !important; }
   .prod .nm { font-weight: 700; }
-  .prod .nm small { display: block; font-weight: 400; color: var(--vao-dim); font-size: 11px; }
+  .prod .nm small { display: block; font-weight: 400; color: var(--apagado); font-size: 12px; }
   .prod .qtd { display: flex; gap: 4px; align-items: center; }
-  .prod .qtd input { flex: 1; min-width: 0; height: 30px; text-align: center; background: #1e1219; color: var(--sobre-mad); border: 0; border-radius: 6px;
-    box-shadow: inset 0 0 0 2px var(--mad-linha); font: 700 14px Tahoma, sans-serif; }
-  .prod .qtd button { height: 30px; min-width: 38px; padding: 0 6px; font-size: 12px; }
-  .prod .comprar { height: 36px; }
-  #l-msg { margin-bottom: 8px; font-weight: 700; }
-  #l-msg:empty { display: none; }
-  #l-msg.ok { color: #8fe39f; } #l-msg.erro { color: var(--ouro-luz); }
+  .prod .qtd input { flex: 1; min-width: 0; height: 36px; text-align: center; background: #1a1117; color: var(--texto); border: 1px solid var(--borda); border-radius: 10px; font: 700 15px "Segoe UI", sans-serif; }
+  .prod .qtd button { padding: 8px 10px; min-width: 40px; }
+  .prod .comprar { background: var(--roxo); color: #fff; padding: 11px; }
+  #l-msg { margin-bottom: 10px; font-weight: 700; } #l-msg:empty { display: none; }
+  #l-msg.ok { color: var(--verde); } #l-msg.erro { color: var(--vermelho); }
+
+  /* geral */
+  .conta-g { cursor: pointer; }
+  .conta-g .nm { font: 700 16px "Segoe UI", sans-serif; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .conta-g .onde { color: var(--apagado); font-size: 12.5px; margin: 3px 0 10px; }
+  .estoque3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .estoque3 div { background: var(--cartao2); border-radius: 10px; padding: 7px 9px; }
+  .estoque3 b { display: block; font-size: 16px; }
+  .estoque3 small { color: var(--apagado); font-size: 11px; }
+  .estoque3 .baixo { background: #3a1f22; } .estoque3 .baixo b { color: var(--vermelho); }
+  .conta-g .rodape { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: var(--apagado); }
+
+  /* folhas por cima: detalhe de recurso, tela ao vivo, ajustes */
+  .sobre { display: none; position: fixed; inset: 0; z-index: 20; background: #0009; align-items: flex-end; }
+  .sobre.aberto { display: flex; }
+  .folha { width: 100%; background: var(--cartao); border-radius: 18px 18px 0 0; padding: 16px 16px 24px; box-sizing: border-box; max-height: 85vh; overflow: auto; }
+  .folha .linha:first-child { margin-bottom: 12px; }
+  .folha h2 { margin: 0; font-size: 17px; flex: 1; }
+  .fechar { background: transparent; font-size: 18px; padding: 4px 8px; }
+  #vivo { background: #000e; flex-direction: column; align-items: stretch; padding: 12px; gap: 10px; }
+  #vivo img { flex: 1; min-height: 0; width: 100%; object-fit: contain; }
+  #ajustes label { display: flex; align-items: center; gap: 10px; margin: 12px 0; font-size: 14px; }
+  #ajustes select { margin-left: auto; background: var(--cartao2); color: var(--texto); border: 1px solid var(--borda); border-radius: 8px; padding: 6px 8px; font: inherit; }
+  .nota { font-size: 12px; color: var(--apagado); margin-top: 10px; }
 </style>
 </head>
 <body>
 <div class="fixo">
-  <header class="madeira">
-    <div class="linha">
-      <h1 class="contorno">Multi<i>Idle</i></h1>
-      <span id="conexao" class="vao">…</span>
-      <button id="btnCfg" title="Ajustes">⚙️</button>
-    </div>
-    <nav id="nav"></nav>
-  </header>
+  <div class="topo">
+    <h1>Multi<i>Idle</i></h1>
+    <span id="conexao">…</span>
+    <button id="btnCfg" title="Ajustes" aria-label="Ajustes">⚙️</button>
+  </div>
+  <nav id="nav"></nav>
+  <!-- sempre à vista na página da conta -->
+  <div id="recursos">
+    <button data-rec="bolas"><b id="r-bolas">—</b><small>🔴 Bolas</small></button>
+    <button data-rec="pocoes"><b id="r-pocoes">—</b><small>🧪 Poções</small></button>
+    <button data-rec="revives"><b id="r-revives">—</b><small>💖 Revives</small></button>
+    <button data-rec="ouro"><b id="r-ouro">—</b><small>💰 Ouro</small></button>
+  </div>
 </div>
 
 <!-- ===== página de uma conta ===== -->
 <main id="pgConta">
-  <section class="bloco madeira">
-    <div class="linha"><span id="c-nome" class="contorno"></span><span id="c-status" class="pill"></span></div>
+  <section class="cartao">
+    <div class="linha"><span id="c-nome"></span><span id="c-status" class="chip"></span></div>
     <div id="c-local"></div>
     <div id="c-treinador"></div>
-    <div class="sub" id="c-sinal"></div>
+    <div id="c-sinal"></div>
   </section>
 
-  <details class="bloco madeira" data-sec="equipe" open>
-    <summary class="contorno">⚔️ Equipe</summary>
-    <div id="c-equipe" class="lista vao"></div>
-  </details>
+  <section class="cartao">
+    <p class="rotulo">Equipe</p>
+    <div id="c-equipe"></div>
+  </section>
 
-  <details class="bloco madeira" data-sec="sessao" open>
-    <summary class="contorno">📈 Sessão <span class="sub" id="c-tempo"></span></summary>
+  <section class="cartao">
+    <p class="rotulo">Sessão <span id="c-tempo" style="text-transform:none;letter-spacing:0;font-weight:500"></span></p>
     <div id="c-kpis" class="kpis"></div>
-    <button class="grande" id="btnZerar" style="width:100%">↺ Zerar sessão</button>
-  </details>
+    <button id="btnZerar">↺ Zerar sessão</button>
+  </section>
 
-  <details class="bloco madeira" data-sec="tela" open>
-    <summary class="contorno">📺 Tela</summary>
-    <div id="c-tela" class="vao" title="Toque para ver ao vivo"><span>carregando imagem…</span></div>
-    <div class="sub" style="margin:6px 0 10px">Toque na imagem para ver ao vivo em tela cheia.</div>
+  <details class="cartao" data-sec="tela" open>
+    <summary class="rotulo">Tela</summary>
+    <div id="c-tela" title="Toque para ver ao vivo"><span>carregando imagem…</span></div>
     <div class="acoes" id="acoes">
       <button data-acao="reload">⟳ Recarregar</button>
       <button data-acao="eco">🍃 Eco</button>
@@ -156,71 +201,74 @@
     </div>
   </details>
 
-  <details class="bloco madeira" data-sec="bolas" open>
-    <summary class="contorno">🔴 Pokébolas <span class="sub" id="c-bolas-total"></span></summary>
-    <div id="c-bolas" class="lista vao"></div>
-    <button class="grande" id="btnIrLoja" style="width:100%;margin-top:8px">🛒 Comprar mais</button>
-  </details>
-
-  <details class="bloco madeira" data-sec="loja" id="secLoja">
-    <summary class="contorno">🛒 Loja <span class="sub" id="l-gold"></span></summary>
+  <details class="cartao" data-sec="loja" id="secLoja">
+    <summary class="rotulo">Loja <span id="l-gold" style="text-transform:none;letter-spacing:0;font-weight:500"></span></summary>
     <div class="chips" id="l-abas">
-      <button data-l="bolas">🔴 Pokébolas</button><button data-l="heal">🧪 Poções</button><button data-l="revive">💖 Revives</button>
+      <button data-l="bolas">Pokébolas</button><button data-l="heal">Poções</button><button data-l="revive">Revives</button>
     </div>
     <div id="l-msg"></div>
-    <div id="l-lista" class="lista vao"></div>
-    <div class="sub" style="margin-top:8px">Compra na loja do jogo com o ouro desta conta. Toque duas vezes em Comprar para confirmar.</div>
+    <div id="l-lista" class="lista"></div>
+    <p class="nota">Compra na loja do jogo com o ouro desta conta. Toque duas vezes em Comprar para confirmar.</p>
   </details>
 
-  <details class="bloco madeira" data-sec="capturas">
-    <summary class="contorno">🎯 Últimas capturas</summary>
-    <div id="c-capturas" class="lista vao"></div>
+  <details class="cartao" data-sec="capturas">
+    <summary class="rotulo">Últimas capturas</summary>
+    <div id="c-capturas" class="lista"></div>
   </details>
 
-  <details class="bloco madeira" data-sec="drops">
-    <summary class="contorno">🎁 Achados da sessão</summary>
-    <div id="c-drops" class="lista vao"></div>
+  <details class="cartao" data-sec="drops">
+    <summary class="rotulo">Achados da sessão</summary>
+    <div id="c-drops" class="lista"></div>
   </details>
 
-  <details class="bloco madeira" data-sec="alertas" open>
-    <summary class="contorno">🔔 Alertas desta conta</summary>
+  <details class="cartao" data-sec="alertas" open>
+    <summary class="rotulo">Alertas</summary>
     <div class="chips" data-filtro></div>
-    <div id="c-log" class="lista vao"></div>
+    <div id="c-log" class="lista"></div>
   </details>
 </main>
 
 <!-- ===== visão geral ===== -->
 <main id="pgGeral" class="oculto">
-  <section class="bloco madeira">
-    <div class="linha" style="margin-bottom:10px"><span class="contorno" style="font-size:17px;font-weight:700;flex:1">📊 Todas as contas</span><span class="sub" id="g-tempo"></span></div>
+  <section class="cartao">
+    <p class="rotulo">Todas as contas <span id="g-tempo" style="text-transform:none;letter-spacing:0;font-weight:500"></span></p>
     <div id="g-kpis" class="kpis"></div>
   </section>
   <div id="g-contas"></div>
-  <details class="bloco madeira" data-sec="g-alertas" open>
-    <summary class="contorno">🔔 Alertas de todas</summary>
+  <details class="cartao" data-sec="g-alertas" open>
+    <summary class="rotulo">Alertas de todas</summary>
     <div class="chips" data-filtro></div>
-    <div id="g-log" class="lista vao"></div>
+    <div id="g-log" class="lista"></div>
   </details>
 </main>
 
+<!-- detalhe de um recurso -->
+<div id="folhaRec" class="sobre">
+  <div class="folha">
+    <div class="linha"><h2 id="fr-titulo"></h2><button class="fechar" data-fechar aria-label="Fechar">✕</button></div>
+    <div id="fr-lista" class="lista"></div>
+    <button id="fr-comprar" class="principal" style="width:100%;margin-top:14px"></button>
+  </div>
+</div>
+
 <!-- tela ao vivo -->
 <div id="vivo" class="sobre">
-  <div class="linha"><span class="contorno" id="vivoNome"></span><button id="vivoFechar">✕ Fechar</button></div>
+  <div class="linha"><span id="vivoNome" style="flex:1;font-weight:700"></span><button class="fechar" id="vivoFechar" aria-label="Fechar">✕</button></div>
   <img id="vivoImg" alt="">
-  <div class="sub" style="text-align:center">Atualiza a cada 2 s enquanto aberta.</div>
+  <div class="nota" style="text-align:center">Atualiza a cada 2 s enquanto aberta.</div>
 </div>
 
 <!-- ajustes -->
 <div id="ajustes" class="sobre">
-  <div class="caixa madeira">
-    <div class="linha"><span class="contorno" style="font-size:16px;font-weight:700;flex:1">⚙️ Ajustes</span><button id="cfgFechar">✕</button></div>
-    <label><input type="checkbox" id="cfgVibrar"> Vibrar com shiny e venda no Market (Android)</label>
+  <div class="folha">
+    <div class="linha"><h2>Ajustes</h2><button class="fechar" data-fechar aria-label="Fechar">✕</button></div>
+    <label><input type="checkbox" id="cfgVibrar"> Vibrar com shiny, venda e preço bom (Android)</label>
     <label>Atualizar dados a cada
       <select id="cfgDados"><option value="2000">2 s</option><option value="3000">3 s</option><option value="10000">10 s</option></select></label>
     <label>Miniatura da tela
       <select id="cfgPrint"><option value="5000">a cada 5 s</option><option value="10000">a cada 10 s</option><option value="30000">a cada 30 s</option><option value="0">desligada</option></select></label>
-    <div class="sub">Os ajustes ficam salvos neste celular. A miniatura só é tirada enquanto o painel está aberto.</div>
-    <div class="sub" id="cfgVersao" style="margin-top:8px"></div>
+    <p class="nota">Os ajustes ficam salvos neste celular. A miniatura só é tirada enquanto o painel está aberto.</p>
+    <p class="nota" id="cfgVersao"></p>
   </div>
 </div>
 
@@ -238,9 +286,15 @@
     return h ? `${h}h ${doisDig(m % 60)}min` : `${m}min`;
   }
   const porHora = (v, ms) => ms > 60000 ? (v / (ms / 3600000)) : 0;
-  const STATUS = { online: '🟢 caçando', quieto: '🟡 parado', fora: '⚪ fora do jogo', pausada: '⏸️ pausada' };
-  const IMPORTANTES = ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas', 'desmaiou', 'atualizou', 'vendido', 'preco', 'pausada'];
-  const POUCAS = 50;
+  const STATUS = { online: 'caçando', quieto: 'parado', fora: 'fora do jogo', pausada: 'pausada' };
+  const IMPORTANTES = ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas', 'desmaiou', 'atualizou', 'vendido', 'preco', 'pausada', 'live'];
+  // abaixo disso o recurso fica vermelho ("baixo")
+  const LIMITE = { bolas: 50, pocoes: 20, revives: 5 };
+  const RECURSOS = {
+    bolas: { nome: 'Pokébolas', emoji: '🔴', loja: 'bolas' },
+    pocoes: { nome: 'Poções', emoji: '🧪', loja: 'heal' },
+    revives: { nome: 'Revives', emoji: '💖', loja: 'revive' },
+  };
 
   // ---- ajustes (salvos neste celular) ----
   const cfg = { vibrar: true, dados: 3000, print: 10000, filtro: 'todos', ...JSON.parse(localStorage.getItem('cfg') ?? '{}') };
@@ -252,7 +306,10 @@
   $('cfgDados').onchange = (e) => { cfg.dados = Number(e.target.value); salvarCfg(); agendar(); };
   $('cfgPrint').onchange = (e) => { cfg.print = Number(e.target.value); salvarCfg(); agendar(); };
   $('btnCfg').onclick = () => $('ajustes').classList.add('aberto');
-  $('cfgFechar').onclick = () => $('ajustes').classList.remove('aberto');
+  // fecha folhas pelo ✕ ou tocando fora
+  document.querySelectorAll('.sobre').forEach((s) => s.addEventListener('click', (e) => {
+    if (e.target === s || e.target.closest('[data-fechar]')) s.classList.remove('aberto');
+  }));
 
   // seções abertas/fechadas lembradas
   const secoes = JSON.parse(localStorage.getItem('secoes') ?? '{}');
@@ -273,8 +330,8 @@
   const vistoAte = JSON.parse(localStorage.getItem('vistoAte') ?? '{}');
   let ultimoAlertaVisto = Number(localStorage.getItem('ultimoAlerta')) || Date.now();
 
-  $('nav').innerHTML = `<button data-c="0" title="Todas as contas">📊</button>` + [1, 2, 3, 4].map((n) =>
-    `<button data-c="${n}"><span class="ponto fora"></span>Conta ${doisDig(n)}<small>—</small></button>`).join('');
+  $('nav').innerHTML = `<button data-c="0" title="Todas as contas"><b>📊</b><small>Geral</small></button>` + [1, 2, 3, 4].map((n) =>
+    `<button data-c="${n}"><span class="ponto fora"></span><b>Conta ${doisDig(n)}</b><small>—</small></button>`).join('');
   $('nav').onclick = (e) => { const b = e.target.closest('button'); if (b) selecionar(Number(b.dataset.c)); };
 
   function selecionar(n) {
@@ -283,17 +340,19 @@
     history.replaceState(null, '', T + (n ? '#' + n : '#geral'));
     $('pgConta').classList.toggle('oculto', !n);
     $('pgGeral').classList.toggle('oculto', !!n);
+    $('recursos').classList.toggle('oculto', !n);
     $('c-tela').innerHTML = '<span>carregando imagem…</span>';
     zerarConfirm();
     desenhar();
     print();
     $('l-msg').textContent = '';
     loja = null;
-    carregarLoja?.();
+    carregarLoja();
     scrollTo({ top: 0 });
   }
 
   // ---- desenho ----
+  const chipStatus = (st) => `<span class="ponto-st ${st}"></span>${STATUS[st] ?? st}`;
   function linhaAlerta(a, comNome) {
     return `<div><time>${hora(a.em)}</time><span>${comNome ? `<b>${esc(a.nome)}</b> · ` : ''}${esc(dados.tipos[a.tipo] ?? a.tipo)}${a.texto ? ': ' + esc(a.texto) : ''}</span></div>`;
   }
@@ -301,17 +360,17 @@
     return dados.alertas.filter((a) => (!conta || a.conta === conta) && (cfg.filtro === 'todos' || IMPORTANTES.includes(a.tipo)));
   }
   function kpis(p, ms) {
-    const item = (v, rot, h, form = fmt) => `<div class="vao"><b>${form(v)}</b><small>${rot}</small>${h ? `<em>${form(Math.round(porHora(v, ms)))}/h</em>` : ''}</div>`;
-    return item(p.abates, '⚔️ abates', true) + item(p.capturas, '🎯 capturas', true) + item(p.shinies, '✨ shinies')
-      + item(p.xp, '⭐ XP ganho', true, compacto) + item(p.gold, '💰 ouro ganho', true, compacto) + item(p.desmaios, '💀 desmaios');
+    const item = (v, rot, h, form = fmt) => `<div><b>${form(v)}</b><small>${rot}</small>${h ? `<em>${form(Math.round(porHora(v, ms)))}/h</em>` : ''}</div>`;
+    return item(p.abates, 'abates', true) + item(p.capturas, 'capturas', true) + item(p.shinies, 'shinies')
+      + item(p.xp, 'XP ganho', true, compacto) + item(p.gold, 'ouro ganho', true, compacto) + item(p.desmaios, 'desmaios');
   }
-  function barraHp(p) {
+  function trilhoHp(p) {
     const pct = p.maxHp ? Math.max(0, Math.min(100, (p.hp / p.maxHp) * 100)) : 0;
-    return `<div class="barra hp ${pct < 25 ? 'baixo' : pct < 50 ? 'medio' : ''}"><i style="width:${pct}%"></i><span>${fmt(p.hp)} / ${fmt(p.maxHp)}</span></div>`;
+    return `<div class="trilho ${pct < 25 ? 'baixo' : pct < 50 ? 'medio' : ''}"><i style="width:${pct}%"></i></div>`;
   }
+  const baixo = (rec, est) => est && est[rec].total < LIMITE[rec];
 
   function desenharNav() {
-    document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('ativo', Number(b.dataset.c) === atual));
     for (const c of dados.contas) {
       const b = document.querySelector(`#nav [data-c="${c.conta}"]`);
       if (!b) continue;
@@ -325,37 +384,37 @@
     document.querySelectorAll('[data-filtro] button').forEach((b) => b.classList.toggle('ativo', b.dataset.f === cfg.filtro));
   }
 
+  function desenharRecursos(c) {
+    const est = c?.estoque;
+    for (const rec of Object.keys(RECURSOS)) {
+      $('r-' + rec).textContent = est ? fmt(est[rec].total) : '—';
+      document.querySelector(`[data-rec="${rec}"]`).classList.toggle('baixo', !!baixo(rec, est));
+    }
+    $('r-ouro').textContent = c?.jogo ? compacto(c.jogo.gold) : '—';
+  }
+
   function desenharConta() {
     const c = dados.contas.find((x) => x.conta === atual);
+    desenharRecursos(c);
     if (!c) { $('c-nome').textContent = `Conta ${doisDig(atual)}`; $('c-status').textContent = 'sem dados'; return; }
     const j = c.jogo;
     $('c-nome').textContent = c.nome;
-    $('c-status').className = 'pill ' + c.status;
-    $('c-status').textContent = STATUS[c.status];
+    $('c-status').innerHTML = chipStatus(c.status);
     $('c-local').textContent = j ? j.local : 'Conta não está logada no jogo';
     $('c-sinal').textContent = c.status === 'fora' ? '' : `Última mensagem do jogo há ${Math.round(c.semMsgHa / 1000)} s`;
     $('c-treinador').innerHTML = !j ? '' : `
-      <div class="nivel"><div class="nv vao"><b>${j.level}</b><small>nível</small></div>
-        <div style="flex:1"><div class="barra"><i style="width:${j.xpPct}%"></i><span>${fmt(j.xpDentro)} / ${fmt(j.xpFaixa)} xp · ${j.xpPct.toFixed(1)}%</span></div></div></div>
-      <div class="moedas">
-        <div class="vao">${compacto(j.gold)}<small>💰 ouro</small></div>
-        <div class="vao">${fmt(j.diamonds)}<small>💎 diamantes</small></div>
-        <div class="vao">${fmt(j.orbs)}<small>🔮 orbs</small></div>
-        <div class="vao">${fmt(j.colecao)}<small>📦 pokémon</small></div>
-      </div>`;
+      <div class="nivel"><span class="nv">Nv ${j.level}</span>
+        <div class="xp"><small><span>${fmt(j.xpDentro)} / ${fmt(j.xpFaixa)} XP</span><span>${j.xpPct.toFixed(1)}%</span></small>
+          <div class="trilho"><i style="width:${j.xpPct}%"></i></div></div></div>
+      <div class="moedas"><span>💎 <b>${fmt(j.diamonds)}</b></span><span>🔮 <b>${fmt(j.orbs)}</b> orbs</span><span>📦 <b>${fmt(j.colecao)}</b> pokémon</span></div>`;
 
-    $('c-equipe').innerHTML = !j?.equipe.length ? '<div class="vazio">Sem dados da equipe (conta fora do jogo).</div>'
-      : j.equipe.map((p) => `<div class="poke"><span class="nm">${p.ativo ? '<span class="ativo-tag">★</span> ' : ''}${p.shiny ? '✨ ' : ''}${esc(p.nome)}</span>
-          <span class="dir">Nv ${p.level}</span>${barraHp(p)}</div>`).join('');
+    $('c-equipe').innerHTML = !j?.equipe.length ? '<div class="apagado">Sem dados da equipe (conta fora do jogo).</div>'
+      : j.equipe.map((p) => `<div class="poke"><div class="linha"><span class="nm">${p.ativo ? '<span class="estrela">★</span> ' : ''}${p.shiny ? '✨ ' : ''}${esc(p.nome)} <span class="apagado">Nv ${p.level}</span></span>
+          <span class="hp">${fmt(p.hp)} / ${fmt(p.maxHp)}</span></div>${trilhoHp(p)}</div>`).join('');
 
     const ms = dados.agora - c.placar.inicio;
     $('c-tempo').textContent = '· ' + duracao(ms);
     $('c-kpis').innerHTML = kpis(c.placar, ms);
-
-    $('c-bolas-total').textContent = j ? `· ${fmt(j.totalBolas)} no total` : '';
-    $('c-bolas').innerHTML = !j ? '<div class="vazio">Sem dados.</div>'
-      : (j.totalBolas < POUCAS ? `<div style="color:var(--ouro-luz);font-weight:700">⚠️ Estoque baixo — reabasteça!</div>` : '')
-        + (j.bolas.length ? j.bolas.map((b) => `<div><span>${esc(b.nome)}</span><span class="dir">${fmt(b.qtd)}</span></div>`).join('') : '<div class="vazio">Nenhuma pokébola!</div>');
 
     $('c-capturas').innerHTML = c.placar.ultimas.length
       ? c.placar.ultimas.map((u) => `<div><time>${hora(u.em)}</time><span>${u.shiny ? '✨ ' : ''}<b>${esc(u.nome)}</b></span><span class="dir">Nv ${u.level}</span></div>`).join('')
@@ -369,6 +428,7 @@
     document.querySelector('[data-acao="eco"]').classList.toggle('ativo', !!c.eco);
     const meus = alertasFiltrados(atual);
     $('c-log').innerHTML = meus.length ? meus.map((a) => linhaAlerta(a, false)).join('') : '<div class="vazio">Nenhum alerta.</div>';
+    if ($('folhaRec').classList.contains('aberto')) abrirRecurso(recAberto); // mantém o detalhe aberto atualizado
   }
 
   function desenharGeral() {
@@ -378,18 +438,18 @@
       for (const k in soma) soma[k] += c.placar[k];
       ms = Math.max(ms, dados.agora - c.placar.inicio);
     }
-    $('g-tempo').textContent = duracao(ms);
+    $('g-tempo').textContent = '· ' + duracao(ms);
     $('g-kpis').innerHTML = kpis(soma, ms);
     $('g-contas').innerHTML = dados.contas.map((c) => {
-      const j = c.jogo;
-      const ativo = j?.equipe.find((p) => p.ativo);
+      const j = c.jogo, est = c.estoque;
       const cms = dados.agora - c.placar.inicio;
-      return `<section class="mini madeira" data-ir="${c.conta}">
-        <div class="linha"><span class="nm contorno">${esc(c.nome)}</span><span class="pill ${c.status}">${STATUS[c.status]}</span></div>
-        <div class="sub">${j ? `${esc(j.local)} · Nv ${j.level}` : 'fora do jogo'}</div>
-        ${ativo ? `<div style="margin-top:6px">${ativo.shiny ? '✨ ' : ''}<b>${esc(ativo.nome)}</b> Nv ${ativo.level}${barraHp(ativo)}</div>` : ''}
-        <div class="dados"><span>⚔️ ${fmt(Math.round(porHora(c.placar.abates, cms)))}/h</span><span>🎯 ${fmt(c.placar.capturas)}</span>
-          <span>✨ ${fmt(c.placar.shinies)}</span><span>🔴 ${j ? fmt(j.totalBolas) : '—'}</span></div>
+      const caixa = (rec) => `<div class="${baixo(rec, est) ? 'baixo' : ''}"><b>${est ? fmt(est[rec].total) : '—'}</b><small>${RECURSOS[rec].emoji} ${RECURSOS[rec].nome}</small></div>`;
+      return `<section class="cartao conta-g" data-ir="${c.conta}">
+        <div class="linha"><span class="nm">${esc(c.nome)}</span><span class="chip">${chipStatus(c.status)}</span></div>
+        <div class="onde">${j ? `${esc(j.local)} · Nv ${j.level}` : 'fora do jogo'}</div>
+        <div class="estoque3">${caixa('bolas')}${caixa('pocoes')}${caixa('revives')}</div>
+        <div class="rodape"><span>⚔️ ${fmt(Math.round(porHora(c.placar.abates, cms)))}/h</span><span>🎯 ${fmt(c.placar.capturas)}</span>
+          <span>✨ ${fmt(c.placar.shinies)}</span><span>💰 ${j ? compacto(j.gold) : '—'}</span></div>
       </section>`;
     }).join('');
     const todos = alertasFiltrados(0);
@@ -404,25 +464,56 @@
     atual ? desenharConta() : desenharGeral();
   }
 
+  // ---- detalhe de um recurso (toque no topo) ----
+  let recAberto = null;
+  function abrirRecurso(rec) {
+    const c = dados?.contas.find((x) => x.conta === atual);
+    recAberto = rec;
+    if (rec === 'ouro') { // ouro não tem detalhe: vai direto pra loja
+      $('secLoja').open = true;
+      carregarLoja();
+      $('secLoja').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    const r = RECURSOS[rec], g = c?.estoque?.[rec];
+    $('fr-titulo').textContent = `${r.emoji} ${r.nome}${g ? ` · ${fmt(g.total)}` : ''}`;
+    $('fr-lista').innerHTML = !g ? '<div class="vazio">Conta fora do jogo.</div>'
+      : (g.total < LIMITE[rec] ? `<div style="color:var(--vermelho);font-weight:700">Estoque baixo (menos de ${LIMITE[rec]}).</div>` : '')
+        + (g.itens.length ? g.itens.map((x) => `<div><span>${esc(x.nome)}</span><span class="dir">${fmt(x.qtd)}</span></div>`).join('') : `<div class="vazio">Nenhum(a) no estoque.</div>`);
+    $('fr-comprar').textContent = `🛒 Comprar ${r.nome.toLowerCase()}`;
+    $('folhaRec').classList.add('aberto');
+  }
+  $('recursos').onclick = (e) => { const b = e.target.closest('[data-rec]'); if (b && dados) abrirRecurso(b.dataset.rec); };
+  $('fr-comprar').onclick = () => {
+    $('folhaRec').classList.remove('aberto');
+    lojaAba = RECURSOS[recAberto].loja;
+    localStorage.setItem('lojaAba', lojaAba);
+    $('secLoja').open = true;
+    carregarLoja();
+    $('secLoja').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   // ---- dados ----
   async function atualizar() {
     try {
       const r = await fetch('api/estado' + T, { cache: 'no-store' });
-      if (r.status === 403) { $('conexao').textContent = '🔒 link inválido'; return; }
+      if (r.status === 403) { $('conexao').textContent = 'link inválido'; $('conexao').className = 'erro'; return; }
       dados = await r.json();
-      $('conexao').textContent = '🟢 ' + hora(dados.agora);
+      $('conexao').textContent = hora(dados.agora);
+      $('conexao').className = 'ok';
       $('cfgVersao').textContent = dados.versao ? 'MultiIdle v' + dados.versao + ' (no PC)' : '';
     } catch {
-      $('conexao').textContent = '🔴 PC fora do ar';
+      $('conexao').textContent = 'PC fora do ar';
+      $('conexao').className = 'erro';
       return;
     }
-    // vibra uma vez por shiny novo (o navegador só deixa vibrar com a página aberta)
+    // vibra uma vez por novidade importante (o navegador só deixa vibrar com a página aberta)
     const novos = dados.alertas.filter((a) => a.em > ultimoAlertaVisto);
     if (novos.length) {
       ultimoAlertaVisto = novos[0].em;
       localStorage.setItem('ultimoAlerta', ultimoAlertaVisto);
       if (cfg.vibrar && novos.some((a) => a.tipo.startsWith('shiny'))) navigator.vibrate?.([250, 120, 250, 120, 400]);
-      else if (cfg.vibrar && novos.some((a) => a.tipo === 'vendido' || a.tipo === 'preco')) navigator.vibrate?.([80, 60, 80]); // "ka-ching" curtinho
+      else if (cfg.vibrar && novos.some((a) => a.tipo === 'vendido' || a.tipo === 'preco')) navigator.vibrate?.([80, 60, 80]);
     }
     desenhar();
   }
@@ -438,7 +529,7 @@
     const url = await buscarPrint(pedida, 640);
     if (pedida !== atual || !url) return;
     if (url === 'escondida') {
-      $('c-tela').innerHTML = '<span>Sem imagem: a janela do MultiIdle está minimizada ou na bandeja. Os números continuam valendo.</span>';
+      $('c-tela').innerHTML = '<span>Sem imagem: o MultiIdle está minimizado ou na bandeja no PC. Os números continuam valendo.</span>';
       return;
     }
     const img = $('c-tela').querySelector('img') ?? document.createElement('img');
@@ -578,12 +669,6 @@
     setTimeout(() => { carregarLoja(); atualizar(); }, 700); // o estado novo (ouro, estoque) chega logo atrás
   };
   $('secLoja').addEventListener('toggle', () => $('secLoja').open && carregarLoja());
-  $('btnIrLoja').onclick = () => {
-    $('secLoja').open = true;
-    lojaAba = 'bolas';
-    carregarLoja();
-    $('secLoja').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
 
   // ---- ritmo ----
   const visivel = () => document.visibilityState === 'visible';

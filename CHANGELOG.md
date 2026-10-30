@@ -3,6 +3,17 @@
 Cada versão nova entra no topo, no formato `## vX.Y.Z — Título`. O texto da seção vira a descrição
 do Release no GitHub. Sem a seção, a publicação não roda.
 
+## v1.3.0 — 📱 Painel do celular novo, mais limpo
+
+### ✨ Novidades
+- **Visual novo no celular:** fundo escuro liso, cartões simples e botões maiores para o dedo. As cores do jogo continuam nos detalhes.
+- **Pokébolas, poções, revives e ouro sempre à vista:** uma barra fixa no topo da conta que não some ao rolar.
+  - **Fica vermelha com ⚠** quando o estoque está baixo: menos de 50 bolas, 20 poções ou 5 revives.
+  - **Toque num bloco** para ver o estoque por tipo, com um botão **"Comprar"** que abre a loja já na aba certa.
+- **Poções e revives** agora aparecem no painel. Antes, só dava para ver dentro da loja.
+- **Na aba Geral,** cada conta mostra pokébolas, poções e revives em destaque, para ver de relance qual conta precisa de reposição.
+- **Mais limpo:** capturas, achados e a tela ficam em seções que abrem e fecham, e o celular lembra como você deixou.
+
 ## v1.2.0 — 📺 Lives parceiras da Twitch
 
 ### ✨ Novidades
