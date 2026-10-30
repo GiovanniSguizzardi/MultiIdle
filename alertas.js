@@ -13,6 +13,7 @@ const TIPOS = {
   vendido: '💰 Item vendido no Market',
   preco: '💸 Preço bom no Mercado',
   pausada: '⏸️ Conta pausada',
+  live: '🔴 Live parceira no ar',
 };
 
 // placar da sessão de cada conta (desde que o app abriu ou desde o último "zerar")

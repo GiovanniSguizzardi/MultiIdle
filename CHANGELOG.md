@@ -3,6 +3,20 @@
 Cada versão nova entra no topo, no formato `## vX.Y.Z — Título`. O texto da seção vira a descrição
 do Release no GitHub. Sem a seção, a publicação não roda.
 
+## v1.2.0 — 📺 Lives parceiras da Twitch
+
+### ✨ Novidades
+- **Novo botão 📺 Lives no topo**, com o mesmo visual da tela da Twitch do PokeIdle:
+  - as lives oficiais **ao vivo** primeiro, com o selo dourado **"⚡ Bônus ativado"**, os espectadores e o "● AO VIVO";
+  - **"✓ você já está lá"** quando o jogo já encontrou as suas contas na live;
+  - os canais offline ficam dobrados embaixo.
+- **Clique numa live para abrir o canal no seu navegador**, onde você já está logado na Twitch.
+- **O bônus de cada conta** aparece no alto do painel: "+15% de XP", "live no ar, ainda não detectado", "offline" ou "Twitch não vinculada".
+- **Ponto vermelho piscando no botão** quando tem live com bônus no ar que alguma das suas contas com Twitch vinculada ainda não abriu.
+- **Novo alerta "🔴 Live parceira no ar"** quando uma live com bônus começa (no máximo um aviso por live a cada 2 horas).
+
+> O bônus é de quem assiste de verdade: o MultiIdle só mostra as lives e abre o canal no navegador. A conta da Twitch é vinculada no próprio PokeIdle.
+
 ## v1.1.1 — 🐛 Caça aos bugs: o MultiIdle não "rouba" mais a sua conta
 
 ### 🔧 Correções

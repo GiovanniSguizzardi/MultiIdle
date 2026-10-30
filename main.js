@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, Notification, ipcMain } = require('electron');
+const { app, BrowserWindow, Tray, Menu, Notification, ipcMain, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 
@@ -91,6 +91,25 @@ ipcMain.handle('mercado-info', () => ({
   itens: Object.entries(mercado.nomes).map(([id, nome]) => ({ id: Number(id), nome })).sort((a, b) => a.nome.localeCompare(b.nome)),
   medias: Object.keys(mercado.medias).length,
 }));
+
+// ---- lives parceiras da Twitch (o bloco 'twitch' que o jogo manda no estado de cada conta) ----
+// O MultiIdle só MOSTRA e abre a live no navegador da pessoa: quem assiste é ela (o bônus é por estar no chat).
+const twitchPorConta = {};
+const livesAvisadas = new Map(); // canal -> quando avisou que entrou no ar (não repete por 2 h)
+function conferirLives(conta, tw) {
+  const comBonus = new Set((tw?.oficiais ?? []).filter((o) => o.bonus === true).map((o) => String(o.login).toLowerCase()));
+  for (const l of tw?.lives ?? []) {
+    const canal = String(l.login).toLowerCase();
+    if (!comBonus.has(canal) || Date.now() - (livesAvisadas.get(canal) ?? 0) < 2 * 3600 * 1000) continue;
+    livesAvisadas.set(canal, Date.now());
+    alerta(conta, 'live', `${l.nome || l.login} está ao vivo com bônus de XP (abra em 📺 Lives)`);
+  }
+}
+ipcMain.handle('twitch-estado', () => twitchPorConta);
+ipcMain.on('abrir-live', (_, canal) => {
+  // só nome de canal da Twitch (letras, números, _): o que vai pro navegador é sempre twitch.tv/<canal>
+  if (/^[a-z0-9_]{2,30}$/i.test(String(canal))) shell.openExternal(`https://www.twitch.tv/${canal}`);
+});
 
 const alerta = (conta, tipo, texto) => {
   const a = { conta, tipo, texto, em: Date.now() };
@@ -284,6 +303,14 @@ app.on('web-contents-created', (_, wc) => {
       }
       info.eu = info.mesclar?.(m.estado) ?? info.eu;
       conferirBolas();
+      const tw = info.eu?.twitch ?? null;
+      const assinatura = JSON.stringify(tw);
+      if (assinatura !== info.twitchAssinatura) {
+        info.twitchAssinatura = assinatura;
+        twitchPorConta[conta] = tw;
+        enviar('twitch', { conta, twitch: tw });
+        conferirLives(conta, tw);
+      }
       return;
     }
     if (m.t !== 'batalha') return;

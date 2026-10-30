@@ -16,6 +16,54 @@
   #celular { left: auto; right: 0; width: 460px; }
   #precos { display: none; position: absolute; top: calc(100% + 8px); right: 0; z-index: 10; width: 480px; max-height: 80vh; overflow: auto; padding: 14px 16px 18px; box-sizing: border-box; }
   #precos.aberto { display: block; }
+  /* 📺 Lives parceiras: o painel e as linhas copiam o visual da tela da Twitch do próprio PokeIdle (estilo.css dele) */
+  #lives { display: none; position: absolute; top: calc(100% + 8px); right: 0; z-index: 10; width: 500px; max-height: 80vh; overflow: auto; padding: 14px 16px 18px; box-sizing: border-box; }
+  #lives.aberto { display: block; }
+  #lives h3 { margin: 0 0 8px; font-size: 13px; }
+  #lives p { margin: 10px 0 0; }
+  #btnLives { position: relative; }
+  #btnLives .tw-ponto { position: absolute; top: 3px; right: 3px; }
+  .lv-contas { display: grid; gap: 4px; margin-bottom: 12px; padding: 6px 10px; }
+  .lv-contas div { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; }
+  .lv-contas .ok { color: #8ff2bb; font-weight: 700; } .lv-contas .vivo { color: #ffb3b3; font-weight: 700; } .lv-contas .apagado { color: var(--vao-dim); }
+  .tw-canais { display: grid; gap: 6px; }
+  .tw-canal { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 0; border-radius: 6px; background: var(--vao); cursor: pointer; text-align: left;
+    box-shadow: inset 0 0 0 1px var(--mad-linha); font: 700 12.5px Tahoma, Verdana, "Segoe UI", sans-serif; color: var(--vao-dim); text-shadow: none; height: auto;
+    transition: background .12s, transform .06s; width: 100%; }
+  .tw-canal:hover { background: color-mix(in srgb, #9146ff 14%, var(--vao)); filter: none; }
+  .tw-canal:active { transform: translateY(1px); }
+  .tw-canal .tw-glifo { flex: none; width: 16px; height: 16px; color: var(--vao-dim); }
+  .tw-canal-nome { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tw-canal-selo { flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; letter-spacing: .9px; text-transform: uppercase; }
+  .tw-canal.ao-vivo { color: #fff; background: color-mix(in srgb, #3ddc84 10%, var(--vao)); box-shadow: inset 0 0 0 2px #2fbf71, 0 0 10px #3ddc8426; }
+  .tw-canal.ao-vivo:hover { background: color-mix(in srgb, #3ddc84 18%, var(--vao)); }
+  .tw-canal.ao-vivo .tw-glifo { color: #bf94ff; }
+  .tw-canal.ao-vivo .tw-canal-selo { color: #5cf29a; }
+  .tw-canal-espect { flex: none; display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 999px; background: #0000002e; font-size: 11.5px; color: #ffb3b3; }
+  .tw-canal-espect, .tw-canal-selo { margin-left: auto; }
+  .tw-canal-espect ~ .tw-canal-selo { margin-left: 0; }
+  .tw-espect-ico { width: 12px; height: 12px; color: #ff6b6b; }
+  .tw-verde { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 0 3px #3ddc8433, 0 0 8px #3ddc84; animation: tw-pulsa 1.4s ease-in-out infinite; }
+  .tw-canal-bonus { position: relative; overflow: hidden; flex: none; display: inline-flex; align-items: center; gap: 2px; padding: 2px 7px; border-radius: 999px;
+    font-size: 8.5px; letter-spacing: .3px; text-transform: uppercase; color: #3d2800; text-shadow: 0 1px 0 #fff6;
+    background: linear-gradient(180deg, #fff3a8 0%, #ffd23f 45%, #f0a500 100%); box-shadow: inset 0 0 0 1px #fff8, 0 0 0 1px #b87800, 0 0 10px #ffd23f88;
+    animation: tw-bonus-pulsa 1.6s ease-in-out infinite; }
+  .tw-bonus-brilho { position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; pointer-events: none; background: linear-gradient(100deg, transparent, #ffffffcc, transparent); transform: skewX(-20deg); animation: tw-bonus-brilha 2.4s ease-in-out infinite; }
+  @keyframes tw-bonus-pulsa { 50% { box-shadow: inset 0 0 0 1px #fff8, 0 0 0 1px #b87800, 0 0 18px #ffd23fcc; transform: scale(1.04); } }
+  @keyframes tw-bonus-brilha { 0% { left: -60%; } 60%, 100% { left: 130%; } }
+  .tw-canal.com-bonus:not(.ao-vivo) { box-shadow: inset 0 0 0 1px #d99a0088; }
+  .tw-canal-falta { flex: none; display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed #a07a44; background: #00000030; font-size: 10.5px; color: #e0c9a0; }
+  .tw-canal-aqui { flex: none; display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 999px; font-size: 9px; letter-spacing: .3px; text-transform: uppercase; color: #8ff2bb; background: #0f3b26; box-shadow: inset 0 0 0 1px #2fbf7188; }
+  .tw-canal.tw-falta-eu { background: color-mix(in srgb, #eb0400 7%, var(--vao)); }
+  .tw-canal.tw-falta-eu:hover { background: color-mix(in srgb, #eb0400 16%, var(--vao)); }
+  .tw-canal.tw-aqui { box-shadow: inset 0 0 0 1px #2fbf7166; }
+  .tw-ponto { flex: none; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #eb0400; box-shadow: 0 0 0 2px #eb040044; animation: tw-pulsa 1.4s ease-in-out infinite; }
+  @keyframes tw-pulsa { 50% { opacity: .35; } }
+  .tw-ninguem { padding: 10px 12px; border-radius: 6px; border: 1px dashed var(--mad-linha); font-size: 11.5px; color: var(--vao-dim); text-align: center; }
+  #lives details summary { cursor: pointer; font: 700 11px Tahoma, sans-serif; letter-spacing: .4px; text-transform: uppercase; color: var(--vao-dim);
+    padding: 6px 12px; border-radius: 6px; background: #00000024; box-shadow: inset 0 0 0 1px var(--mad-linha); text-align: center; list-style: none; margin-top: 6px; }
+  #lives details[open] summary { margin-bottom: 6px; }
+  #lives details .tw-canais { margin-top: 6px; }
   #precos h3 { margin: 0 0 6px; font-size: 13px; }
   #precos p { margin: 6px 0 10px; }
   #regras { padding: 4px 10px; margin-bottom: 12px; }
@@ -97,7 +145,15 @@
   <button id="btnFps" title="Quadros por segundo da cena de cada conta. Menos = menos CPU/GPU (o farm é no servidor, não muda nada no jogo). Contas escondidas ou com a janela minimizada já caem pra 1 fps sozinhas."></button>
   <button id="ecoTodas" title="Liga/desliga o Modo Economia do jogo em todas as contas (para de desenhar a cena; o farm continua)">🍃 Eco: todas</button>
   <span id="ultimo" class="vao"></span>
+  <button id="btnLives" title="Lives parceiras do PokeIdle na Twitch (bônus de XP pra quem assiste)">📺 Lives<i class="tw-ponto oculto" id="livesPonto"></i></button>
   <button id="btnPrecos" title="Aviso de preço bom no Mercado">💸 Preços</button>
+  <div id="lives" class="madeira">
+    <h3 class="contorno">📺 Bônus Twitch das suas contas</h3>
+    <div id="lvContas" class="lv-contas vao"></div>
+    <h3 class="contorno">Lives oficiais do PokeIdle</h3>
+    <div id="lvLista"></div>
+    <p class="sub">Clique numa live pra abrir no seu navegador. O bônus de XP vale pra conta do jogo cuja conta da Twitch (vinculada no próprio PokeIdle) estiver no chat da live; a detecção leva alguns minutos. Cada live oficial a mais assistida ao mesmo tempo soma mais bônus.</p>
+  </div>
   <button id="btnCelular" title="Acompanhar pelo celular">📱 Celular</button>
   <div id="precos" class="madeira">
     <h3 class="contorno">💸 Avisar quando aparecer no Mercado:</h3>
@@ -320,7 +376,7 @@
     }
     $('erroPainel').textContent = r.erro ? `Painel fora do ar: ${r.erro}` : r.links.length || r.tailscale ? '' : 'PC sem rede local.';
   }
-  $('btnCelular').onclick = () => { $('precos').classList.remove('aberto'); if ($('celular').classList.toggle('aberto')) pintarCelular(); };
+  $('btnCelular').onclick = () => { $('precos').classList.remove('aberto'); $('lives').classList.remove('aberto'); if ($('celular').classList.toggle('aberto')) pintarCelular(); };
   $('painelLigado').onchange = async (e) => {
     await ipcRenderer.invoke('painel-ligar', e.target.checked);
     setTimeout(pintarCelular, 300); // dá tempo do servidor subir (ou acusar porta ocupada)
@@ -406,7 +462,8 @@
   };
   $('btnPrecos').onclick = async () => {
     if (!$('precos').classList.toggle('aberto')) return;
-    $('celular').classList.remove('aberto'); // os dois abrem no mesmo canto
+    $('celular').classList.remove('aberto'); // os painéis da direita abrem no mesmo canto
+    $('lives').classList.remove('aberto');
     const info = await ipcRenderer.invoke('mercado-info');
     catalogoItens = info.itens;
     $('listaItens').innerHTML = '';
@@ -417,6 +474,96 @@
   };
   ipcRenderer.invoke('mercado-info').then((info) => { catalogoItens = info.itens; });
   salvarRegras(); // manda as regras salvas pro main ao abrir
+
+  // ---- 📺 lives parceiras da Twitch (bloco 'twitch' do estado de cada conta, vindo do main.js) ----
+  // Mesmo desenho da tela da Twitch do PokeIdle. Clicar abre a live no navegador da pessoa: quem assiste é ela.
+  const GLIFO_TWITCH = `<svg class="tw-glifo" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>`;
+  const GLIFO_ESPECTADOR = `<svg class="tw-espect-ico" viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 2.5a3.8 3.8 0 1 1 0 7.6 3.8 3.8 0 0 1 0-7.6zM3 17c0-3.2 3.1-5.1 7-5.1s7 1.9 7 5.1v.8H3z"/></svg>`;
+  const escHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const pctTxt = (v) => (Number(v) || 0).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+  const minusc = (x) => String(x ?? '').toLowerCase();
+  const twitchDe = {}; // conta -> bloco twitch do jogo (null = fora do jogo)
+
+  function dadosLives() {
+    const blocos = Object.entries(twitchDe).filter(([, tw]) => tw);
+    const base = blocos[0]?.[1]; // lives e canais oficiais são os mesmos pra todas as contas
+    if (!base) return null;
+    const noAr = new Map((base.lives ?? []).map((l) => [minusc(l.login), l]));
+    const canais = (base.oficiais ?? []).map((o) => {
+      const l = noAr.get(minusc(o.login));
+      return { ...o, nome: l?.nome || o.nome, aoVivo: !!l, espectadores: Number(l?.espectadores) || 0 };
+    });
+    for (const l of base.lives ?? []) {
+      if (!canais.some((c) => minusc(c.login) === minusc(l.login))) canais.push({ ...l, aoVivo: true, espectadores: Number(l.espectadores) || 0 });
+    }
+    canais.sort((a, b) => Number(b.aoVivo) - Number(a.aoVivo) || b.espectadores - a.espectadores);
+    // contas com Twitch vinculada e em quais lives o jogo já as encontrou
+    const vinculadas = blocos.filter(([, tw]) => tw.login).map(([c, tw]) => ({ conta: Number(c), em: new Set((tw.assistindoEm ?? []).map(minusc)) }));
+    return { canais, vinculadas };
+  }
+
+  function linhaCanal(c, vinculadas) {
+    const canal = minusc(c.login);
+    const estao = vinculadas.filter((v) => v.em.has(canal));
+    const faltam = c.aoVivo && c.bonus === true ? vinculadas.filter((v) => !v.em.has(canal)) : [];
+    const todos = vinculadas.length > 0 && estao.length === vinculadas.length;
+    const nomesDe = (lista) => lista.map((v) => nomes[v.conta]).join(', ');
+    const selo = todos
+      ? `<span class="tw-canal-aqui" title="O PokeIdle já encontrou ${escHtml(nomesDe(estao))} nesta live">✓ <b>você já está lá</b></span>`
+      : c.bonus === true
+        ? `<span class="tw-canal-bonus" title="Assistir esta live dá bônus de XP${estao.length ? ` (já contando: ${escHtml(nomesDe(estao))})` : ''}"><i class="tw-bonus-brilho" aria-hidden="true"></i>⚡ <b>Bônus ativado</b></span>`
+        : c.bonus === false ? '<span class="tw-canal-falta">Falta ativação</span>' : '';
+    const classes = ['tw-canal', c.aoVivo && 'ao-vivo', c.bonus && 'com-bonus', todos && 'tw-aqui', faltam.length && 'tw-falta-eu'].filter(Boolean).join(' ');
+    const dica = `Abrir twitch.tv/${c.login} no navegador${faltam.length ? ` · ainda não detectado: ${nomesDe(faltam)}` : ''}`;
+    return `<button type="button" class="${classes}" data-canal="${escHtml(c.login)}" title="${escHtml(dica)}">
+      ${faltam.length ? '<i class="tw-ponto" aria-hidden="true"></i>' : ''}${GLIFO_TWITCH}
+      <span class="tw-canal-nome">${escHtml(c.nome || c.login)}</span>${selo}
+      ${c.aoVivo ? `<span class="tw-canal-espect" title="${(c.espectadores).toLocaleString('pt-BR')} espectadores">${GLIFO_ESPECTADOR}${c.espectadores.toLocaleString('pt-BR')}</span>` : ''}
+      <span class="tw-canal-selo">${c.aoVivo ? '<i class="tw-verde" aria-hidden="true"></i>Ao vivo' : 'Offline'}</span>
+    </button>`;
+  }
+
+  function pintarLives() {
+    const d = dadosLives();
+    // o bônus de cada conta, no alto do painel
+    $('lvContas').innerHTML = [1, 2, 3, 4].map((i) => {
+      const tw = twitchDe[i];
+      const [classe, texto] = !tw ? ['apagado', 'fora do jogo']
+        : !tw.login ? ['apagado', 'Twitch não vinculada (vincule no PokeIdle)']
+        : tw.assistindo ? ['ok', `⚡ +${pctTxt(tw.pctAtual ?? tw.pct)}% de XP`]
+        : tw.aoVivo ? ['vivo', 'live no ar, ainda não detectado']
+        : ['apagado', 'offline'];
+      return `<div><span>${escHtml(nomes[i])}</span><span class="${classe}">${escHtml(texto)}</span></div>`;
+    }).join('');
+    if (!d) {
+      $('lvLista').innerHTML = '<div class="tw-ninguem">Entre no jogo com alguma conta pra ver as lives oficiais.</div>';
+      $('livesPonto').classList.add('oculto');
+      return;
+    }
+    const aoVivo = d.canais.filter((c) => c.aoVivo);
+    const offline = d.canais.filter((c) => !c.aoVivo);
+    const offlineAberto = $('lvOffline')?.open ?? false;
+    $('lvLista').innerHTML = `<div class="tw-canais">
+      ${aoVivo.map((c) => linhaCanal(c, d.vinculadas)).join('') || '<div class="tw-ninguem">Nenhuma live oficial no ar agora.</div>'}
+      ${offline.length ? `<details id="lvOffline"${offlineAberto ? ' open' : ''}><summary>Offline (${offline.length}) ▾</summary>
+        <div class="tw-canais">${offline.map((c) => linhaCanal(c, d.vinculadas)).join('')}</div></details>` : ''}
+    </div>`;
+    // ponto vermelho no botão: tem live com bônus que alguma conta vinculada ainda não abriu
+    $('livesPonto').classList.toggle('oculto', !$('lvLista').querySelector('.tw-falta-eu'));
+  }
+
+  $('lvLista').onclick = (e) => {
+    const linha = e.target.closest('[data-canal]');
+    if (linha) ipcRenderer.send('abrir-live', linha.dataset.canal);
+  };
+  $('btnLives').onclick = () => {
+    if (!$('lives').classList.toggle('aberto')) return;
+    $('precos').classList.remove('aberto');
+    $('celular').classList.remove('aberto');
+    pintarLives();
+  };
+  ipcRenderer.on('twitch', (_, { conta, twitch }) => { twitchDe[conta] = twitch; pintarLives(); });
+  ipcRenderer.invoke('twitch-estado').then((todos) => { Object.assign(twitchDe, todos); pintarLives(); });
 
   // ---- limite de FPS da cena (o limitador roda dentro de cada página do jogo, ver main.js) ----
   const OPCOES_FPS = [60, 30, 20, 10];
@@ -467,6 +614,7 @@
     if (!pane) return;
     if (c.nick) nomes[c.conta] = c.nick;
     pane.querySelector('.nome').textContent = nomes[c.conta];
+    if ($('lives').classList.contains('aberto')) pintarLives();
     const p = c.placar;
     pane.querySelector('.placar').textContent = `🎯 ${p.capturas}  ✨ ${p.shinies}  ⚔️ ${p.abates}  💀 ${p.desmaios}`;
   });
