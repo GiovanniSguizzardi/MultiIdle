@@ -53,6 +53,10 @@
   @keyframes tw-bonus-brilha { 0% { left: -60%; } 60%, 100% { left: 130%; } }
   .tw-canal.com-bonus:not(.ao-vivo) { box-shadow: inset 0 0 0 1px #d99a0088; }
   .tw-canal-falta { flex: none; display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed #a07a44; background: #00000030; font-size: 10.5px; color: #e0c9a0; }
+  /* selo "pontos ativos" (roxo da Twitch) e "em breve", como na tela nova do jogo */
+  .kk-canal-pontos { flex: none; padding: 2px 7px; border-radius: 999px; font-size: 8.5px; letter-spacing: .4px; text-transform: uppercase; color: #fff; text-shadow: 0 1px 0 #0008;
+    background: #9146ff; box-shadow: 0 0 0 1px #6a3fbf, 0 0 8px color-mix(in srgb, #9146ff 45%, transparent); }
+  .kk-canal-falta { flex: none; padding: 2px 8px; border-radius: 999px; border: 1px dashed var(--mad-luz2); background: color-mix(in srgb, #000 19%, transparent); font-size: 10px; color: var(--sobre-mad-dim); }
   .tw-canal-aqui { flex: none; display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 999px; font-size: 9px; letter-spacing: .3px; text-transform: uppercase; color: #8ff2bb; background: #0f3b26; box-shadow: inset 0 0 0 1px #2fbf7188; }
   .tw-canal.tw-falta-eu { background: color-mix(in srgb, #eb0400 7%, var(--vao)); }
   .tw-canal.tw-falta-eu:hover { background: color-mix(in srgb, #eb0400 16%, var(--vao)); }
@@ -152,7 +156,7 @@
     <div id="lvContas" class="lv-contas vao"></div>
     <h3 class="contorno">Lives oficiais do PokeIdle</h3>
     <div id="lvLista"></div>
-    <p class="sub">Clique numa live pra abrir no seu navegador. O bônus de XP vale pra conta do jogo cuja conta da Twitch (vinculada no próprio PokeIdle) estiver no chat da live; a detecção leva alguns minutos. Cada live oficial a mais assistida ao mesmo tempo soma mais bônus.</p>
+    <p class="sub"><b>Como funciona (desde 04/11):</b> assista na <b>página do canal</b> (ou no app da Twitch) com o vídeo rodando pra ganhar os pontos do canal. Com eles, resgate no canal as recompensas do PokeIdle: cada resgate dá horas de bônus (XP, Capture Boost ou Secret Lure) pra conta do jogo vinculada à sua Twitch, e as horas se somam. Clique numa live pra abrir no seu navegador.</p>
   </div>
   <button id="btnCelular" title="Acompanhar pelo celular">📱 Celular</button>
   <div id="precos" class="madeira">
@@ -481,58 +485,47 @@
   const GLIFO_ESPECTADOR = `<svg class="tw-espect-ico" viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor" d="M10 2.5a3.8 3.8 0 1 1 0 7.6 3.8 3.8 0 0 1 0-7.6zM3 17c0-3.2 3.1-5.1 7-5.1s7 1.9 7 5.1v.8H3z"/></svg>`;
   const escHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const pctTxt = (v) => (Number(v) || 0).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
-  const minusc = (x) => String(x ?? '').toLowerCase();
   const twitchDe = {}; // conta -> bloco twitch do jogo (null = fora do jogo)
 
+  // Regra de 04/11/2026 (twitch.js): assistir na página do canal dá os pontos do canal; com eles a pessoa resgata
+  // horas de bônus. O jogo manda os canais oficiais já com aoVivo/espectadores/ativo, e o fim de cada bônus.
+  const TW = require('./twitch');
   function dadosLives() {
-    const blocos = Object.entries(twitchDe).filter(([, tw]) => tw);
-    const base = blocos[0]?.[1]; // lives e canais oficiais são os mesmos pra todas as contas
+    const base = Object.values(twitchDe).find((tw) => tw); // canais oficiais são os mesmos pra todas as contas
     if (!base) return null;
-    const noAr = new Map((base.lives ?? []).map((l) => [minusc(l.login), l]));
-    const canais = (base.oficiais ?? []).map((o) => {
-      const l = noAr.get(minusc(o.login));
-      return { ...o, nome: l?.nome || o.nome, aoVivo: !!l, espectadores: Number(l?.espectadores) || 0 };
-    });
-    for (const l of base.lives ?? []) {
-      if (!canais.some((c) => minusc(c.login) === minusc(l.login))) canais.push({ ...l, aoVivo: true, espectadores: Number(l.espectadores) || 0 });
-    }
-    canais.sort((a, b) => Number(b.aoVivo) - Number(a.aoVivo) || b.espectadores - a.espectadores);
-    // contas com Twitch vinculada e em quais lives o jogo já as encontrou
-    const vinculadas = blocos.filter(([, tw]) => tw.login).map(([c, tw]) => ({ conta: Number(c), em: new Set((tw.assistindoEm ?? []).map(minusc)) }));
-    return { canais, vinculadas };
+    const canais = [...(base.oficiais ?? [])].sort((a, b) =>
+      Number(!!b.aoVivo) - Number(!!a.aoVivo) || (Number(b.espectadores) || 0) - (Number(a.espectadores) || 0));
+    // contas vinculadas SEM nenhum bônus valendo: são as que têm o que resgatar
+    const semBonus = [1, 2, 3, 4].filter((i) => TW.vinculada(twitchDe[i]) && !TW.bonusAtivos(twitchDe[i]).length);
+    return { canais, semBonus };
   }
 
-  function linhaCanal(c, vinculadas) {
-    const canal = minusc(c.login);
-    const estao = vinculadas.filter((v) => v.em.has(canal));
-    const faltam = c.aoVivo && c.bonus === true ? vinculadas.filter((v) => !v.em.has(canal)) : [];
-    const todos = vinculadas.length > 0 && estao.length === vinculadas.length;
-    const nomesDe = (lista) => lista.map((v) => nomes[v.conta]).join(', ');
-    const selo = todos
-      ? `<span class="tw-canal-aqui" title="O PokeIdle já encontrou ${escHtml(nomesDe(estao))} nesta live">✓ <b>você já está lá</b></span>`
-      : c.bonus === true
-        ? `<span class="tw-canal-bonus" title="Assistir esta live dá bônus de XP${estao.length ? ` (já contando: ${escHtml(nomesDe(estao))})` : ''}"><i class="tw-bonus-brilho" aria-hidden="true"></i>⚡ <b>Bônus ativado</b></span>`
-        : c.bonus === false ? '<span class="tw-canal-falta">Falta ativação</span>' : '';
-    const classes = ['tw-canal', c.aoVivo && 'ao-vivo', c.bonus && 'com-bonus', todos && 'tw-aqui', faltam.length && 'tw-falta-eu'].filter(Boolean).join(' ');
-    const dica = `Abrir twitch.tv/${c.login} no navegador${faltam.length ? ` · ainda não detectado: ${nomesDe(faltam)}` : ''}`;
+  function linhaCanal(c, semBonus) {
+    const espect = Number(c.espectadores) || 0;
+    const chama = c.aoVivo && c.ativo && semBonus.length > 0; // dá pra resgatar aqui e tem conta sem bônus
+    const selo = c.ativo
+      ? '<span class="kk-canal-pontos" title="O streamer autorizou: dá pra resgatar o bônus com os pontos do canal">pontos ativos</span>'
+      : '<span class="kk-canal-falta" title="O streamer ainda não liberou as recompensas do PokeIdle">em breve</span>';
+    const classes = ['tw-canal', c.aoVivo && 'ao-vivo', chama && 'tw-falta-eu'].filter(Boolean).join(' ');
+    const dica = `Abrir twitch.tv/${c.login} no navegador${chama ? ` · sem bônus agora: ${semBonus.map((i) => nomes[i]).join(', ')}` : ''}`;
     return `<button type="button" class="${classes}" data-canal="${escHtml(c.login)}" title="${escHtml(dica)}">
-      ${faltam.length ? '<i class="tw-ponto" aria-hidden="true"></i>' : ''}${GLIFO_TWITCH}
+      ${chama ? '<i class="tw-ponto" aria-hidden="true"></i>' : ''}${GLIFO_TWITCH}
       <span class="tw-canal-nome">${escHtml(c.nome || c.login)}</span>${selo}
-      ${c.aoVivo ? `<span class="tw-canal-espect" title="${(c.espectadores).toLocaleString('pt-BR')} espectadores">${GLIFO_ESPECTADOR}${c.espectadores.toLocaleString('pt-BR')}</span>` : ''}
+      ${c.aoVivo ? `<span class="tw-canal-espect" title="${espect.toLocaleString('pt-BR')} espectadores">${GLIFO_ESPECTADOR}${espect.toLocaleString('pt-BR')}</span>` : ''}
       <span class="tw-canal-selo">${c.aoVivo ? '<i class="tw-verde" aria-hidden="true"></i>Ao vivo' : 'Offline'}</span>
     </button>`;
   }
 
   function pintarLives() {
     const d = dadosLives();
-    // o bônus de cada conta, no alto do painel
+    // o bônus de cada conta, no alto do painel: o que está valendo e quanto falta
     $('lvContas').innerHTML = [1, 2, 3, 4].map((i) => {
       const tw = twitchDe[i];
+      const ativos = TW.bonusAtivos(tw);
       const [classe, texto] = !tw ? ['apagado', 'fora do jogo']
-        : !tw.login ? ['apagado', 'Twitch não vinculada (vincule no PokeIdle)']
-        : tw.assistindo ? ['ok', `⚡ +${pctTxt(tw.pctAtual ?? tw.pct)}% de XP`]
-        : tw.aoVivo ? ['vivo', 'live no ar, ainda não detectado']
-        : ['apagado', 'offline'];
+        : !TW.vinculada(tw) ? ['apagado', 'Twitch não vinculada (vincule no PokeIdle)']
+        : ativos.length ? ['ok', ativos.map((b) => `+${pctTxt(tw.pct)}% ${b.nome} · ${TW.tempoCurto(b.falta)}`).join('  ·  ')]
+        : ['vivo', 'sem bônus agora: resgate numa live com pontos ativos'];
       return `<div><span>${escHtml(nomes[i])}</span><span class="${classe}">${escHtml(texto)}</span></div>`;
     }).join('');
     if (!d) {
@@ -544,13 +537,15 @@
     const offline = d.canais.filter((c) => !c.aoVivo);
     const offlineAberto = $('lvOffline')?.open ?? false;
     $('lvLista').innerHTML = `<div class="tw-canais">
-      ${aoVivo.map((c) => linhaCanal(c, d.vinculadas)).join('') || '<div class="tw-ninguem">Nenhuma live oficial no ar agora.</div>'}
+      ${aoVivo.map((c) => linhaCanal(c, d.semBonus)).join('') || '<div class="tw-ninguem">Nenhuma live oficial no ar agora.</div>'}
       ${offline.length ? `<details id="lvOffline"${offlineAberto ? ' open' : ''}><summary>Offline (${offline.length}) ▾</summary>
-        <div class="tw-canais">${offline.map((c) => linhaCanal(c, d.vinculadas)).join('')}</div></details>` : ''}
+        <div class="tw-canais">${offline.map((c) => linhaCanal(c, d.semBonus)).join('')}</div></details>` : ''}
     </div>`;
-    // ponto vermelho no botão: tem live com bônus que alguma conta vinculada ainda não abriu
+    // ponto vermelho no botão: live com pontos ativos no ar e alguma conta vinculada sem bônus
     $('livesPonto').classList.toggle('oculto', !$('lvLista').querySelector('.tw-falta-eu'));
   }
+  // os bônus contam o tempo sozinhos: repinta de minuto em minuto (o ponto e o "falta" ficam certos)
+  setInterval(pintarLives, 60000);
 
   $('lvLista').onclick = (e) => {
     const linha = e.target.closest('[data-canal]');

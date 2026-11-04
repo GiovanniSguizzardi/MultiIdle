@@ -14,6 +14,7 @@ const TIPOS = {
   preco: '💸 Preço bom no Mercado',
   pausada: '⏸️ Conta pausada',
   live: '🔴 Live parceira no ar',
+  twitchFim: '⏰ Bônus da Twitch acabou',
 };
 
 // placar da sessão de cada conta (desde que o app abriu ou desde o último "zerar")

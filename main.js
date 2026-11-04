@@ -12,6 +12,7 @@ const remoto = require('./remoto');
 const { criarMesclador } = require('./estado');
 const { decidirRetry } = require('./retry');
 const { avaliar, ofertaDoChat, ofertasDoResumo, textoDaOferta } = require('./precos');
+const { livesComPontos, bonusQueAcabaram } = require('./twitch');
 
 // AFK com pouca CPU: janela minimizada/na bandeja/coberta PARA de desenhar (o Chromium sabe que está
 // escondida), mas os relógios do jogo (ping de 25 s, vigia da conexão) seguem no ritmo normal — o farm é
@@ -93,16 +94,16 @@ ipcMain.handle('mercado-info', () => ({
 }));
 
 // ---- lives parceiras da Twitch (o bloco 'twitch' que o jogo manda no estado de cada conta) ----
-// O MultiIdle só MOSTRA e abre a live no navegador da pessoa: quem assiste é ela (o bônus é por estar no chat).
+// O MultiIdle só MOSTRA e abre a live no navegador da pessoa: quem assiste é ela. Desde 04/11/2026 o bônus é por
+// resgate com os pontos do canal (ver twitch.js); antes era automático pelo chat.
 const twitchPorConta = {};
 const livesAvisadas = new Map(); // canal -> quando avisou que entrou no ar (não repete por 2 h)
 function conferirLives(conta, tw) {
-  const comBonus = new Set((tw?.oficiais ?? []).filter((o) => o.bonus === true).map((o) => String(o.login).toLowerCase()));
-  for (const l of tw?.lives ?? []) {
-    const canal = String(l.login).toLowerCase();
-    if (!comBonus.has(canal) || Date.now() - (livesAvisadas.get(canal) ?? 0) < 2 * 3600 * 1000) continue;
+  for (const c of livesComPontos(tw)) {
+    const canal = String(c.login).toLowerCase();
+    if (Date.now() - (livesAvisadas.get(canal) ?? 0) < 2 * 3600 * 1000) continue;
     livesAvisadas.set(canal, Date.now());
-    alerta(conta, 'live', `${l.nome || l.login} está ao vivo com bônus de XP (abra em 📺 Lives)`);
+    alerta(conta, 'live', `${c.nome || c.login} está ao vivo: assista na página do canal e resgate o bônus com os pontos do canal (abra em 📺 Lives)`);
   }
 }
 ipcMain.handle('twitch-estado', () => twitchPorConta);
@@ -150,6 +151,9 @@ app.on('web-contents-created', (_, wc) => {
   };
   let ultimoCliqueVersao = 0;
   const vigia = setInterval(async () => {
+    // bônus da Twitch que acabou (o fim é um horário: não chega mensagem nenhuma quando passa)
+    const acabaram = bonusQueAcabaram((info.bonusTwitchVisto ??= {}), info.eu?.twitch);
+    if (acabaram.length) alerta(conta, 'twitchFim', `${acabaram.join(', ')} · dá pra resgatar mais horas com os pontos do canal`);
     // O jogo mostra um aviso e PARA de reconectar quando a conta foi aberta em outro aparelho/aba (fechamento
     // 4001, "#sessao-tomada") ou foi bloqueada (ban, rede cheia: "#alerta-conta"). Pelo jogo, "tomar a conta
     // tem de ser sempre um gesto de alguém": aqui o MultiIdle só avisa e espera, sem recarregar.

@@ -3,6 +3,19 @@
 Cada versão nova entra no topo, no formato `## vX.Y.Z — Título`. O texto da seção vira a descrição
 do Release no GitHub. Sem a seção, a publicação não roda.
 
+## v1.3.1 — 📺 Lives da Twitch adaptadas à regra nova do PokeIdle
+
+### 🔧 Correções
+- **O painel 📺 Lives voltou a funcionar.** Em 04/11 o PokeIdle mudou o bônus da Twitch, e o MultiIdle parou de entender os dados. Agora ele segue a regra nova:
+  - você **assiste na página do canal** (ou no app da Twitch) com o vídeo rodando e ganha os **pontos do canal**;
+  - com os pontos, **resgata no canal** horas de bônus (+15% de XP, Capture Boost ou Secret Lure), e as horas se somam.
+- **Os canais oficiais** mostram o selo roxo **"pontos ativos"** (dá para resgatar ali) ou **"em breve"**, como no jogo.
+- **O bônus de cada conta** mostra o que está valendo e quanto tempo falta. Por exemplo: "+15% XP · 42min".
+- **O ponto vermelho** no botão 📺 Lives acende quando tem live com pontos ativos no ar e alguma conta vinculada está sem bônus.
+
+### ✨ Novidades
+- **Novo alerta "⏰ Bônus da Twitch acabou"**, para você saber a hora de resgatar mais horas.
+
 ## v1.3.0 — 📱 Painel do celular novo, mais limpo
 
 ### ✨ Novidades
