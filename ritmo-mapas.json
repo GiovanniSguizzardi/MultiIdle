@@ -1,0 +1,3121 @@
+{
+ "_origem": "pokeidle-hunt/scripts/exportar-ritmo-mapas.mjs — telemetria do PokeIdle Launcher",
+ "versoesDoJogo": [
+  "1.380.2"
+ ],
+ "geradoEm": "2026-10-29",
+ "diaSazonal": "ELECTRIC",
+ "faixa": {
+  "p10": 2.96,
+  "mediana": 3.35,
+  "p90": 3.61
+ },
+ "mapas": {
+  "aipom": {
+   "s": 3.31,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "alakazam": {
+   "s": 2.42,
+   "medidas": 6,
+   "ondas": 30
+  },
+  "ancient_dragonair": {
+   "s": 3.35,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "ancient_granbull": {
+   "s": 3.37,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "ancient_hypno": {
+   "s": 3.03,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "ancient_marowak": {
+   "s": 3.45,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "ancient_meganium": {
+   "s": 3.29,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "ancient_pinsir": {
+   "s": 3.64,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "ancient_pupitar": {
+   "s": 3.29,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "ancient_xatu": {
+   "s": 3.44,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "arbok": {
+   "s": 3.44,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "arcanine": {
+   "s": 3.31,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "ariados": {
+   "s": 3.5,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "banshee_misdreavus": {
+   "s": 3.61,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "bayleef": {
+   "s": 3.1,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "beedrill": {
+   "s": 3.45,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "bellossom": {
+   "s": 3.49,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "bellsprout": {
+   "s": 3.59,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "blastoise": {
+   "s": 3.16,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "brave_alakazam": {
+   "s": 2.81,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "brave_arcanine": {
+   "s": 3.37,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "brave_blastoise": {
+   "s": 2.97,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "brave_charizard": {
+   "s": 3.37,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "brave_clefable": {
+   "s": 4.5,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "brave_mantine": {
+   "s": 3.49,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "brave_nidoking": {
+   "s": 3.28,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "brave_nidoqueen": {
+   "s": 3.29,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "brave_noctowl": {
+   "s": 3.39,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "brave_steelix": {
+   "s": 3.83,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "brave_venusaur": {
+   "s": 3.35,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "brute_rhydon": {
+   "s": 3.03,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "bulbasaur": {
+   "s": 2.62,
+   "medidas": 3,
+   "ondas": 1166
+  },
+  "butterfree": {
+   "s": 3.42,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "caterpie": {
+   "s": 3.6,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "chansey": {
+   "s": 3.25,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "charged_raichu": {
+   "s": 3.3,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "charizard": {
+   "s": 3.26,
+   "medidas": 6,
+   "ondas": 940
+  },
+  "charmander": {
+   "s": 3.13,
+   "medidas": 2,
+   "ondas": 10
+  },
+  "charmeleon": {
+   "s": 3.4,
+   "medidas": 2,
+   "ondas": 10
+  },
+  "chikorita": {
+   "s": 3.61,
+   "medidas": 2,
+   "ondas": 10
+  },
+  "clefable": {
+   "s": 2.33,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "clefairy": {
+   "s": 2.88,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "cleffa": {
+   "s": 3.39,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "cloyster": {
+   "s": 3.61,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "cubone": {
+   "s": 3.28,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "dark_crobat": {
+   "s": 3.36,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "delibird": {
+   "s": 2.99,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "dewgong": {
+   "s": 3.55,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "diglett": {
+   "s": 3.13,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "dodrio": {
+   "s": 3.35,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "doduo": {
+   "s": 3.22,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "dragonair": {
+   "s": 3.7,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "dragonite": {
+   "s": 3.03,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "dratini": {
+   "s": 3.45,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "drowzee": {
+   "s": 3.62,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "dugtrio": {
+   "s": 3.03,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "dunsparce": {
+   "s": 3.41,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "ekans": {
+   "s": 2.98,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "electabuzz": {
+   "s": 3.62,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "electrode": {
+   "s": 3.44,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "enigmatic_girafarig": {
+   "s": 3.44,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "enraged_typhlosion": {
+   "s": 2.68,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "evil_cloyster": {
+   "s": 3.35,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "exeggcute": {
+   "s": 2.87,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "exeggutor": {
+   "s": 3.4,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "farfetch_d": {
+   "s": 2.84,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "fearow": {
+   "s": 3.39,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "forretress": {
+   "s": 3.34,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "freezing_dewgong": {
+   "s": 3.32,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "furious_gyarados": {
+   "s": 3.27,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "furious_magmar": {
+   "s": 3.53,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "furious_pidgeot": {
+   "s": 3.84,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "furious_sandslash": {
+   "s": 3.42,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "furious_scyther": {
+   "s": 3.18,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "furious_skarmory": {
+   "s": 4.26,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "furious_wigglytuff": {
+   "s": 3.79,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "furret": {
+   "s": 3.39,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "gengar": {
+   "s": 3.41,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "geodude": {
+   "s": 3.68,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "gligar": {
+   "s": 3.12,
+   "medidas": 2,
+   "ondas": 10
+  },
+  "gloom": {
+   "s": 3.28,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "golbat": {
+   "s": 3.68,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "goldeen": {
+   "s": 3.28,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "golduck": {
+   "s": 3.32,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "golem": {
+   "s": 3.26,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "graveler": {
+   "s": 3.42,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "grimer": {
+   "s": 3.53,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "growlithe": {
+   "s": 3.38,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "gyarados": {
+   "s": 3.48,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "hard_golem": {
+   "s": 3.49,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "haunter": {
+   "s": 3.18,
+   "medidas": 2,
+   "ondas": 10
+  },
+  "heavy_piloswine": {
+   "s": 3.3,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "heracross": {
+   "s": 3.18,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "hitmonchan": {
+   "s": 3.03,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "hitmonlee": {
+   "s": 2.71,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "hoothoot": {
+   "s": 3.49,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "horsea": {
+   "s": 3.29,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "hypno": {
+   "s": 2.71,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "igglybuff": {
+   "s": 3.44,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "ivysaur": {
+   "s": 2.78,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "jigglypuff": {
+   "s": 3.4,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "jumpluff": {
+   "s": 3.08,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "jynx": {
+   "s": 3.23,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "kabuto": {
+   "s": 3.32,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "kabutops": {
+   "s": 3.4,
+   "medidas": 2,
+   "ondas": 10
+  },
+  "kadabra": {
+   "s": 3.43,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "kakuna": {
+   "s": 3.28,
+   "medidas": 1,
+   "ondas": 10
+  },
+  "kangaskhan": {
+   "s": 5.6,
+   "medidas": 2,
+   "ondas": 10
+  },
+  "kingler": {
+   "s": 3.26,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "koffing": {
+   "s": 3.39,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "krabby": {
+   "s": 3.34,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "lapras": {
+   "s": 2.65,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "ledian": {
+   "s": 3.53,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "ledyba": {
+   "s": 3.56,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "lickitung": {
+   "s": 3.4,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "machamp": {
+   "s": 2.99,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "machoke": {
+   "s": 3.23,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "machop": {
+   "s": 3.47,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "magmar": {
+   "s": 3.28,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "magnemite": {
+   "s": 3.44,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "magneton": {
+   "s": 3.68,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "mankey": {
+   "s": 3.22,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "marill": {
+   "s": 3.34,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "marowak": {
+   "s": 3.02,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "meganium": {
+   "s": 3.56,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "meowth": {
+   "s": 3.22,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "metapod": {
+   "s": 3.14,
+   "medidas": 1,
+   "ondas": 10
+  },
+  "milch_miltank": {
+   "s": 3.4,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "mr_mime": {
+   "s": 3.7,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "muk": {
+   "s": 2.45,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "natu": {
+   "s": 3.47,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "nidoking": {
+   "s": 3.41,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "nidoqueen": {
+   "s": 3.42,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "nidoranfe": {
+   "s": 3.52,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "nidoranma": {
+   "s": 3.52,
+   "medidas": 2,
+   "ondas": 10
+  },
+  "nidorina": {
+   "s": 3.54,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "nidorino": {
+   "s": 3.53,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "ninetales": {
+   "s": 2.93,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "oddish": {
+   "s": 3.22,
+   "medidas": 3,
+   "ondas": 15
+  },
+  "omanyte": {
+   "s": 3.36,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "omastar": {
+   "s": 3.29,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "onix": {
+   "s": 3.32,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "paras": {
+   "s": 3.08,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "persian": {
+   "s": 2.87,
+   "medidas": 2,
+   "ondas": 10
+  },
+  "phanpy": {
+   "s": 3.29,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "pichu": {
+   "s": 3.32,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "pidgeot": {
+   "s": 2.79,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "pidgeotto": {
+   "s": 3.43,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "pidgey": {
+   "s": 3.23,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "piloswine": {
+   "s": 3.35,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "pineco": {
+   "s": 3.22,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "pinsir": {
+   "s": 3.61,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "poliwag": {
+   "s": 3.36,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "poliwhirl": {
+   "s": 3.33,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "poliwrath": {
+   "s": 3.26,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "primeape": {
+   "s": 2.89,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "psy_jynx": {
+   "s": 3.35,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "psyduck": {
+   "s": 3.37,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "raichu": {
+   "s": 3.28,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "rapidash": {
+   "s": 3.52,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "raticate": {
+   "s": 3.44,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "rattata": {
+   "s": 3.39,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "remoraid": {
+   "s": 3.17,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "rhydon": {
+   "s": 3.11,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "rhyhorn": {
+   "s": 3.39,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "roll_donphan": {
+   "s": 3.42,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "sandshrew": {
+   "s": 2.96,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "sandslash": {
+   "s": 2.94,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "scizor": {
+   "s": 3.52,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "scyther": {
+   "s": 3.51,
+   "medidas": 2,
+   "ondas": 10
+  },
+  "seadra": {
+   "s": 3.36,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "seaking": {
+   "s": 3.28,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "seel": {
+   "s": 3.81,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "sentret": {
+   "s": 3.36,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "shellder": {
+   "s": 3.56,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "shuckle": {
+   "s": 3.31,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "skarmory": {
+   "s": 3.01,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "skiploom": {
+   "s": 3.04,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "slowbro": {
+   "s": 3.17,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "slowpoke": {
+   "s": 3.21,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "slugma": {
+   "s": 3.32,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "smoochum": {
+   "s": 3.23,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "sneasel": {
+   "s": 3.15,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "snorlax": {
+   "s": 2.91,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "snubbull": {
+   "s": 3.11,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "spearow": {
+   "s": 3.77,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "spinarak": {
+   "s": 3.45,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "squirtle": {
+   "s": 3.54,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "stantler": {
+   "s": 3.52,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "starmie": {
+   "s": 3.42,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "staryu": {
+   "s": 3.14,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "steelix": {
+   "s": 3.56,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "sunflora": {
+   "s": 3.37,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "swinub": {
+   "s": 3.15,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "taekwondo_hitmonchan": {
+   "s": 3.42,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "taekwondo_hitmonlee": {
+   "s": 3.46,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "taekwondo_hitmontop": {
+   "s": 3.05,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "tangela": {
+   "s": 2.87,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "tauros": {
+   "s": 3.59,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "teddiursa": {
+   "s": 3.49,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "tentacool": {
+   "s": 3.09,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "tentacruel": {
+   "s": 2.49,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "togepi": {
+   "s": 3.73,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "tribal_feraligatr": {
+   "s": 3.4,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "trickmaster_gengar": {
+   "s": 3.08,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "tyrogue": {
+   "s": 3.37,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "venomoth": {
+   "s": 3.01,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "venonat": {
+   "s": 3.3,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "venusaur": {
+   "s": 3.17,
+   "medidas": 2,
+   "ondas": 11
+  },
+  "victreebel": {
+   "s": 3.6,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "vileplume": {
+   "s": 3.14,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "voltorb": {
+   "s": 3.6,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "vulpix": {
+   "s": 3.36,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "war_heracross": {
+   "s": 3.56,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "wartortle": {
+   "s": 3.16,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "weedle": {
+   "s": 3.7,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "weepinbell": {
+   "s": 3.17,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "weezing": {
+   "s": 2.81,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "wigglytuff": {
+   "s": 4,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "wooper": {
+   "s": 3.38,
+   "medidas": 1,
+   "ondas": 5
+  },
+  "yanma": {
+   "s": 3.43,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "zubat": {
+   "s": 3.35,
+   "medidas": 1,
+   "ondas": 6
+  },
+  "crobat": {
+   "s": 3.51,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.09
+  },
+  "croconaw": {
+   "s": 3.26,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.38
+  },
+  "donphan": {
+   "s": 3.32,
+   "medidas": 1,
+   "ondas": 178,
+   "indireto": true,
+   "golpes": 1.23
+  },
+  "elekid": {
+   "s": 3.57,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.27
+  },
+  "furious_ampharos": {
+   "s": 3.32,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.08
+  },
+  "girafarig": {
+   "s": 3.16,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.11
+  },
+  "granbull": {
+   "s": 3.31,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.19
+  },
+  "hitmontop": {
+   "s": 2.87,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.18
+  },
+  "larvitar": {
+   "s": 2.67,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.16
+  },
+  "magnetic_electabuzz": {
+   "s": 3.25,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.07
+  },
+  "mareep": {
+   "s": 3.27,
+   "medidas": 1,
+   "ondas": 6,
+   "indireto": true,
+   "golpes": 1.21
+  },
+  "miltank": {
+   "s": 3.25,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.23
+  },
+  "misdreavus": {
+   "s": 3.27,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.18
+  },
+  "pikachu": {
+   "s": 3.37,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.45
+  },
+  "qwilfish": {
+   "s": 3.17,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.36
+  },
+  "togetic": {
+   "s": 3.93,
+   "medidas": 1,
+   "ondas": 6,
+   "indireto": true,
+   "golpes": 1.18
+  },
+  "ursaring": {
+   "s": 3.57,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.22
+  },
+  "xatu": {
+   "s": 3.33,
+   "medidas": 1,
+   "ondas": 5,
+   "indireto": true,
+   "golpes": 1.12
+  }
+ },
+ "hunts": {
+  "abra": "alakazam",
+  "absol_hoenn": "houndour",
+  "aerodactyl": "kabutops",
+  "altaria_hoenn": "dragonair",
+  "ancient_dragonite": "ancient_dragonair",
+  "anorith_hoenn": "graveler",
+  "aron_hoenn": "magnemite",
+  "azurill_hoenn": "pidgey",
+  "bagon_hoenn": "dragonair",
+  "baltoy_hoenn": "sandshrew",
+  "banette_hoenn": "haunter",
+  "banshee_mismagius": "banshee_misdreavus",
+  "barboach_hoenn": "squirtle",
+  "beautifly_hoenn": "butterfree",
+  "beldum_hoenn": "magnemite",
+  "bidoof_sinnoh": "pidgey",
+  "blaziken_hoenn": "charmander",
+  "blissey_sinnoh": "pidgey",
+  "bonsly_sinnoh": "geodude",
+  "brave_aerodactyl": "taekwondo_hitmontop",
+  "brave_tyranitar": "ancient_pupitar",
+  "breloom_hoenn": "ivysaur",
+  "bronzor_sinnoh": "magnemite",
+  "budew_sinnoh": "ivysaur",
+  "buizel_sinnoh": "squirtle",
+  "buneary_sinnoh": "pidgey",
+  "burmy_plant_cloak_sinnoh": "butterfree",
+  "cacnea_hoenn": "ivysaur",
+  "cacturne_hoenn": "ivysaur",
+  "camerupt_hoenn": "charmander",
+  "carnivine_sinnoh": "ivysaur",
+  "carvanha_hoenn": "goldeen",
+  "cascoon_hoenn": "butterfree",
+  "castform_fire_hoenn": "magcargo",
+  "castform_rainy_hoenn": "squirtle",
+  "castform_snowy_hoenn": "squirtle",
+  "castform_sunny_hoenn": "charmander",
+  "chatot_sinnoh": "pidgey",
+  "cherrim_sinnoh": "ivysaur",
+  "cherubi_sinnoh": "ivysaur",
+  "chimchar_sinnoh": "charmander",
+  "chimecho_hoenn": "alakazam",
+  "chingling_sinnoh": "alakazam",
+  "clamperl_hoenn": "squirtle",
+  "claydol_hoenn": "sandshrew",
+  "combee_sinnoh": "butterfree",
+  "combusken_hoenn": "charmander",
+  "corphish_hoenn": "staryu",
+  "crawdaunt_hoenn": "tribal_feraligatr",
+  "croagunk_sinnoh": "ivysaur",
+  "delcatty_hoenn": "pidgey",
+  "ditto_sinnoh": "pidgey",
+  "drifloon_sinnoh": "haunter",
+  "dusclops_hoenn": "haunter",
+  "duskull_hoenn": "trickmaster_gengar",
+  "dustox_hoenn": "butterfree",
+  "eevee": "weepinbell",
+  "electrike_hoenn": "pikachu",
+  "espeon": "alakazam",
+  "exploud_hoenn": "pidgey",
+  "feebas_hoenn": "squirtle",
+  "finneon_sinnoh": "squirtle",
+  "flareon": "charmander",
+  "flygon_hoenn": "sandshrew",
+  "freezing_aurorus": "heavy_piloswine",
+  "froslass_sinnoh": "jynx",
+  "furious_scizor": "furious_scyther",
+  "furious_whimsicott": "brave_clefable",
+  "gardevoir_hoenn": "alakazam",
+  "gastly": "haunter",
+  "gible_sinnoh": "dragonair",
+  "glalie_hoenn": "jynx",
+  "glameow_sinnoh": "pidgey",
+  "gorebyss_hoenn": "squirtle",
+  "grotle_sinnoh": "ivysaur",
+  "grovyle_hoenn": "ivysaur",
+  "grumpig_hoenn": "alakazam",
+  "gulpin_hoenn": "brave_nidoqueen",
+  "happiny_sinnoh": "pidgey",
+  "hariyama_hoenn": "primeape",
+  "hippopotas_sinnoh": "sandshrew",
+  "hippowdon_sinnoh": "sandshrew",
+  "hoppip": "oddish",
+  "huntail_hoenn": "squirtle",
+  "illumise_hoenn": "ancient_pinsir",
+  "jolteon": "pikachu",
+  "kecleon_hoenn": "persian",
+  "kirlia_hoenn": "alakazam",
+  "kricketot_sinnoh": "butterfree",
+  "kricketune_sinnoh": "butterfree",
+  "lairon_hoenn": "magnemite",
+  "leafeon_sinnoh": "ivysaur",
+  "lileep_hoenn": "geodude",
+  "linoone_hoenn": "pidgey",
+  "lombre_hoenn": "blastoise",
+  "lotad_hoenn": "wartortle",
+  "loudred_hoenn": "pidgey",
+  "lucario_sinnoh": "magnemite",
+  "ludicolo_hoenn": "squirtle",
+  "lunatone_hoenn": "larvitar",
+  "luvdisc_hoenn": "squirtle",
+  "magikarp": "squirtle",
+  "magma_magcargo": "furious_magmar",
+  "makuhita_hoenn": "primeape",
+  "manectric_hoenn": "pikachu",
+  "mantyke_sinnoh": "squirtle",
+  "marshtomp_hoenn": "feraligatr",
+  "masquerain_hoenn": "weedle",
+  "mawile_hoenn": "brave_steelix",
+  "medicham_hoenn": "primeape",
+  "meditite_hoenn": "mankey",
+  "metagross_hoenn": "magnemite",
+  "metang_hoenn": "magnemite",
+  "mightyena_hoenn": "houndour",
+  "milotic_hoenn": "marill",
+  "mime_jr_sinnoh": "alakazam",
+  "minun_hoenn": "raichu",
+  "mismagius_sinnoh": "haunter",
+  "monferno_sinnoh": "charmander",
+  "mothim_sinnoh": "butterfree",
+  "mudkip_hoenn": "corsola",
+  "munchlax_sinnoh": "pidgey",
+  "murkrow_sinnoh": "houndour",
+  "nincada_hoenn": "butterfree",
+  "ninjask_hoenn": "ledyba",
+  "nosepass_hoenn": "geodude",
+  "numel_hoenn": "charmander",
+  "nuzleaf_hoenn": "ivysaur",
+  "parasect": "chikorita",
+  "pelipper_hoenn": "poliwrath",
+  "piplup_sinnoh": "squirtle",
+  "plusle_hoenn": "pikachu",
+  "ponyta": "charmander",
+  "poochyena_hoenn": "houndour",
+  "porygon2_sinnoh": "pidgey",
+  "porygon_sinnoh": "pidgey",
+  "psy_exeggutor": "ancient_meganium",
+  "ralts_hoenn": "alakazam",
+  "riolu_sinnoh": "primeape",
+  "roselia_hoenn": "ivysaur",
+  "sableye_hoenn": "houndoom",
+  "salamence_hoenn": "dragonair",
+  "sceptile_hoenn": "ivysaur",
+  "sealeo_hoenn": "squirtle",
+  "seedot_hoenn": "ivysaur",
+  "seviper_hoenn": "muk",
+  "sharpedo_hoenn": "squirtle",
+  "shedinja_hoenn": "butterfree",
+  "shelgon_hoenn": "dragonair",
+  "shellos_sinnoh": "squirtle",
+  "shieldon_sinnoh": "larvitar",
+  "shiftry_hoenn": "ivysaur",
+  "shinx_sinnoh": "pikachu",
+  "shroomish_hoenn": "ancient_meganium",
+  "shuppet_hoenn": "misdreavus",
+  "silcoon_hoenn": "scyther",
+  "skorupi_sinnoh": "ivysaur",
+  "slaking_hoenn": "pidgey",
+  "slakoth_hoenn": "dunsparce",
+  "slowking_sinnoh": "squirtle",
+  "smeargle": "pidgey",
+  "snorunt_hoenn": "heavy_piloswine",
+  "snover_sinnoh": "heavy_piloswine",
+  "spheal_hoenn": "squirtle",
+  "spinda_hoenn": "pidgey",
+  "spiritomb_sinnoh": "haunter",
+  "spoink_hoenn": "alakazam",
+  "starly_sinnoh": "pidgey",
+  "stunky_sinnoh": "ivysaur",
+  "sudowoodo_sinnoh": "geodude",
+  "sunkern": "oddish",
+  "surskit_hoenn": "venonat",
+  "swablu_hoenn": "pidgey",
+  "swalot_hoenn": "crobat",
+  "swellow_hoenn": "pidgey",
+  "taillow_hoenn": "pidgey",
+  "torchic_hoenn": "charmander",
+  "torkoal_hoenn": "charmander",
+  "toxic_toxicroak": "brave_nidoqueen",
+  "trapinch_hoenn": "sandshrew",
+  "treecko_hoenn": "ivysaur",
+  "tropius_hoenn": "ivysaur",
+  "turtwig_sinnoh": "ivysaur",
+  "umbreon": "houndour",
+  "vaporeon": "squirtle",
+  "vibrava_hoenn": "sandshrew",
+  "vigoroth_hoenn": "pidgey",
+  "volbeat_hoenn": "weedle",
+  "wailmer_hoenn": "squirtle",
+  "wailord_hoenn": "squirtle",
+  "walrein_hoenn": "squirtle",
+  "war_scrafty": "taekwondo_hitmonchan",
+  "whiscash_hoenn": "squirtle",
+  "whismur_hoenn": "miltank",
+  "wingull_hoenn": "politoed",
+  "wormadam_plant_cloak_sinnoh": "butterfree",
+  "wormadam_sandy_cloak_sinnoh": "butterfree",
+  "wormadam_trash_cloak_sinnoh": "butterfree",
+  "wurmple_hoenn": "butterfree",
+  "wynaut_hoenn": "alakazam",
+  "zangoose_hoenn": "pidgey",
+  "zigzagoon_hoenn": "lickitung"
+ },
+ "fontes": [
+  "abra",
+  "aerodactyl",
+  "aipom",
+  "alakazam",
+  "ampharos",
+  "ancient_dragonair",
+  "ancient_granbull",
+  "ancient_hypno",
+  "ancient_marowak",
+  "ancient_meganium",
+  "ancient_pinsir",
+  "ancient_pupitar",
+  "ancient_xatu",
+  "arbok",
+  "arcanine",
+  "ariados",
+  "azumarill",
+  "banshee_misdreavus",
+  "bayleef",
+  "beedrill",
+  "bellossom",
+  "bellsprout",
+  "blastoise",
+  "brave_alakazam",
+  "brave_arcanine",
+  "brave_blastoise",
+  "brave_charizard",
+  "brave_clefable",
+  "brave_mantine",
+  "brave_nidoking",
+  "brave_nidoqueen",
+  "brave_noctowl",
+  "brave_steelix",
+  "brave_venusaur",
+  "brute_rhydon",
+  "bulbasaur",
+  "butterfree",
+  "caterpie",
+  "chansey",
+  "charged_raichu",
+  "charizard",
+  "charmander",
+  "charmeleon",
+  "chikorita",
+  "chinchou",
+  "clefable",
+  "clefairy",
+  "cleffa",
+  "cloyster",
+  "corsola",
+  "crobat",
+  "croconaw",
+  "cubone",
+  "cyndaquil",
+  "dark_crobat",
+  "delibird",
+  "dewgong",
+  "diglett",
+  "dodrio",
+  "doduo",
+  "donphan",
+  "dragonair",
+  "dragonite",
+  "dratini",
+  "drowzee",
+  "dugtrio",
+  "dunsparce",
+  "ekans",
+  "electabuzz",
+  "electrode",
+  "elekid",
+  "enigmatic_girafarig",
+  "enraged_typhlosion",
+  "evil_cloyster",
+  "exeggcute",
+  "exeggutor",
+  "farfetch_d",
+  "fearow",
+  "feraligatr",
+  "flaaffy",
+  "forretress",
+  "freezing_dewgong",
+  "furious_ampharos",
+  "furious_gyarados",
+  "furious_magmar",
+  "furious_pidgeot",
+  "furious_sandslash",
+  "furious_scyther",
+  "furious_skarmory",
+  "furious_wigglytuff",
+  "furret",
+  "gastly",
+  "gengar",
+  "geodude",
+  "girafarig",
+  "gligar",
+  "gloom",
+  "golbat",
+  "goldeen",
+  "golduck",
+  "golem",
+  "granbull",
+  "graveler",
+  "grimer",
+  "growlithe",
+  "gyarados",
+  "hard_golem",
+  "haunter",
+  "heavy_piloswine",
+  "heracross",
+  "hitmonchan",
+  "hitmonlee",
+  "hitmontop",
+  "hoothoot",
+  "hoppip",
+  "horsea",
+  "houndoom",
+  "houndour",
+  "hypno",
+  "igglybuff",
+  "ivysaur",
+  "jigglypuff",
+  "jumpluff",
+  "jynx",
+  "kabuto",
+  "kabutops",
+  "kadabra",
+  "kakuna",
+  "kangaskhan",
+  "kingdra",
+  "kingler",
+  "koffing",
+  "krabby",
+  "lanturn",
+  "lapras",
+  "larvitar",
+  "ledian",
+  "ledyba",
+  "lickitung",
+  "machamp",
+  "machoke",
+  "machop",
+  "magby",
+  "magcargo",
+  "magmar",
+  "magnemite",
+  "magnetic_electabuzz",
+  "magneton",
+  "mankey",
+  "mantine",
+  "mareep",
+  "marill",
+  "marowak",
+  "meganium",
+  "meowth",
+  "metapod",
+  "milch_miltank",
+  "miltank",
+  "misdreavus",
+  "mr_mime",
+  "muk",
+  "natu",
+  "nidoking",
+  "nidoqueen",
+  "nidoranfe",
+  "nidoranma",
+  "nidorina",
+  "nidorino",
+  "ninetales",
+  "noctowl",
+  "octillery",
+  "oddish",
+  "omanyte",
+  "omastar",
+  "onix",
+  "paras",
+  "parasect",
+  "persian",
+  "phanpy",
+  "pichu",
+  "pidgeot",
+  "pidgeotto",
+  "pidgey",
+  "pikachu",
+  "piloswine",
+  "pineco",
+  "pinsir",
+  "politoed",
+  "poliwag",
+  "poliwhirl",
+  "poliwrath",
+  "ponyta",
+  "primeape",
+  "psy_jynx",
+  "psyduck",
+  "pupitar",
+  "quagsire",
+  "quilava",
+  "qwilfish",
+  "raichu",
+  "rapidash",
+  "raticate",
+  "rattata",
+  "remoraid",
+  "rhydon",
+  "rhyhorn",
+  "roll_donphan",
+  "sandshrew",
+  "sandslash",
+  "scizor",
+  "scyther",
+  "seadra",
+  "seaking",
+  "seel",
+  "sentret",
+  "shellder",
+  "shuckle",
+  "skarmory",
+  "skiploom",
+  "slowbro",
+  "slowpoke",
+  "slugma",
+  "smoochum",
+  "sneasel",
+  "snorlax",
+  "snubbull",
+  "spearow",
+  "spinarak",
+  "squirtle",
+  "stantler",
+  "starmie",
+  "staryu",
+  "steelix",
+  "sunflora",
+  "sunkern",
+  "swinub",
+  "taekwondo_hitmonchan",
+  "taekwondo_hitmonlee",
+  "taekwondo_hitmontop",
+  "tangela",
+  "tauros",
+  "teddiursa",
+  "tentacool",
+  "tentacruel",
+  "togepi",
+  "togetic",
+  "totodile",
+  "tribal_feraligatr",
+  "trickmaster_gengar",
+  "typhlosion",
+  "tyranitar",
+  "tyrogue",
+  "ursaring",
+  "venomoth",
+  "venonat",
+  "venusaur",
+  "victreebel",
+  "vileplume",
+  "voltorb",
+  "vulpix",
+  "war_heracross",
+  "wartortle",
+  "weedle",
+  "weepinbell",
+  "weezing",
+  "wigglytuff",
+  "wobbuffet",
+  "wooper",
+  "xatu",
+  "yanma",
+  "zubat"
+ ],
+ "biomas": {
+  "BUG": {
+   "mapa": "butterfree",
+   "acertos": 14,
+   "de": 22
+  },
+  "DARK": {
+   "mapa": "houndour",
+   "acertos": 5,
+   "de": 6
+  },
+  "DRAGON": {
+   "mapa": "dragonair",
+   "acertos": 5,
+   "de": 6
+  },
+  "ELECTRIC": {
+   "mapa": "pikachu",
+   "acertos": 5,
+   "de": 6
+  },
+  "FIGHTING": {
+   "mapa": "primeape",
+   "acertos": 4,
+   "de": 7
+  },
+  "FIRE": {
+   "mapa": "charmander",
+   "acertos": 11,
+   "de": 12
+  },
+  "GHOST": {
+   "mapa": "haunter",
+   "acertos": 6,
+   "de": 9
+  },
+  "GRASS": {
+   "mapa": "ivysaur",
+   "acertos": 18,
+   "de": 24
+  },
+  "GROUND": {
+   "mapa": "sandshrew",
+   "acertos": 7,
+   "de": 7
+  },
+  "ICE": {
+   "mapa": "heavy_piloswine",
+   "acertos": 2,
+   "de": 5
+  },
+  "NORMAL": {
+   "mapa": "pidgey",
+   "acertos": 24,
+   "de": 30
+  },
+  "POISON": {
+   "mapa": "ivysaur",
+   "acertos": 3,
+   "de": 6
+  },
+  "PSYCHIC": {
+   "mapa": "alakazam",
+   "acertos": 11,
+   "de": 11
+  },
+  "ROCK": {
+   "mapa": "geodude",
+   "acertos": 4,
+   "de": 10
+  },
+  "STEEL": {
+   "mapa": "magnemite",
+   "acertos": 7,
+   "de": 8
+  },
+  "WATER": {
+   "mapa": "squirtle",
+   "acertos": 23,
+   "de": 33
+  }
+ },
+ "calibracao": [
+  {
+   "hunt": "abra",
+   "nivel": 2375,
+   "sPorAbate": 2.48,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "abra",
+   "nivel": 2383,
+   "sPorAbate": 2.39,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "aerodactyl",
+   "nivel": 2380,
+   "sPorAbate": 3.33,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "aipom",
+   "nivel": 2380,
+   "sPorAbate": 3.31,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "alakazam",
+   "nivel": 2380,
+   "sPorAbate": 2.31,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "ampharos",
+   "nivel": 2384,
+   "sPorAbate": 6.56,
+   "golpesPorAbate": 4.93,
+   "ondas": 5
+  },
+  {
+   "hunt": "ancient_dragonair",
+   "nivel": 2384,
+   "sPorAbate": 3.35,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "ancient_granbull",
+   "nivel": 2383,
+   "sPorAbate": 3.37,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "ancient_hypno",
+   "nivel": 2384,
+   "sPorAbate": 3.03,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "ancient_marowak",
+   "nivel": 2383,
+   "sPorAbate": 3.45,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "ancient_meganium",
+   "nivel": 2382,
+   "sPorAbate": 3.29,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "ancient_pinsir",
+   "nivel": 2384,
+   "sPorAbate": 3.64,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "ancient_pupitar",
+   "nivel": 2384,
+   "sPorAbate": 3.29,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "ancient_xatu",
+   "nivel": 2382,
+   "sPorAbate": 3.44,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "arcanine",
+   "nivel": 2385,
+   "sPorAbate": 3.31,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "ariados",
+   "nivel": 2384,
+   "sPorAbate": 3.5,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "azumarill",
+   "nivel": 2382,
+   "sPorAbate": 4,
+   "golpesPorAbate": 2.33,
+   "ondas": 5
+  },
+  {
+   "hunt": "banshee_misdreavus",
+   "nivel": 2380,
+   "sPorAbate": 3.61,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "bayleef",
+   "nivel": 2384,
+   "sPorAbate": 3.1,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "bellossom",
+   "nivel": 2385,
+   "sPorAbate": 3.49,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "blastoise",
+   "nivel": 2383,
+   "sPorAbate": 3.16,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "blissey_sinnoh",
+   "nivel": 2374,
+   "sPorAbate": 4.06,
+   "golpesPorAbate": 2.94,
+   "ondas": 5
+  },
+  {
+   "hunt": "brave_alakazam",
+   "nivel": 2382,
+   "sPorAbate": 2.81,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "brave_arcanine",
+   "nivel": 2383,
+   "sPorAbate": 3.37,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "brave_blastoise",
+   "nivel": 2384,
+   "sPorAbate": 2.97,
+   "golpesPorAbate": 1.02,
+   "ondas": 5
+  },
+  {
+   "hunt": "brave_charizard",
+   "nivel": 2382,
+   "sPorAbate": 3.37,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "brave_clefable",
+   "nivel": 2382,
+   "sPorAbate": 4.5,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "brave_mantine",
+   "nivel": 2385,
+   "sPorAbate": 3.49,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "brave_nidoking",
+   "nivel": 2380,
+   "sPorAbate": 3.28,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "brave_nidoqueen",
+   "nivel": 2385,
+   "sPorAbate": 3.29,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "brave_noctowl",
+   "nivel": 2380,
+   "sPorAbate": 3.39,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "brave_steelix",
+   "nivel": 2380,
+   "sPorAbate": 3.83,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "brave_venusaur",
+   "nivel": 2380,
+   "sPorAbate": 3.35,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "brute_rhydon",
+   "nivel": 2380,
+   "sPorAbate": 3.03,
+   "golpesPorAbate": 1.01,
+   "ondas": 6
+  },
+  {
+   "hunt": "burmy_plant_cloak_sinnoh",
+   "nivel": 2375,
+   "sPorAbate": 3.47,
+   "golpesPorAbate": 1.2,
+   "ondas": 5
+  },
+  {
+   "hunt": "charged_raichu",
+   "nivel": 2382,
+   "sPorAbate": 3.3,
+   "golpesPorAbate": 1.03,
+   "ondas": 5
+  },
+  {
+   "hunt": "chikorita",
+   "nivel": 2385,
+   "sPorAbate": 3.68,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "clamperl_hoenn",
+   "nivel": 2374,
+   "sPorAbate": 3.64,
+   "golpesPorAbate": 1.47,
+   "ondas": 5
+  },
+  {
+   "hunt": "clefable",
+   "nivel": 2385,
+   "sPorAbate": 2.33,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "cleffa",
+   "nivel": 2382,
+   "sPorAbate": 3.39,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "corsola",
+   "nivel": 2384,
+   "sPorAbate": 4.83,
+   "golpesPorAbate": 3.49,
+   "ondas": 5
+  },
+  {
+   "hunt": "cradily_hoenn",
+   "nivel": 2374,
+   "sPorAbate": 5.1,
+   "golpesPorAbate": 3.12,
+   "ondas": 5
+  },
+  {
+   "hunt": "crobat",
+   "nivel": 2380,
+   "sPorAbate": 3.58,
+   "golpesPorAbate": 1.09,
+   "ondas": 5
+  },
+  {
+   "hunt": "croconaw",
+   "nivel": 2382,
+   "sPorAbate": 3.54,
+   "golpesPorAbate": 1.38,
+   "ondas": 5
+  },
+  {
+   "hunt": "dark_crobat",
+   "nivel": 2382,
+   "sPorAbate": 3.36,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "delibird",
+   "nivel": 2380,
+   "sPorAbate": 2.99,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "donphan",
+   "nivel": 2380,
+   "sPorAbate": 3.49,
+   "golpesPorAbate": 1.23,
+   "ondas": 178
+  },
+  {
+   "hunt": "dragonair",
+   "nivel": 2384,
+   "sPorAbate": 3.7,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "dragonite",
+   "nivel": 2384,
+   "sPorAbate": 3.03,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "dunsparce",
+   "nivel": 2380,
+   "sPorAbate": 3.41,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "electabuzz",
+   "nivel": 2380,
+   "sPorAbate": 3.62,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "elekid",
+   "nivel": 2380,
+   "sPorAbate": 3.77,
+   "golpesPorAbate": 1.27,
+   "ondas": 5
+  },
+  {
+   "hunt": "enigmatic_girafarig",
+   "nivel": 2384,
+   "sPorAbate": 3.44,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "enraged_typhlosion",
+   "nivel": 2383,
+   "sPorAbate": 2.68,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "evil_cloyster",
+   "nivel": 2380,
+   "sPorAbate": 3.35,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "exeggutor",
+   "nivel": 2382,
+   "sPorAbate": 3.4,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "feraligatr",
+   "nivel": 2382,
+   "sPorAbate": 4.23,
+   "golpesPorAbate": 2.83,
+   "ondas": 5
+  },
+  {
+   "hunt": "flaaffy",
+   "nivel": 2380,
+   "sPorAbate": 3.7,
+   "golpesPorAbate": 2.09,
+   "ondas": 5
+  },
+  {
+   "hunt": "forretress",
+   "nivel": 2384,
+   "sPorAbate": 3.34,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "freezing_dewgong",
+   "nivel": 2385,
+   "sPorAbate": 3.32,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "froslass_sinnoh",
+   "nivel": 2375,
+   "sPorAbate": 5,
+   "golpesPorAbate": 3.33,
+   "ondas": 5
+  },
+  {
+   "hunt": "furious_ampharos",
+   "nivel": 2385,
+   "sPorAbate": 3.38,
+   "golpesPorAbate": 1.08,
+   "ondas": 5
+  },
+  {
+   "hunt": "furious_gyarados",
+   "nivel": 2385,
+   "sPorAbate": 3.27,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "furious_magmar",
+   "nivel": 2384,
+   "sPorAbate": 3.53,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "furious_pidgeot",
+   "nivel": 2384,
+   "sPorAbate": 3.84,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "furious_sandslash",
+   "nivel": 2383,
+   "sPorAbate": 3.42,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "furious_scyther",
+   "nivel": 2384,
+   "sPorAbate": 3.18,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "furious_skarmory",
+   "nivel": 2382,
+   "sPorAbate": 4.26,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "furious_wigglytuff",
+   "nivel": 2384,
+   "sPorAbate": 3.79,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "furret",
+   "nivel": 2384,
+   "sPorAbate": 3.39,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "gengar",
+   "nivel": 2380,
+   "sPorAbate": 3.41,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "girafarig",
+   "nivel": 2380,
+   "sPorAbate": 3.24,
+   "golpesPorAbate": 1.11,
+   "ondas": 5
+  },
+  {
+   "hunt": "gligar",
+   "nivel": 2374,
+   "sPorAbate": 3.13,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "gligar",
+   "nivel": 2383,
+   "sPorAbate": 3.11,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "golduck",
+   "nivel": 2384,
+   "sPorAbate": 3.32,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "golem",
+   "nivel": 2385,
+   "sPorAbate": 3.26,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "granbull",
+   "nivel": 2380,
+   "sPorAbate": 3.45,
+   "golpesPorAbate": 1.19,
+   "ondas": 5
+  },
+  {
+   "hunt": "graveler",
+   "nivel": 2380,
+   "sPorAbate": 3.42,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "gyarados",
+   "nivel": 2383,
+   "sPorAbate": 3.48,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "hard_golem",
+   "nivel": 2384,
+   "sPorAbate": 3.49,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "heavy_piloswine",
+   "nivel": 2384,
+   "sPorAbate": 3.3,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "heracross",
+   "nivel": 2382,
+   "sPorAbate": 3.18,
+   "golpesPorAbate": 1.01,
+   "ondas": 5
+  },
+  {
+   "hunt": "hitmonchan",
+   "nivel": 2382,
+   "sPorAbate": 3.03,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "hitmonlee",
+   "nivel": 2380,
+   "sPorAbate": 2.71,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "hitmontop",
+   "nivel": 2380,
+   "sPorAbate": 3,
+   "golpesPorAbate": 1.18,
+   "ondas": 5
+  },
+  {
+   "hunt": "hoothoot",
+   "nivel": 2380,
+   "sPorAbate": 3.49,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "hoppip",
+   "nivel": 2384,
+   "sPorAbate": 3.21,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "houndoom",
+   "nivel": 2382,
+   "sPorAbate": 4.66,
+   "golpesPorAbate": 2.25,
+   "ondas": 5
+  },
+  {
+   "hunt": "hypno",
+   "nivel": 2380,
+   "sPorAbate": 2.71,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "igglybuff",
+   "nivel": 2385,
+   "sPorAbate": 3.44,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "jumpluff",
+   "nivel": 2382,
+   "sPorAbate": 3.08,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "kabutops",
+   "nivel": 2384,
+   "sPorAbate": 3.47,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "kangaskhan",
+   "nivel": 2375,
+   "sPorAbate": 5.65,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "kingdra",
+   "nivel": 2382,
+   "sPorAbate": 6.63,
+   "golpesPorAbate": 4.65,
+   "ondas": 6
+  },
+  {
+   "hunt": "kingler",
+   "nivel": 2384,
+   "sPorAbate": 3.26,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "lanturn",
+   "nivel": 2384,
+   "sPorAbate": 12.72,
+   "golpesPorAbate": 12.33,
+   "ondas": 5
+  },
+  {
+   "hunt": "lapras",
+   "nivel": 2385,
+   "sPorAbate": 2.65,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "larvitar",
+   "nivel": 2385,
+   "sPorAbate": 2.79,
+   "golpesPorAbate": 1.16,
+   "ondas": 5
+  },
+  {
+   "hunt": "leafeon_sinnoh",
+   "nivel": 2375,
+   "sPorAbate": 5.42,
+   "golpesPorAbate": 3.83,
+   "ondas": 6
+  },
+  {
+   "hunt": "ledian",
+   "nivel": 2384,
+   "sPorAbate": 3.53,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "ledyba",
+   "nivel": 2380,
+   "sPorAbate": 3.56,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "lickitung",
+   "nivel": 2380,
+   "sPorAbate": 3.4,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "machamp",
+   "nivel": 2385,
+   "sPorAbate": 2.99,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "magmar",
+   "nivel": 2380,
+   "sPorAbate": 3.28,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "magnetic_electabuzz",
+   "nivel": 2385,
+   "sPorAbate": 3.3,
+   "golpesPorAbate": 1.07,
+   "ondas": 5
+  },
+  {
+   "hunt": "magneton",
+   "nivel": 2384,
+   "sPorAbate": 3.68,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "mantine",
+   "nivel": 2384,
+   "sPorAbate": 5.97,
+   "golpesPorAbate": 3.93,
+   "ondas": 6
+  },
+  {
+   "hunt": "mareep",
+   "nivel": 2385,
+   "sPorAbate": 3.42,
+   "golpesPorAbate": 1.21,
+   "ondas": 6
+  },
+  {
+   "hunt": "marill",
+   "nivel": 2380,
+   "sPorAbate": 3.34,
+   "golpesPorAbate": 1.03,
+   "ondas": 5
+  },
+  {
+   "hunt": "meganium",
+   "nivel": 2380,
+   "sPorAbate": 3.56,
+   "golpesPorAbate": 1.01,
+   "ondas": 6
+  },
+  {
+   "hunt": "milch_miltank",
+   "nivel": 2384,
+   "sPorAbate": 3.4,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "miltank",
+   "nivel": 2374,
+   "sPorAbate": 3.42,
+   "golpesPorAbate": 1.23,
+   "ondas": 5
+  },
+  {
+   "hunt": "misdreavus",
+   "nivel": 2384,
+   "sPorAbate": 3.4,
+   "golpesPorAbate": 1.18,
+   "ondas": 5
+  },
+  {
+   "hunt": "mr_mime",
+   "nivel": 2382,
+   "sPorAbate": 3.7,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "muk",
+   "nivel": 2383,
+   "sPorAbate": 2.45,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "natu",
+   "nivel": 2384,
+   "sPorAbate": 3.47,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "nidoking",
+   "nivel": 2384,
+   "sPorAbate": 3.41,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "nidoqueen",
+   "nivel": 2385,
+   "sPorAbate": 3.42,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "octillery",
+   "nivel": 2380,
+   "sPorAbate": 4.18,
+   "golpesPorAbate": 2.25,
+   "ondas": 6
+  },
+  {
+   "hunt": "omastar",
+   "nivel": 2385,
+   "sPorAbate": 3.29,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "onix",
+   "nivel": 2382,
+   "sPorAbate": 3.32,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "phanpy",
+   "nivel": 2385,
+   "sPorAbate": 3.29,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "pichu",
+   "nivel": 2383,
+   "sPorAbate": 3.32,
+   "golpesPorAbate": 1.02,
+   "ondas": 6
+  },
+  {
+   "hunt": "pidgeot",
+   "nivel": 2383,
+   "sPorAbate": 2.79,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "piloswine",
+   "nivel": 2385,
+   "sPorAbate": 3.35,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "pineco",
+   "nivel": 2383,
+   "sPorAbate": 3.22,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "pinsir",
+   "nivel": 2384,
+   "sPorAbate": 3.61,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "politoed",
+   "nivel": 2384,
+   "sPorAbate": 4.32,
+   "golpesPorAbate": 2.87,
+   "ondas": 5
+  },
+  {
+   "hunt": "poliwrath",
+   "nivel": 2382,
+   "sPorAbate": 3.26,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "psy_jynx",
+   "nivel": 2384,
+   "sPorAbate": 3.35,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "quagsire",
+   "nivel": 2385,
+   "sPorAbate": 3.93,
+   "golpesPorAbate": 2.19,
+   "ondas": 5
+  },
+  {
+   "hunt": "qwilfish",
+   "nivel": 2380,
+   "sPorAbate": 3.43,
+   "golpesPorAbate": 1.36,
+   "ondas": 5
+  },
+  {
+   "hunt": "raichu",
+   "nivel": 2384,
+   "sPorAbate": 3.28,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "remoraid",
+   "nivel": 2380,
+   "sPorAbate": 3.17,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "rhydon",
+   "nivel": 2383,
+   "sPorAbate": 3.11,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "roll_donphan",
+   "nivel": 2382,
+   "sPorAbate": 3.42,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "roselia_hoenn",
+   "nivel": 2374,
+   "sPorAbate": 2.66,
+   "golpesPorAbate": 1.08,
+   "ondas": 5
+  },
+  {
+   "hunt": "roselia_hoenn",
+   "nivel": 2383,
+   "sPorAbate": 2.88,
+   "golpesPorAbate": 1.14,
+   "ondas": 5
+  },
+  {
+   "hunt": "sandslash",
+   "nivel": 2380,
+   "sPorAbate": 2.94,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "scizor",
+   "nivel": 2385,
+   "sPorAbate": 3.52,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "sentret",
+   "nivel": 2380,
+   "sPorAbate": 3.36,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "shuckle",
+   "nivel": 2380,
+   "sPorAbate": 3.31,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "skarmory",
+   "nivel": 2384,
+   "sPorAbate": 3.01,
+   "golpesPorAbate": 1.05,
+   "ondas": 5
+  },
+  {
+   "hunt": "skiploom",
+   "nivel": 2382,
+   "sPorAbate": 3.04,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "slowbro",
+   "nivel": 2384,
+   "sPorAbate": 3.17,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "slowking_sinnoh",
+   "nivel": 2374,
+   "sPorAbate": 4.33,
+   "golpesPorAbate": 2.81,
+   "ondas": 5
+  },
+  {
+   "hunt": "slugma",
+   "nivel": 2383,
+   "sPorAbate": 3.32,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "smoochum",
+   "nivel": 2380,
+   "sPorAbate": 3.23,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "sneasel",
+   "nivel": 2383,
+   "sPorAbate": 3.15,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "snorlax",
+   "nivel": 2384,
+   "sPorAbate": 2.91,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "snubbull",
+   "nivel": 2384,
+   "sPorAbate": 3.11,
+   "golpesPorAbate": 1.02,
+   "ondas": 5
+  },
+  {
+   "hunt": "spinarak",
+   "nivel": 2384,
+   "sPorAbate": 3.45,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "stantler",
+   "nivel": 2380,
+   "sPorAbate": 3.52,
+   "golpesPorAbate": 1.02,
+   "ondas": 6
+  },
+  {
+   "hunt": "starmie",
+   "nivel": 2385,
+   "sPorAbate": 3.42,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "steelix",
+   "nivel": 2382,
+   "sPorAbate": 3.56,
+   "golpesPorAbate": 1.03,
+   "ondas": 5
+  },
+  {
+   "hunt": "sunflora",
+   "nivel": 2384,
+   "sPorAbate": 3.37,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "sunkern",
+   "nivel": 2384,
+   "sPorAbate": 3.14,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "swalot_hoenn",
+   "nivel": 2375,
+   "sPorAbate": 5.47,
+   "golpesPorAbate": 2.9,
+   "ondas": 5
+  },
+  {
+   "hunt": "swinub",
+   "nivel": 2380,
+   "sPorAbate": 3.15,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "taekwondo_hitmonchan",
+   "nivel": 2384,
+   "sPorAbate": 3.42,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "taekwondo_hitmonlee",
+   "nivel": 2384,
+   "sPorAbate": 3.46,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "taekwondo_hitmontop",
+   "nivel": 2382,
+   "sPorAbate": 3.05,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "tauros",
+   "nivel": 2380,
+   "sPorAbate": 3.59,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "teddiursa",
+   "nivel": 2380,
+   "sPorAbate": 3.49,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "tentacruel",
+   "nivel": 2380,
+   "sPorAbate": 2.49,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "togepi",
+   "nivel": 2384,
+   "sPorAbate": 3.73,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "togetic",
+   "nivel": 2383,
+   "sPorAbate": 4.06,
+   "golpesPorAbate": 1.18,
+   "ondas": 6
+  },
+  {
+   "hunt": "tribal_feraligatr",
+   "nivel": 2383,
+   "sPorAbate": 3.4,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "trickmaster_gengar",
+   "nivel": 2380,
+   "sPorAbate": 3.08,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "typhlosion",
+   "nivel": 2385,
+   "sPorAbate": 4.22,
+   "golpesPorAbate": 2.83,
+   "ondas": 6
+  },
+  {
+   "hunt": "tyrogue",
+   "nivel": 2385,
+   "sPorAbate": 3.37,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "ursaring",
+   "nivel": 2384,
+   "sPorAbate": 3.73,
+   "golpesPorAbate": 1.22,
+   "ondas": 5
+  },
+  {
+   "hunt": "venusaur",
+   "nivel": 2383,
+   "sPorAbate": 3.11,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "vibrava_hoenn",
+   "nivel": 2374,
+   "sPorAbate": 4.42,
+   "golpesPorAbate": 3.7,
+   "ondas": 5
+  },
+  {
+   "hunt": "war_heracross",
+   "nivel": 2384,
+   "sPorAbate": 3.56,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "weezing",
+   "nivel": 2385,
+   "sPorAbate": 2.81,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "wigglytuff",
+   "nivel": 2384,
+   "sPorAbate": 4,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  },
+  {
+   "hunt": "wobbuffet",
+   "nivel": 2384,
+   "sPorAbate": 4.02,
+   "golpesPorAbate": 2,
+   "ondas": 5
+  },
+  {
+   "hunt": "wooper",
+   "nivel": 2385,
+   "sPorAbate": 3.38,
+   "golpesPorAbate": 1,
+   "ondas": 5
+  },
+  {
+   "hunt": "wormadam_plant_cloak_sinnoh",
+   "nivel": 2372,
+   "sPorAbate": 5.1,
+   "golpesPorAbate": 3.65,
+   "ondas": 39
+  },
+  {
+   "hunt": "wormadam_plant_cloak_sinnoh",
+   "nivel": 2375,
+   "sPorAbate": 5.06,
+   "golpesPorAbate": 3.74,
+   "ondas": 59
+  },
+  {
+   "hunt": "wormadam_plant_cloak_sinnoh",
+   "nivel": 2383,
+   "sPorAbate": 5.12,
+   "golpesPorAbate": 3.84,
+   "ondas": 13
+  },
+  {
+   "hunt": "wormadam_plant_cloak_sinnoh",
+   "nivel": 2385,
+   "sPorAbate": 4.93,
+   "golpesPorAbate": 3.8,
+   "ondas": 69
+  },
+  {
+   "hunt": "wormadam_trash_cloak_sinnoh",
+   "nivel": 2375,
+   "sPorAbate": 5.3,
+   "golpesPorAbate": 4.11,
+   "ondas": 5
+  },
+  {
+   "hunt": "wynaut_hoenn",
+   "nivel": 2374,
+   "sPorAbate": 2.69,
+   "golpesPorAbate": 1.68,
+   "ondas": 6
+  },
+  {
+   "hunt": "xatu",
+   "nivel": 2384,
+   "sPorAbate": 3.42,
+   "golpesPorAbate": 1.12,
+   "ondas": 5
+  },
+  {
+   "hunt": "yanma",
+   "nivel": 2383,
+   "sPorAbate": 3.43,
+   "golpesPorAbate": 1,
+   "ondas": 6
+  }
+ ]
+}

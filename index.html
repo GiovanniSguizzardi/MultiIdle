@@ -21,6 +21,7 @@
   #lives.aberto { display: block; }
   #lives h3 { margin: 0 0 8px; font-size: 13px; }
   #lives p { margin: 10px 0 0; }
+  #lvTodas { width: 100%; margin-bottom: 8px; }
   #btnLives { position: relative; }
   #btnLives .tw-ponto { position: absolute; top: 3px; right: 3px; }
   .lv-contas { display: grid; gap: 4px; margin-bottom: 12px; padding: 6px 10px; }
@@ -53,10 +54,6 @@
   @keyframes tw-bonus-brilha { 0% { left: -60%; } 60%, 100% { left: 130%; } }
   .tw-canal.com-bonus:not(.ao-vivo) { box-shadow: inset 0 0 0 1px #d99a0088; }
   .tw-canal-falta { flex: none; display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; border: 1px dashed #a07a44; background: #00000030; font-size: 10.5px; color: #e0c9a0; }
-  /* selo "pontos ativos" (roxo da Twitch) e "em breve", como na tela nova do jogo */
-  .kk-canal-pontos { flex: none; padding: 2px 7px; border-radius: 999px; font-size: 8.5px; letter-spacing: .4px; text-transform: uppercase; color: #fff; text-shadow: 0 1px 0 #0008;
-    background: #9146ff; box-shadow: 0 0 0 1px #6a3fbf, 0 0 8px color-mix(in srgb, #9146ff 45%, transparent); }
-  .kk-canal-falta { flex: none; padding: 2px 8px; border-radius: 999px; border: 1px dashed var(--mad-luz2); background: color-mix(in srgb, #000 19%, transparent); font-size: 10px; color: var(--sobre-mad-dim); }
   .tw-canal-aqui { flex: none; display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 999px; font-size: 9px; letter-spacing: .3px; text-transform: uppercase; color: #8ff2bb; background: #0f3b26; box-shadow: inset 0 0 0 1px #2fbf7188; }
   .tw-canal.tw-falta-eu { background: color-mix(in srgb, #eb0400 7%, var(--vao)); }
   .tw-canal.tw-falta-eu:hover { background: color-mix(in srgb, #eb0400 16%, var(--vao)); }
@@ -92,6 +89,8 @@
   #celular label { display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 6px 0 10px; }
   #celular .erro { color: var(--ouro-luz); font-weight: 700; }
   .oculto { display: none !important; }
+  .bar .desemp, #desempTotal { font-size: 10.5px; color: var(--sobre-mad-dim); white-space: nowrap; }
+  #desempTotal { align-self: flex-end; padding-bottom: 3px; margin-left: -4px; }
   #versao { font-size: 10px; color: var(--sobre-mad-dim); margin: 0 4px 0 -8px; cursor: pointer; align-self: flex-end; padding-bottom: 3px; }
   #btnUpdate { box-shadow: inset 0 0 0 2px var(--ouro-esc), inset 0 0 0 4px var(--ouro-luz), inset 0 0 0 5px var(--ouro), 0 2px 0 var(--mad-base);
     animation: pulsa 1.2s infinite alternate; }
@@ -107,15 +106,21 @@
   /* layouts: 1 grande + 3 pequenas, e 4 lado a lado */
   #grid.l13 { grid-template-columns: var(--x3, 65%) 1fr; grid-template-rows: repeat(3, 1fr); }
   #grid.l13 #sx { left: var(--x3, 65%); }
-  #grid.l13:not(.solo) .pane.grande { grid-row: span 3; order: -1; }
+  #grid.l13 .pane.grande:not(.max), #grid.l13 .lugar.grande { grid-row: span 3; order: -1; }
   #grid.l14 { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; }
   #grid.l13 #sy, #grid.l14 .split { display: none; }
   .bar [data-a="grande"] { display: none; }
   #grid.l13 .pane:not(.grande) [data-a="grande"] { display: inline-block; }
   #layouts { display: flex; gap: 4px; }
   button.ativo { box-shadow: inset 0 0 0 2px var(--ouro-esc), inset 0 0 0 4px var(--ouro-luz), inset 0 0 0 5px var(--ouro), 0 2px 0 var(--mad-base); }
-  #grid.solo { grid-template-columns: 1fr; grid-template-rows: 1fr; }
-  #grid.solo .pane:not(.max), #grid.solo .split { display: none; }
+  /* foco (⛶ / Ctrl+N): a conta focada fica POR CIMA das outras, que continuam no lugar e desenhadas por baixo
+     (a 1 fps). Escondê-las com display:none fazia o Chromium jogar fora a imagem delas: ao sair do foco elas
+     voltavam vazias. O .lugar guarda a vaga da focada no grid, pra nenhuma outra mudar de tamanho. */
+  #grid.solo .split { display: none; }
+  .pane.max { position: absolute; inset: 0; z-index: 3; }
+  /* trocando de tamanho e zoom ao mesmo tempo: a tela fica oculta até o jogo se ajustar e volta num fade curto */
+  webview { transition: opacity .12s; }
+  webview.ajustando { opacity: 0; transition: none; }
   .split { position: absolute; z-index: 1; border-radius: 6px; }
   .split:hover, .dragging .split { background: var(--rx); box-shadow: inset 0 0 0 2px var(--mad-linha); }
   #sx { top: 0; bottom: 0; left: var(--x, 50%); width: 12px; cursor: col-resize; }
@@ -132,6 +137,58 @@
   /* alerta: a madeira do painel ganha anel dourado piscando (o "dourado da conquista" do jogo) */
   /* pisca 7 vezes e o anel dourado fica parado (pisca infinito gastava CPU da janela até alguém clicar) */
   .pane.alerta { animation: pisca 0.9s 7 alternate forwards; }
+  /* conta no Centro Pokémon = não está caçando: anel vermelho parado e faixa no topo (sem animação: não gasta CPU) */
+  .pane.centro { box-shadow: inset 0 0 0 2px #5a0000, inset 0 0 0 5px #eb0400, inset 0 0 0 7px #ff8a80, 0 4px 0 var(--mad-base), 0 6px 0 var(--mad-linha); }
+  .bar .aviso-centro { display: none; padding: 2px 8px; border-radius: 6px; background: #eb0400; color: #fff; font-weight: 700; white-space: nowrap; box-shadow: inset 0 0 0 2px #5a0000; }
+  .pane.centro .aviso-centro { display: inline-block; }
+  /* 🎯 HUNT: a janela abre por cima da tela da conta (o jogo continua rodando por baixo) */
+  .tela { position: relative; }
+  .bar .btn-hunt { background: linear-gradient(180deg, #fff3a8 0 6px, #b87800 6px 8px, #f0a500 8px calc(100% - 8px), #ffd23f calc(100% - 8px) calc(100% - 6px), #fff3a8 calc(100% - 6px) 100%);
+    text-shadow: -1px -1px 0 #7d5313, 1px -1px 0 #7d5313, -1px 1px 0 #7d5313, 1px 1px 0 #7d5313; letter-spacing: .5px; }
+  .bar .btn-hunt.ativo { filter: brightness(1.15); }
+  /* fora da melhor hunt pra XP: o botão fica vermelho (parado, sem animação: não gasta CPU) */
+  .bar .btn-hunt.errada { background: linear-gradient(180deg, #ffd0c8 0 6px, #7a0f0a 6px 8px, #e0352b 8px calc(100% - 8px), #ff6b5e calc(100% - 8px) calc(100% - 6px), #ffd0c8 calc(100% - 6px) 100%);
+    text-shadow: -1px -1px 0 #5a0000, 1px -1px 0 #5a0000, -1px 1px 0 #5a0000, 1px 1px 0 #5a0000; }
+  .hunt { position: absolute; inset: 4px; z-index: 2; display: flex; flex-direction: column; padding: 10px 12px 16px; min-width: 0; container-type: inline-size; }
+  @container (max-width: 640px) { .hunt-tabela .c-tr, .hunt-tabela .c-golpe { display: none; } .hunt-card .grande { font-size: 13px; } }
+  .hunt-bonus { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-left: auto; }
+  .hunt-bonus b { color: #8fd0ff; margin-right: 2px; }
+  .hunt-topo { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex: none; }
+  .hunt-titulo { font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .hunt-sub { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--sobre-mad-dim); margin-left: 4px; }
+  .hunt-corpo { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 8px; }
+  .hunt-msg { padding: 18px 12px; text-align: center; color: var(--vao-dim); }
+  .hunt-msg.erro { color: #ffb3b3; }
+  .hunt-giro { display: inline-block; animation: hunt-gira 1s linear infinite; }
+  @keyframes hunt-gira { to { transform: rotate(360deg); } }
+  .hunt-resumo { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; }
+  .hunt-card { padding: 8px 10px; }
+  .hunt-card h4 { margin: 0 0 4px; font-size: 10.5px; letter-spacing: .6px; text-transform: uppercase; color: var(--vao-dim); }
+  .hunt-card .grande { font-size: 15px; font-weight: 700; color: #fff; }
+  .hunt-card .linha { color: var(--sobre-mad-dim); margin-top: 2px; }
+  .hunt-card .verde { color: #8ff2bb; font-weight: 700; } .hunt-card .ouro { color: var(--ouro-luz); font-weight: 700; }
+  .hunt-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .hunt-chip { padding: 1px 7px; border-radius: 999px; background: #00000038; box-shadow: inset 0 0 0 1px var(--mad-linha); font-size: 10.5px; color: var(--sobre-mad); white-space: nowrap; }
+  .hunt-filtros { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 6px 10px; }
+  .hunt-filtros label { display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; }
+  .hunt-filtros select { height: 26px; background: var(--vao2); color: var(--sobre-mad); border: 0; border-radius: 6px; padding: 0 6px; box-shadow: inset 0 0 0 2px var(--mad-linha); font: 12px Tahoma, sans-serif; }
+  .hunt-tabela { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  .hunt-tabela th { position: sticky; top: 0; z-index: 1; background: var(--vao2); color: var(--vao-dim); font-size: 10px; letter-spacing: .5px; text-transform: uppercase; text-align: right; padding: 6px 8px; white-space: nowrap; cursor: pointer; }
+  .hunt-tabela th:nth-child(2) { text-align: left; }
+  .hunt-tabela th.ord { color: var(--ouro-luz); }
+  .hunt-tabela td { padding: 5px 8px; border-top: 1px solid var(--vao2); text-align: right; white-space: nowrap; }
+  .hunt-tabela td.nome { text-align: left; white-space: normal; min-width: 130px; }
+  .hunt-tabela td.nome b { color: #fff; } .hunt-tabela td.nome small { color: var(--vao-dim); }
+  .hunt-tabela td.pos { color: var(--vao-dim); }
+  .hunt-tabela td.xp { color: #8fd0ff; font-weight: 700; }
+  .hunt-tabela tr.atual td { background: color-mix(in srgb, #3ddc84 14%, transparent); }
+  .hunt-tabela tr.atual td.nome b::after { content: " ● você está aqui"; color: #5cf29a; font-size: 10px; }
+  .hunt-tabela tr.trancada td { opacity: .55; }
+  .hunt-tabela tr.top td.pos { color: var(--ouro-luz); font-weight: 700; }
+  .hunt-risco-ok { color: #8ff2bb; } .hunt-risco-medio { color: #ffd23f; } .hunt-risco-alto { color: #ff9b6b; } .hunt-risco-morte { color: #ff6b6b; font-weight: 700; }
+  .hunt-tipo { display: inline-block; padding: 0 5px; border-radius: 4px; font-size: 9.5px; font-weight: 700; color: #fff; text-shadow: 0 1px 0 #0006; margin-right: 3px; }
+  .hunt-mais { align-self: center; }
+  .hunt-rodape { font-size: 10.5px; color: var(--vao-dim); padding: 2px 4px 0; }
   @keyframes pisca { to { box-shadow: inset 0 0 0 2px var(--ouro-esc), inset 0 0 0 5px var(--ouro), inset 0 0 0 7px var(--ouro-luz), 0 4px 0 var(--mad-base), 0 6px 0 var(--mad-linha), 0 0 18px var(--ouro-luz); } }
 </style>
 </head>
@@ -139,6 +196,7 @@
 <div id="top" class="madeira">
   <span id="logo" class="contorno">Multi<i>Idle</i></span>
   <span id="versao" title="Versão do MultiIdle — clique para procurar atualização"></span>
+  <span id="desempTotal" title="O MultiIdle inteiro (as 4 contas, a janela e a placa de vídeo): CPU em % do PC e memória. Atualiza a cada 5 s."></span>
   <button id="btnUpdate" class="oculto"></button>
   <button id="sino">🔔 Alertas <span id="naoLidos"></span></button>
   <span id="layouts">
@@ -149,14 +207,15 @@
   <button id="btnFps" title="Quadros por segundo da cena de cada conta. Menos = menos CPU/GPU (o farm é no servidor, não muda nada no jogo). Contas escondidas ou com a janela minimizada já caem pra 1 fps sozinhas."></button>
   <button id="ecoTodas" title="Liga/desliga o Modo Economia do jogo em todas as contas (para de desenhar a cena; o farm continua)">🍃 Eco: todas</button>
   <span id="ultimo" class="vao"></span>
-  <button id="btnLives" title="Lives parceiras do PokeIdle na Twitch (bônus de XP pra quem assiste)">📺 Lives<i class="tw-ponto oculto" id="livesPonto"></i></button>
+  <button id="btnLives" title="Lives parceiras do PokeIdle na Twitch (resgate horas de bônus com os pontos do canal)">📺 Lives<i class="tw-ponto oculto" id="livesPonto"></i></button>
   <button id="btnPrecos" title="Aviso de preço bom no Mercado">💸 Preços</button>
   <div id="lives" class="madeira">
     <h3 class="contorno">📺 Bônus Twitch das suas contas</h3>
     <div id="lvContas" class="lv-contas vao"></div>
     <h3 class="contorno">Lives oficiais do PokeIdle</h3>
+    <button id="lvTodas" class="oculto" title="Abre cada live ao vivo numa aba do seu navegador">▶ Abrir todas as lives ao vivo</button>
     <div id="lvLista"></div>
-    <p class="sub"><b>Como funciona (desde 04/11):</b> assista na <b>página do canal</b> (ou no app da Twitch) com o vídeo rodando pra ganhar os pontos do canal. Com eles, resgate no canal as recompensas do PokeIdle: cada resgate dá horas de bônus (XP, Capture Boost ou Secret Lure) pra conta do jogo vinculada à sua Twitch, e as horas se somam. Clique numa live pra abrir no seu navegador.</p>
+    <p class="sub">Clique numa live pra abrir no seu navegador. Assista na página do canal (com o vídeo rodando) pra ganhar pontos e resgate lá as horas de bônus (XP, Captura, Lure) nas lives com <b>Pontos ativos</b>. O bônus vale pra conta do jogo vinculada à sua Twitch no próprio PokeIdle.</p>
   </div>
   <button id="btnCelular" title="Acompanhar pelo celular">📱 Celular</button>
   <div id="precos" class="madeira">
@@ -209,7 +268,7 @@
 </div>
 <div id="grid"><div class="split" id="sx"></div><div class="split" id="sy"></div></div>
 <script>
-  const GAME_URL = 'https://pokeidle.io/app';
+  const { GAME_URL, GAME_HOST, LS } = require('./protocolo');
   const grid = document.getElementById('grid');
 
   for (let i = 1; i <= 4; i++) {
@@ -217,31 +276,45 @@
     pane.className = 'pane madeira';
     pane.innerHTML = `
       <div class="bar">
-        <span class="contorno nome">Conta ${i}</span><span class="placar" title="Desde que o app abriu: capturas · shinies · abates · desmaios"></span>
+        <span class="contorno nome">Conta ${i}</span><span class="aviso-centro" title="A conta está no Centro Pokémon: não está caçando">🏥 NO CENTRO</span><span class="placar" title="Desde que o app abriu: capturas · shinies · abates · desmaios"></span><span class="desemp" title="Quanto esta conta está gastando: CPU em % do PC e memória. Atualiza a cada 5 s."></span>
         <button data-a="grande" title="Deixar esta conta grande">⭐</button>
-        <button data-a="back" title="Voltar">←</button>
-        <button data-a="home" title="Voltar ao PokeIdle">🏠</button>
+        <button data-a="hunt" class="btn-hunt" title="🎯 HUNT: onde o pokémon em campo desta conta ganha mais XP por hora">HUNT</button>
         <button data-a="zout" title="Diminuir zoom">−</button>
         <button data-a="zreset" title="Zoom padrão (100%)">100%</button>
         <button data-a="zin" title="Aumentar zoom">+</button>
         <button data-a="eco" title="Modo Economia do jogo: para de desenhar a cena (bem mais leve); o farm continua">🍃</button>
         <button data-a="mute">🔊</button>
         <button data-a="reload">⟳</button>
-        <button data-a="max">⛶</button>
+        <button data-a="max" title="Focar esta conta (Ctrl+${i}); no foco o zoom fica em 100%">⛶</button>
       </div>
       <div class="tela vao"><webview src="${GAME_URL}" partition="persist:conta${i}"
-               allowpopups></webview></div>`;
+               allowpopups></webview>
+        <div class="hunt madeira oculto">
+          <div class="hunt-topo"><span class="contorno hunt-titulo">🎯 HUNT</span><span class="hunt-sub"></span>
+            <button data-h="atualizar" title="Calcular de novo">⟳</button><button data-h="fechar" title="Fechar">✕</button></div>
+          <div class="hunt-corpo"></div>
+        </div></div>`;
     grid.appendChild(pane);
 
     const wv = pane.querySelector('webview');
     const zLabel = pane.querySelector('[data-a="zreset"]');
+    // zoom salvo da conta; no foco (⛶ / Ctrl+N) ela fica em 100% e o − / + só valem até sair do foco
     let zoom = Number(localStorage.getItem('zoom' + i)) || 1;
-    const setZoom = (z) => {
-      zoom = Math.round(Math.min(3, Math.max(0.25, z)) * 100) / 100;
-      wv.setZoomFactor(zoom);
-      zLabel.textContent = Math.round(zoom * 100) + '%';
-      localStorage.setItem('zoom' + i, zoom);
+    let zoomFoco = null; // null = sem foco
+    const aplicarZoom = () => {
+      const z = zoomFoco ?? zoom;
+      zLabel.textContent = Math.round(z * 100) + '%';
+      try { wv.setZoomFactor(z); } catch {} // antes do dom-ready a webview não aceita; o dom-ready reaplica
     };
+    const setZoom = (z) => {
+      z = Math.round(Math.min(3, Math.max(0.25, z)) * 100) / 100;
+      if (zoomFoco != null) zoomFoco = z;
+      else { zoom = z; localStorage.setItem('zoom' + i, zoom); }
+      aplicarZoom();
+    };
+    pane.setFoco = (on) => { zoomFoco = on ? 1 : null; aplicarZoom(); };
+    pane.zoomSalvo = () => zoom;
+    pane.zoomAtual = () => zoomFoco ?? zoom;
     const botaoMudo = pane.querySelector('[data-a="mute"]');
     const setMudo = (m) => {
       wv.setAudioMuted(m);
@@ -249,7 +322,7 @@
       localStorage.setItem('mudo' + i, m ? '1' : '0');
     };
     wv.addEventListener('dom-ready', () => {
-      setZoom(zoom); // reaplica a cada carregamento
+      aplicarZoom(); // reaplica a cada carregamento
       setMudo(localStorage.getItem('mudo' + i) === '1');
       aplicarFps();
       lerEco(pane);
@@ -263,26 +336,64 @@
       if (a === 'grande') setGrande(i);
       if (a === 'eco') setEco(pane, !pane.eco);
       if (a === 'reload') wv.reload();
-      if (a === 'back' && wv.canGoBack()) wv.goBack();
-      if (a === 'home') wv.loadURL(GAME_URL);
+      if (a === 'hunt') alternarHunt(pane, i);
       if (a === 'mute') setMudo(!wv.isAudioMuted());
-      if (a === 'max') {
-        const on = !pane.classList.contains('max');
-        document.querySelectorAll('.pane').forEach(p => p.classList.remove('max'));
-        pane.classList.toggle('max', on);
-        grid.classList.toggle('solo', on);
-        aplicarFps();
-      }
+      if (a === 'max') focar(pane.classList.contains('max') ? 0 : i);
     };
+  }
+
+  // foco numa conta (⛶ ou Ctrl+1..4): ela ocupa a tela com zoom 100%; i = 0 tira o foco.
+  // Quem sai do foco volta pro zoom salvo dela.
+  function focar(i) {
+    document.querySelectorAll('.pane').forEach((p, j) => {
+      const on = j === i - 1;
+      if (p.classList.contains('max') === on) return;
+      const trocar = () => {
+        p.lugar ??= document.createElement('div');
+        if (on) {
+          p.lugar.className = 'lugar' + (p.classList.contains('grande') ? ' grande' : '');
+          p.before(p.lugar);
+        } else p.lugar.remove();
+        p.classList.toggle('max', on);
+        p.setFoco(on);
+        aplicarFps(); // a troca oculta acontece um instante depois: o fps segue o estado novo
+      };
+      // zoom salvo ≠ 100%: a conta muda de tamanho E de zoom, e o jogo faria dois ajustes seguidos
+      // (aparecia cortado por um instante). Oculta só a tela dela até ele terminar.
+      if (p.zoomSalvo() !== 1) trocarOculta(p, trocar); else trocar();
+    });
+    grid.classList.toggle('solo', i > 0);
+    aplicarFps();
+    if (i) document.querySelectorAll('.pane')[i - 1].querySelector('webview').focus(); // o teclado vai pra conta focada
+  }
+  // Oculta a tela, troca, e mostra assim que a largura da página do jogo mudou e parou de mudar (~0,1 s;
+  // no máximo ~0,6 s). Não dá pra calcular a largura final: o jogo aplica uma escala própria em tela grande.
+  async function trocarOculta(p, trocar) {
+    const wv = p.querySelector('webview');
+    const vez = p.troca = (p.troca ?? 0) + 1; // trocas rápidas seguidas: só a última revela
+    const largura = () => wv.executeJavaScript('innerWidth').catch(() => null);
+    const espera = (ms) => new Promise((r) => setTimeout(r, ms));
+    wv.classList.add('ajustando');
+    const antes = await largura();
+    trocar();
+    let ultima = antes;
+    for (let t = 0; t < 20 && p.troca === vez && antes != null; t++) {
+      await espera(25);
+      const w = await largura();
+      if (w == null || (w !== antes && w === ultima)) break; // mudou e ficou igual em duas leituras
+      ultima = w;
+    }
+    await espera(30); // um quadro pro jogo se desenhar no tamanho novo
+    if (p.troca === vez) wv.classList.remove('ajustando');
   }
 
   // Modo Economia do próprio jogo (preferência 'cfg-economia' do preferencias.mjs dele). Ligado, a cena
   // para de ser desenhada e o servidor para de mandar o campo; o farm continua. O jogo aplica a
   // preferência ao carregar, então: grava e recarrega a conta.
-  const ECO_JS = (on) => `location.host === 'pokeidle.io' && (localStorage.setItem('cfg-economia', '${on ? 1 : 0}'), true)`;
+  const ECO_JS = (on) => `location.host === '${GAME_HOST}' && (localStorage.setItem('${LS.economia}', '${on ? 1 : 0}'), true)`;
   async function lerEco(pane) {
     const wv = pane.querySelector('webview');
-    pane.eco = await wv.executeJavaScript(`localStorage.getItem('cfg-economia') === '1'`).catch(() => false);
+    pane.eco = await wv.executeJavaScript(`localStorage.getItem('${LS.economia}') === '1'`).catch(() => false);
     pane.querySelector('[data-a="eco"]').classList.toggle('ativo', pane.eco);
     const todas = [...document.querySelectorAll('.pane')].every(p => p.eco);
     document.getElementById('ecoTodas').classList.toggle('ativo', todas);
@@ -308,7 +419,7 @@
     localStorage.setItem('layout', l);
   };
   function setGrande(i) {
-    document.querySelectorAll('.pane').forEach((p, j) => p.classList.toggle('grande', j === i - 1));
+    document.querySelectorAll('.pane').forEach((p, j) => { p.classList.toggle('grande', j === i - 1); p.lugar?.classList.toggle('grande', j === i - 1); });
     localStorage.setItem('grande', i);
   }
   document.getElementById('layouts').onclick = (e) => { if (e.target.dataset.l) setLayout(e.target.dataset.l); };
@@ -486,54 +597,62 @@
   const escHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const pctTxt = (v) => (Number(v) || 0).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
   const twitchDe = {}; // conta -> bloco twitch do jogo (null = fora do jogo)
+  // Desde 04/11/2026 o bônus não é mais automático pelo chat: são HORAS resgatadas com os pontos do canal.
+  // O bloco traz { vinculado, login, pct, bonus: { xp|captura|shiny: fim }, oficiais: [{ login, nome, aoVivo, espectadores, ativo }] }.
+  const TIPOS_BONUS = [['xp', 'XP'], ['captura', 'Captura'], ['shiny', 'Lure']];
+  const vinculada = (tw) => !!(tw && (tw.vinculado ?? !!tw.login));
+  const bonusAtivos = (tw) => TIPOS_BONUS.map(([tp, nome]) => ({ nome, ate: Number(tw?.bonus?.[tp]) || 0 })).filter((b) => b.ate > Date.now());
+  const tempoRestante = (ms) => { const m = Math.max(1, Math.round(ms / 60000)); return m >= 60 ? `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}` : `${m}min`; };
 
-  // Regra de 04/11/2026 (twitch.js): assistir na página do canal dá os pontos do canal; com eles a pessoa resgata
-  // horas de bônus. O jogo manda os canais oficiais já com aoVivo/espectadores/ativo, e o fim de cada bônus.
-  const TW = require('./twitch');
   function dadosLives() {
-    const base = Object.values(twitchDe).find((tw) => tw); // canais oficiais são os mesmos pra todas as contas
+    const base = Object.values(twitchDe).find((tw) => tw); // os canais oficiais são os mesmos pra todas as contas
     if (!base) return null;
-    const canais = [...(base.oficiais ?? [])].sort((a, b) =>
-      Number(!!b.aoVivo) - Number(!!a.aoVivo) || (Number(b.espectadores) || 0) - (Number(a.espectadores) || 0));
-    // contas vinculadas SEM nenhum bônus valendo: são as que têm o que resgatar
-    const semBonus = [1, 2, 3, 4].filter((i) => TW.vinculada(twitchDe[i]) && !TW.bonusAtivos(twitchDe[i]).length);
+    const canais = (base.oficiais ?? []).map((o) => ({ ...o, aoVivo: !!o.aoVivo, espectadores: Number(o.espectadores) || 0 }));
+    canais.sort((a, b) => Number(b.aoVivo) - Number(a.aoVivo) || b.espectadores - a.espectadores);
+    // contas vinculadas sem nenhum bônus rodando: são elas que o ponto vermelho chama pra live
+    const semBonus = Object.entries(twitchDe).filter(([, tw]) => vinculada(tw) && !bonusAtivos(tw).length).map(([c]) => Number(c));
     return { canais, semBonus };
   }
 
   function linhaCanal(c, semBonus) {
-    const espect = Number(c.espectadores) || 0;
-    const chama = c.aoVivo && c.ativo && semBonus.length > 0; // dá pra resgatar aqui e tem conta sem bônus
+    const chama = c.aoVivo && c.ativo && semBonus.length > 0;
     const selo = c.ativo
-      ? '<span class="kk-canal-pontos" title="O streamer autorizou: dá pra resgatar o bônus com os pontos do canal">pontos ativos</span>'
-      : '<span class="kk-canal-falta" title="O streamer ainda não liberou as recompensas do PokeIdle">em breve</span>';
-    const classes = ['tw-canal', c.aoVivo && 'ao-vivo', chama && 'tw-falta-eu'].filter(Boolean).join(' ');
-    const dica = `Abrir twitch.tv/${c.login} no navegador${chama ? ` · sem bônus agora: ${semBonus.map((i) => nomes[i]).join(', ')}` : ''}`;
+      ? `<span class="tw-canal-bonus" title="O streamer ativou as recompensas: resgate as horas de bônus com os pontos do canal"><i class="tw-bonus-brilho" aria-hidden="true"></i>⚡ <b>Pontos ativos</b></span>`
+      : '<span class="tw-canal-falta">em breve</span>';
+    const classes = ['tw-canal', c.aoVivo && 'ao-vivo', c.ativo && 'com-bonus', chama && 'tw-falta-eu'].filter(Boolean).join(' ');
+    const dica = `Abrir twitch.tv/${c.login} no navegador${chama ? ` · sem bônus rodando: ${semBonus.map((i) => nomes[i]).join(', ')}` : ''}`;
     return `<button type="button" class="${classes}" data-canal="${escHtml(c.login)}" title="${escHtml(dica)}">
       ${chama ? '<i class="tw-ponto" aria-hidden="true"></i>' : ''}${GLIFO_TWITCH}
       <span class="tw-canal-nome">${escHtml(c.nome || c.login)}</span>${selo}
-      ${c.aoVivo ? `<span class="tw-canal-espect" title="${espect.toLocaleString('pt-BR')} espectadores">${GLIFO_ESPECTADOR}${espect.toLocaleString('pt-BR')}</span>` : ''}
+      ${c.aoVivo ? `<span class="tw-canal-espect" title="${(c.espectadores).toLocaleString('pt-BR')} espectadores">${GLIFO_ESPECTADOR}${c.espectadores.toLocaleString('pt-BR')}</span>` : ''}
       <span class="tw-canal-selo">${c.aoVivo ? '<i class="tw-verde" aria-hidden="true"></i>Ao vivo' : 'Offline'}</span>
     </button>`;
   }
 
   function pintarLives() {
     const d = dadosLives();
-    // o bônus de cada conta, no alto do painel: o que está valendo e quanto falta
+    const noAr = d ? d.canais.filter((c) => c.aoVivo && c.ativo).length : 0;
+    // o bônus de cada conta, no alto do painel
     $('lvContas').innerHTML = [1, 2, 3, 4].map((i) => {
       const tw = twitchDe[i];
-      const ativos = TW.bonusAtivos(tw);
+      const ativos = bonusAtivos(tw);
       const [classe, texto] = !tw ? ['apagado', 'fora do jogo']
-        : !TW.vinculada(tw) ? ['apagado', 'Twitch não vinculada (vincule no PokeIdle)']
-        : ativos.length ? ['ok', ativos.map((b) => `+${pctTxt(tw.pct)}% ${b.nome} · ${TW.tempoCurto(b.falta)}`).join('  ·  ')]
-        : ['vivo', 'sem bônus agora: resgate numa live com pontos ativos'];
+        : !vinculada(tw) ? ['apagado', 'Twitch não vinculada (vincule no PokeIdle)']
+        : ativos.length ? ['ok', `⚡ +${pctTxt(tw.pct)}% · ${ativos.map((b) => `${b.nome} ${tempoRestante(b.ate - Date.now())}`).join(' · ')}`]
+        : noAr ? ['vivo', 'sem bônus · live no ar, resgate lá']
+        : ['apagado', 'sem bônus · nenhuma live no ar'];
       return `<div><span>${escHtml(nomes[i])}</span><span class="${classe}">${escHtml(texto)}</span></div>`;
     }).join('');
     if (!d) {
       $('lvLista').innerHTML = '<div class="tw-ninguem">Entre no jogo com alguma conta pra ver as lives oficiais.</div>';
+      $('lvTodas').classList.add('oculto');
       $('livesPonto').classList.add('oculto');
       return;
     }
     const aoVivo = d.canais.filter((c) => c.aoVivo);
+    $('lvTodas').classList.toggle('oculto', !aoVivo.length);
+    $('lvTodas').textContent = `▶ Abrir todas as lives ao vivo (${aoVivo.length})`;
+    $('lvTodas').dataset.canais = aoVivo.map((c) => c.login).join(',');
     const offline = d.canais.filter((c) => !c.aoVivo);
     const offlineAberto = $('lvOffline')?.open ?? false;
     $('lvLista').innerHTML = `<div class="tw-canais">
@@ -541,16 +660,17 @@
       ${offline.length ? `<details id="lvOffline"${offlineAberto ? ' open' : ''}><summary>Offline (${offline.length}) ▾</summary>
         <div class="tw-canais">${offline.map((c) => linhaCanal(c, d.semBonus)).join('')}</div></details>` : ''}
     </div>`;
-    // ponto vermelho no botão: live com pontos ativos no ar e alguma conta vinculada sem bônus
+    // ponto vermelho no botão: live com pontos ativos no ar e alguma conta vinculada sem bônus rodando
     $('livesPonto').classList.toggle('oculto', !$('lvLista').querySelector('.tw-falta-eu'));
   }
-  // os bônus contam o tempo sozinhos: repinta de minuto em minuto (o ponto e o "falta" ficam certos)
-  setInterval(pintarLives, 60000);
+  // o tempo dos bônus anda sozinho (e um bônus que acaba muda o ponto vermelho): repinta a cada 30 s
+  setInterval(pintarLives, 30000);
 
   $('lvLista').onclick = (e) => {
     const linha = e.target.closest('[data-canal]');
     if (linha) ipcRenderer.send('abrir-live', linha.dataset.canal);
   };
+  $('lvTodas').onclick = () => ipcRenderer.send('abrir-lives', $('lvTodas').dataset.canais.split(',').filter(Boolean));
   $('btnLives').onclick = () => {
     if (!$('lives').classList.toggle('aberto')) return;
     $('precos').classList.remove('aberto');
@@ -559,6 +679,180 @@
   };
   ipcRenderer.on('twitch', (_, { conta, twitch }) => { twitchDe[conta] = twitch; pintarLives(); });
   ipcRenderer.invoke('twitch-estado').then((todos) => { Object.assign(twitchDe, todos); pintarLives(); });
+
+  // ---- 🎯 HUNT: onde o pokémon em campo ganha mais XP (a conta é feita na página do jogo, ver hunt-motor.js) ----
+  const huntPrefs = { regiao: '', soLiberadas: true, comPocao: true, ordem: 'xpPokemonH', todas: false };
+  try { Object.assign(huntPrefs, JSON.parse(localStorage.getItem('huntPrefs') ?? '{}'), { todas: false }); } catch {}
+  const salvarHuntPrefs = () => { try { localStorage.setItem('huntPrefs', JSON.stringify(huntPrefs)); } catch {} };
+  const HUNT_TOPO = 40; // quantas hunts aparecem antes do "mostrar todas"
+  const COR_TIPO = { NORMAL: '#9fa19f', FIRE: '#e62829', WATER: '#2980ef', GRASS: '#3fa129', ELECTRIC: '#d8b600', ICE: '#3dcef3', FIGHTING: '#ff8000',
+    POISON: '#9141cb', GROUND: '#915121', FLYING: '#81b9ef', PSYCHIC: '#ef4179', BUG: '#91a119', ROCK: '#afa981', GHOST: '#704170', DRAGON: '#5060e1',
+    DARK: '#624d4e', STEEL: '#60a1b8', FAIRY: '#ef70ef' };
+  const NOME_REGIAO = (r) => (r ? String(r).charAt(0).toUpperCase() + String(r).slice(1) : '—');
+  const xpCurto = (n) => {
+    n = Number(n) || 0;
+    if (n >= 1e9) return (n / 1e9).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + ' bi';
+    if (n >= 1e6) return (n / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' mi';
+    if (n >= 1e4) return Math.round(n / 1e3).toLocaleString('pt-BR') + ' mil';
+    return Math.round(n).toLocaleString('pt-BR');
+  };
+  const duracao = (horas) => {
+    if (!(horas > 0) || !Number.isFinite(horas)) return '—';
+    const min = Math.max(1, Math.round(horas * 60));
+    if (min < 60) return `${min}min`;
+    if (min < 48 * 60) return `${Math.floor(min / 60)}h${min % 60 ? ` ${String(min % 60).padStart(2, '0')}min` : ''}`;
+    return `${Math.floor(min / 1440)}d ${Math.round((min % 1440) / 60)}h`;
+  };
+  const faltaXp = (o) => (o?.xpProximo != null && o?.xp != null ? Math.max(0, o.xpProximo - o.xp) : null);
+  const seloTipo = (t) => `<span class="hunt-tipo" style="background:${COR_TIPO[t] ?? '#777'}">${escHtml(String(t ?? '').slice(0, 3))}</span>`;
+  const pctMult = (m) => `+${((m - 1) * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`;
+
+  function riscoHtml(l) {
+    if (l.inviavel) return '<span class="hunt-risco-morte" title="O pokémon não consegue derrotar os selvagens daqui">não mata</span>';
+    if (l.umHit) return `<span class="hunt-risco-morte" title="O golpe mais forte do selvagem tira mais que o seu HP inteiro">☠ 1 hit · ${l.mortesH.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}/h</span>`;
+    if (l.mortesH > 0) return `<span class="hunt-risco-alto" title="Mortes estimadas por hora">☠ ${l.mortesH.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}/h</span>`;
+    const p = Math.round(l.hitPct * 100);
+    const c = p < 35 ? 'ok' : p < 70 ? 'medio' : 'alto';
+    return `<span class="hunt-risco-${c}" title="O golpe mais forte do selvagem tira ${p}% do seu HP">${p}% HP</span>`;
+  }
+
+  function pintarHunt(pane) {
+    const h = pane.hunt;
+    const corpo = pane.querySelector('.hunt-corpo');
+    const sub = pane.querySelector('.hunt-sub');
+    if (h.erro && !h.dados) { sub.textContent = ''; corpo.innerHTML = `<div class="hunt-msg erro">${escHtml(h.erro)}</div>`; return; }
+    if (!h.dados) { sub.textContent = ''; corpo.innerHTML = '<div class="hunt-msg"><span class="hunt-giro">⟳</span> Simulando o seu pokémon em todas as hunts…</div>'; return; }
+    const d = h.dados;
+    const pk = d.pokemon;
+    sub.innerHTML = `${escHtml(pk.nome)} Lv ${pk.level} ${pk.tipos.map(seloTipo).join('')}${faltaXp(pk) != null ? ` · faltam ${xpCurto(faltaXp(pk))} XP pro Lv ${pk.level + 1}` : ''}${h.calculando ? ' · <span class="hunt-giro">⟳</span>' : ''}${h.erro ? ` · <span style="color:#ffb3b3">⚠ ${escHtml(h.erro)}</span>` : ''}`;
+
+    const ordem = huntPrefs.ordem;
+    let linhas = d.linhas.filter((l) => (!huntPrefs.soLiberadas || l.liberada) && (!huntPrefs.regiao || l.regiao === huntPrefs.regiao));
+    linhas = linhas.slice().sort((a, b) => (b[ordem] ?? 0) - (a[ordem] ?? 0) || a.nivel - b.nivel);
+    const melhor = linhas.find((l) => !l.inviavel);
+    const atual = d.linhas.find((l) => l.slug === d.huntAtual);
+    const posAtual = atual ? linhas.indexOf(atual) + 1 : 0;
+    const faltaPk = faltaXp(pk);
+    const faltaTr = faltaXp(d.treinador);
+    const regioes = [...new Set(d.linhas.filter((l) => !huntPrefs.soLiberadas || l.liberada).map((l) => l.regiao).filter(Boolean))];
+    if (huntPrefs.regiao && !regioes.includes(huntPrefs.regiao)) huntPrefs.regiao = '';
+
+    const ganho = atual && melhor && atual !== melhor && atual.xpPokemonH > 0 ? melhor.xpPokemonH / atual.xpPokemonH - 1 : 0;
+    const b = d.bonus;
+    const cardAtual = atual
+      ? `<div class="grande">${xpCurto(atual.xpPokemonH)} XP/h</div>
+         <div class="linha"><b>${escHtml(atual.nome)}</b> · ${posAtual ? `#${posAtual} no ranking` : 'fora do filtro'}</div>
+         <div class="linha">Próximo nível em <b>${duracao(faltaPk / atual.xpPokemonH)}</b></div>`
+      : `<div class="linha">${d.huntAtual ? 'Hunt atual fora da lista' : 'A conta não está caçando agora'}</div>`;
+    const cardMelhor = melhor
+      ? `<div class="grande ouro">${xpCurto(melhor.xpPokemonH)} XP/h</div>
+         <div class="linha"><b>${escHtml(melhor.nome)}</b> · Nv ${melhor.nivel} · ${escHtml(NOME_REGIAO(melhor.regiao))}</div>
+         <div class="linha">${atual === melhor ? '<span class="verde">✓ você já está na melhor</span>' : ganho > 0 ? `<span class="verde">+${Math.round(ganho * 100)}% de XP</span> que a atual · ` : ''}próximo nível em <b>${duracao(faltaPk / melhor.xpPokemonH)}</b></div>`
+      : '<div class="linha">Nenhuma hunt viável com esse filtro</div>';
+
+    const visiveis = huntPrefs.todas ? linhas : linhas.slice(0, HUNT_TOPO);
+    const th = (k, rot, dica) => `<th data-ord="${k}" class="${ordem === k ? 'ord' : ''}${k === 'xpTreinadorH' ? ' c-tr' : ''}" title="${escHtml(dica)}">${rot}${ordem === k ? ' ▾' : ''}</th>`;
+    corpo.innerHTML = `
+      <div class="hunt-resumo">
+        <div class="hunt-card vao"><h4>Agora</h4>${cardAtual}</div>
+        <div class="hunt-card vao"><h4>Melhor hunt pra XP</h4>${cardMelhor}</div>
+      </div>
+      <div class="hunt-filtros vao">
+        <label>Região <select data-hf="regiao"><option value="">Todas</option>${regioes.map((r) => `<option value="${escHtml(r)}"${r === huntPrefs.regiao ? ' selected' : ''}>${escHtml(NOME_REGIAO(r))}</option>`).join('')}</select></label>
+        <label title="Só as hunts que o nível do treinador já libera"><input type="checkbox" data-hf="soLiberadas"${huntPrefs.soLiberadas ? ' checked' : ''}> só liberadas</label>
+        <label title="Com poção automática, só morre quem leva mais que o HP inteiro num golpe"><input type="checkbox" data-hf="comPocao"${huntPrefs.comPocao ? ' checked' : ''}> com poção automática</label>
+        <span class="hunt-bonus" title="Bônus de XP ativos agora (o mesmo total que o jogo paga por abate)"><b>Bônus ${b.pokemon > 1.0001 ? pctMult(b.pokemon) : 'nenhum'}${Math.abs(b.pokemon - b.treinador) > 1e-4 ? ` (treinador ${pctMult(b.treinador)})` : ''}</b>${b.itens.map((x) => `<span class="hunt-chip" title="${x.ate ? 'até ' + new Date(x.ate).toLocaleString('pt-BR') : ''}">${escHtml(x.nome)} ${Math.abs(x.pk - x.tr) < 1e-4 ? pctMult(x.pk) : `${pctMult(x.pk)} / tr ${pctMult(x.tr)}`}</span>`).join('')}</span>
+      </div>
+      <table class="hunt-tabela vao">
+        <thead><tr><th>#</th><th>Hunt</th>
+          ${th('xpPokemonH', 'XP/h Pokémon', 'XP por hora do pokémon em campo, com os bônus ativos')}
+          ${th('xpTreinadorH', 'XP/h Treinador', 'XP por hora do treinador, com os bônus ativos')}
+          ${th('kph', 'Abates/h', 'Abates por hora (≈ = mapa ainda não medido em jogo, estimado)')}
+          <th title="Tempo até o próximo nível do pokémon caçando aqui">Próx. nível</th>
+          <th title="O quanto o selvagem mais forte bate em você">Risco</th>
+          <th class="c-golpe" title="O golpe que mais rende aqui">Golpe</th></tr></thead>
+        <tbody>${visiveis.map((l, k) => `
+          <tr class="${[l === atual && 'atual', !l.liberada && 'trancada', k < 3 && !l.inviavel && 'top'].filter(Boolean).join(' ')}">
+            <td class="pos">${k + 1}</td>
+            <td class="nome"><b>${escHtml(l.nome)}</b><br><small>Nv ${l.nivel} · ${escHtml(NOME_REGIAO(l.regiao))}${l.especie && l.especie !== l.nome ? ` · ${escHtml(l.especie)}` : ''}${l.liberada ? '' : ' · 🔒'}</small></td>
+            <td class="xp">${l.inviavel ? '—' : xpCurto(l.xpPokemonH)}</td>
+            <td class="c-tr">${l.inviavel ? '—' : xpCurto(l.xpTreinadorH)}</td>
+            <td title="${l.kphFaixa ? `entre ${Math.round(l.kphFaixa[0])} e ${Math.round(l.kphFaixa[1])} por hora` : ''}">${l.inviavel ? '—' : `${l.ritmo === 'medido' ? '' : '≈'}${Math.round(l.kph).toLocaleString('pt-BR')}`}</td>
+            <td>${l.inviavel ? '—' : duracao(faltaPk / l.xpPokemonH)}</td>
+            <td>${riscoHtml(l)}</td>
+            <td class="c-golpe">${l.melhorGolpe ? `${seloTipo(l.melhorGolpe.tipo)}${escHtml(l.melhorGolpe.nome)}${l.efetividade >= 2 ? ' <b title="super efetivo">×' + l.efetividade.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '</b>' : ''}` : '—'}</td>
+          </tr>`).join('')}</tbody>
+      </table>
+      ${linhas.length > HUNT_TOPO ? `<button class="hunt-mais" data-h="todas">${huntPrefs.todas ? `Mostrar só as ${HUNT_TOPO} melhores` : `Mostrar todas (${linhas.length})`}</button>` : ''}
+      <div class="hunt-rodape">Treinador Lv ${d.treinador.level ?? '?'}${faltaTr != null && melhor ? ` · próximo nível do treinador em ${duracao(faltaTr / melhor.xpTreinadorH)} na melhor hunt` : ''}
+        · ${linhas.length} hunts · ritmo medido em jogo em ${d.medidas} delas (≈ = estimado)${d.tipoDoDia ? ` · dia de ${escHtml(d.tipoDoDia)}: 2× mais forte` : ''}${d.podio ? ` · pódio de ginásio +${d.podio.pct}% de dano` : ''}
+        · dados do jogo v${escHtml(d.versao ?? '?')} · cálculo em ${d.ms} ms
+        · motor baseado no <b>/hunt for PokeIdle</b>, de Liang (usado com autorização)</div>`;
+  }
+
+  const huntDe = (pane) => (pane.hunt ??= { dados: null, erro: null, calculando: false, timer: null });
+  // Só fica vermelho com folga: a estimativa erra uns 5%, e hunts quase empatadas fariam o botão piscar.
+  const FOLGA_HUNT = 0.05;
+  const TITULO_HUNT = '🎯 HUNT: onde o pokémon em campo desta conta ganha mais XP por hora';
+
+  /** Dourado = na melhor hunt liberada pra XP (ou fora de hunt); vermelho = tem hunt bem melhor pro pokémon em campo. */
+  function marcarBotaoHunt(pane) {
+    const botao = pane.querySelector('[data-a="hunt"]');
+    const d = pane.hunt?.erro ? null : pane.hunt?.dados;
+    const atual = d?.huntAtual ? d.linhas.find((l) => l.slug === d.huntAtual) : null;
+    const melhor = d?.linhas.find((l) => l.liberada && !l.inviavel); // já vem em ordem de XP/h do pokémon
+    const errada = !!(atual && melhor && atual !== melhor && melhor.xpPokemonH > atual.xpPokemonH * (1 + FOLGA_HUNT));
+    botao.classList.toggle('errada', errada);
+    botao.title = errada
+      ? `⚠ ${d.pokemon.nome} não está na melhor hunt pra XP: ${atual.nome} rende ${xpCurto(atual.xpPokemonH)} XP/h, ${melhor.nome} rende ${xpCurto(melhor.xpPokemonH)} XP/h (+${Math.round((melhor.xpPokemonH / Math.max(1, atual.xpPokemonH) - 1) * 100)}%)`
+      : atual && melhor ? `${TITULO_HUNT}
+✓ ${atual.nome}: ${atual === melhor ? 'a melhor hunt' : 'praticamente empatada com a melhor'} pra XP` : TITULO_HUNT;
+  }
+
+  async function calcularHunt(pane, i) {
+    const h = huntDe(pane);
+    if (h.calculando) return;
+    h.calculando = true;
+    const aberta = () => !pane.querySelector('.hunt').classList.contains('oculto');
+    if (aberta()) pintarHunt(pane);
+    const r = await ipcRenderer.invoke('hunt', { conta: i, comPocao: huntPrefs.comPocao }).catch((e) => ({ ok: false, erro: e.message }));
+    h.calculando = false;
+    if (r.ok) { h.dados = r.r; h.erro = null; } else h.erro = r.erro;
+    marcarBotaoHunt(pane);
+    if (aberta()) pintarHunt(pane);
+  }
+
+  function alternarHunt(pane, i) {
+    const janela = pane.querySelector('.hunt');
+    const abrir = janela.classList.contains('oculto');
+    janela.classList.toggle('oculto', !abrir);
+    pane.querySelector('[data-a="hunt"]').classList.toggle('ativo', abrir);
+    huntDe(pane);
+    if (!pane.huntLigada) {
+      pane.huntLigada = true;
+      janela.onclick = (e) => {
+        const alvo = e.target.closest('[data-h], [data-ord]');
+        if (!alvo) return;
+        if (alvo.dataset.h === 'fechar') return alternarHunt(pane, i);
+        if (alvo.dataset.h === 'atualizar') return calcularHunt(pane, i);
+        if (alvo.dataset.h === 'todas') { huntPrefs.todas = !huntPrefs.todas; return pintarHunt(pane); }
+        if (alvo.dataset.ord) { huntPrefs.ordem = alvo.dataset.ord; salvarHuntPrefs(); pintarHunt(pane); }
+      };
+      janela.onchange = (e) => {
+        const k = e.target.dataset.hf;
+        if (!k) return;
+        huntPrefs[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        salvarHuntPrefs();
+        if (k === 'comPocao') calcularHunt(pane, i); else pintarHunt(pane);
+      };
+    }
+    clearInterval(pane.hunt.timer);
+    if (!abrir) return;
+    calcularHunt(pane, i);
+    // aberta, se atualiza sozinha (bônus que acabam, nível que sobe, troca de pokémon ou de hunt)
+    pane.hunt.timer = setInterval(() => calcularHunt(pane, i), 60000);
+  }
+
 
   // ---- limite de FPS da cena (o limitador roda dentro de cada página do jogo, ver main.js) ----
   const OPCOES_FPS = [60, 30, 20, 10];
@@ -592,6 +886,20 @@
 
   // ações vindas do celular: aperta o mesmo botão do painel da conta
   ipcRenderer.on('acao', (_, { conta, acao }) => panes[conta - 1]?.querySelector(`[data-a="${acao}"]`)?.click());
+  // Ctrl+1..4 (lido no main.js, funciona mesmo com o teclado dentro de uma conta): de novo na mesma conta tira o foco
+  ipcRenderer.on('foco', (_, n) => focar(panes[n - 1]?.classList.contains('max') ? 0 : n));
+  // desempenho (medido no main.js a cada 5 s, só com a janela aberta)
+  const fmtCpu = (v) => `${v < 10 ? v.toFixed(1) : Math.round(v)}%`;
+  const fmtMem = (mb) => mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${Math.round(mb)} MB`;
+  ipcRenderer.on('desempenho', (_, d) => {
+    $('desempTotal').textContent = `⚙️ ${fmtCpu(d.total.cpu)} · ${fmtMem(d.total.mem)}`;
+    panes.forEach((p, j) => {
+      const m = d.contas[j + 1];
+      p.querySelector('.desemp').textContent = m ? `⚙️ ${fmtCpu(m.cpu)} · ${fmtMem(m.mem)}` : '';
+    });
+  });
+  // conta no Centro Pokémon (não está caçando): fica vermelha até sair
+  ipcRenderer.on('centro', (_, { conta, centro }) => panes[conta - 1]?.classList.toggle('centro', centro));
 
   let naoLidos = 0;
   $('sino').onclick = () => {
@@ -675,7 +983,8 @@
     if (!$('painel').classList.contains('aberto')) $('naoLidos').textContent = `(${++naoLidos})`;
     const pAlerta = panes[a.conta - 1];
     if (pAlerta) { pAlerta.classList.remove('alerta'); void pAlerta.offsetWidth; pAlerta.classList.add('alerta'); } // reinicia o pisca
-    new Notification(`MultiIdle — ${nomes[a.conta]}`, { body: `${TIPOS[a.tipo]}${a.texto ? ': ' + a.texto : ''}` });
+    // notificação do Windows só pra Pokémon desmaiado; o resto fica no histórico, no som e no celular
+    if (a.tipo === 'desmaiou') new Notification(`MultiIdle — ${nomes[a.conta]}`, { body: `${TIPOS[a.tipo]}${a.texto ? ': ' + a.texto : ''}` });
   });
 </script>
 </body>

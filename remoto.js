@@ -9,6 +9,7 @@ const { app, ipcMain } = require('electron');
 const QRCode = require('qrcode');
 const { TIPOS, placarNovo } = require('./alertas');
 const { resumir } = require('./estado');
+const { GAME_HOST, LS, LIMITES } = require('./protocolo');
 
 const PORTA = Number(process.env.MULTIIDLE_PORTA) || 7777;
 const ACOES = ['reload', 'eco', 'home', 'zerar']; // zerar é feito aqui; as outras o index.html executa
@@ -49,6 +50,7 @@ const nomeDa = (conta) => contas[conta]?.info.nick ?? `Conta ${conta}`;
 function status(info) {
   if (info.bloqueio) return 'pausada';
   if (!info.logado) return 'fora';
+  if (info.centroDesde) return 'centro'; // no Centro Pokémon = não está caçando
   return Date.now() - info.ultimaMsg < 60000 ? 'online' : 'quieto';
 }
 
@@ -72,7 +74,7 @@ let catalogoItens = null; // { em, itens }
 async function consumiveis() {
   if (catalogoItens && Date.now() - catalogoItens.em < 6 * 3600 * 1000) return catalogoItens.itens;
   try {
-    const { items } = await (await fetch('https://pokeidle.io/assets/items.json')).json();
+    const { items } = await (await fetch(`https://${GAME_HOST}/assets/items.json`)).json();
     const itens = items.filter((i) => i.category === 'heal' || i.category === 'revive')
       .sort((a, b) => a.npcPrice - b.npcPrice)
       .map((i) => ({ id: i.id, nome: i.name, preco: i.npcPrice, cat: i.category, cura: i.healAmount ?? null, revive: i.revivePct ?? null }));
@@ -142,9 +144,9 @@ async function rota(req, res) {
       semMsgHa: Date.now() - info.ultimaMsg,
       jogo: info.logado ? resumir(info.eu, info.ctx ?? { hunts: {}, bolas: {} }) : null,
       estoque: info.logado ? await estoque(info) : null,
-      eco: await wc.executeJavaScript(`localStorage.getItem('cfg-economia') === '1'`).catch(() => null),
+      eco: await wc.executeJavaScript(`localStorage.getItem('${LS.economia}') === '1'`).catch(() => null),
     })));
-    return json(res, { versao: app.getVersion(), agora: Date.now(), contas: lista.sort((a, b) => a.conta - b.conta), alertas: historico.slice(0, 100), tipos: TIPOS });
+    return json(res, { versao: app.getVersion(), agora: Date.now(), contas: lista.sort((a, b) => a.conta - b.conta), alertas: historico.slice(0, 100), tipos: TIPOS, limites: LIMITES });
   }
   const print = url.pathname.match(/^\/api\/print\/([1-4])$/);
   if (print) {
@@ -178,10 +180,17 @@ async function rota(req, res) {
     const p = await lerJson(req);
     if (!p) return json(res, { erro: 'json' }, 400);
     const conta = Number(p.conta);
-    if (!(conta >= 1 && conta <= 4) || !ACOES.includes(p.acao)) return json(res, { erro: 'ação inválida' }, 400);
+    // conta 0 só vale pro 'zerar' (zera todas, pela aba Geral)
+    const ok = ACOES.includes(p.acao) && ((conta >= 1 && conta <= 4) || (conta === 0 && p.acao === 'zerar'));
+    if (!ok) return json(res, { erro: 'ação inválida' }, 400);
     if (p.acao === 'zerar') {
-      const c = contas[conta];
-      if (c) { c.info.placar = placarNovo(); win?.webContents.send('conta', { conta, nick: c.info.nick, placar: c.info.placar }); }
+      // zera TUDO que o painel mostra da sessão: placar (abates, capturas, achados, XP, ouro) e os alertas
+      for (const [n, c] of Object.entries(contas)) {
+        if (conta && Number(n) !== conta) continue;
+        c.info.placar = placarNovo();
+        win?.webContents.send('conta', { conta: Number(n), nick: c.info.nick, placar: c.info.placar });
+      }
+      for (let i = historico.length - 1; i >= 0; i--) if (!conta || historico[i].conta === conta) historico.splice(i, 1);
     } else {
       win?.webContents.send('acao', { conta, acao: p.acao }); // o index.html aperta o botão do painel
     }

@@ -13,8 +13,8 @@ const TIPOS = {
   vendido: '💰 Item vendido no Market',
   preco: '💸 Preço bom no Mercado',
   pausada: '⏸️ Conta pausada',
-  live: '🔴 Live parceira no ar',
-  twitchFim: '⏰ Bônus da Twitch acabou',
+  centro: '🏥 Parada no Centro Pokémon',
+  protocolo: '🧩 O jogo mudou',
 };
 
 // placar da sessão de cada conta (desde que o app abriu ou desde o último "zerar")

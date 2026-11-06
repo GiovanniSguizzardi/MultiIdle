@@ -1,18 +1,22 @@
-const { app, BrowserWindow, Tray, Menu, Notification, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, Tray, Menu, ipcMain, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
+const fs = require('fs');
 
 // Pasta dos dados (logins das 4 contas, zoom, link do celular). Fixa no nome antigo: o instalador
 // chama o app de "MultiIdle", e sem isto o Electron passaria a usar outra pasta e todos os logins sumiriam.
 // MULTIIDLE_DADOS existe só pros testes rodarem numa pasta separada.
 app.setPath('userData', process.env.MULTIIDLE_DADOS || path.join(app.getPath('appData'), 'multi-idle-by-gibas'));
 const APP_ID = 'com.gibas.multiidle'; // o mesmo do instalador (package.json > build.appId)
+// só uma instância: abrir o .bat de novo só traz a janela de volta (senão seriam 8 contas logadas).
+// O return para aqui: a segunda cópia não registra nada nem tenta abrir a porta do painel.
+if (!app.requestSingleInstanceLock()) { app.quit(); return; }
 const { eventoParaAlerta, placarNovo, contar } = require('./alertas');
 const remoto = require('./remoto');
 const { criarMesclador } = require('./estado');
 const { decidirRetry } = require('./retry');
 const { avaliar, ofertaDoChat, ofertasDoResumo, textoDaOferta } = require('./precos');
-const { livesComPontos, bonusQueAcabaram } = require('./twitch');
+const { GAME_URL, GAME_HOST, IDS, LS, LIMITES, protocoloMudou } = require('./protocolo');
 
 // AFK com pouca CPU: janela minimizada/na bandeja/coberta PARA de desenhar (o Chromium sabe que está
 // escondida), mas os relógios do jogo (ping de 25 s, vigia da conexão) seguem no ritmo normal — o farm é
@@ -24,8 +28,7 @@ app.setAppUserModelId(APP_ID); // necessário pras notificações do Windows apa
 
 // O jogo derruba e reconecta sozinho com 30 s sem mensagem; 3 min sem nada = travou de verdade
 const TRAVADO_MS = Number(process.env.MULTIIDLE_TRAVADO_MS) || 3 * 60 * 1000;
-const GAME_URL = 'https://pokeidle.io/app';
-const POUCAS_BOLAS = 50; // abaixo disso (somando todos os tipos) avisa "Pokébolas acabando"
+const CENTRO_MS = 60 * 1000; // parada no Centro Pokémon por mais que isso vira alerta (cura rápida não conta)
 
 // Todos os pedidos de quadro do mesmo instante passam juntos (o jogo tem mais de um laço); os ids
 // devolvidos são estáveis, então o cancelAnimationFrame do jogo continua funcionando.
@@ -94,23 +97,83 @@ ipcMain.handle('mercado-info', () => ({
 }));
 
 // ---- lives parceiras da Twitch (o bloco 'twitch' que o jogo manda no estado de cada conta) ----
-// O MultiIdle só MOSTRA e abre a live no navegador da pessoa: quem assiste é ela. Desde 04/11/2026 o bônus é por
-// resgate com os pontos do canal (ver twitch.js); antes era automático pelo chat.
+// O MultiIdle só MOSTRA e abre a live no navegador da pessoa: quem assiste e resgata o bônus com os pontos do canal é ela.
 const twitchPorConta = {};
-const livesAvisadas = new Map(); // canal -> quando avisou que entrou no ar (não repete por 2 h)
-function conferirLives(conta, tw) {
-  for (const c of livesComPontos(tw)) {
-    const canal = String(c.login).toLowerCase();
-    if (Date.now() - (livesAvisadas.get(canal) ?? 0) < 2 * 3600 * 1000) continue;
-    livesAvisadas.set(canal, Date.now());
-    alerta(conta, 'live', `${c.nome || c.login} está ao vivo: assista na página do canal e resgate o bônus com os pontos do canal (abra em 📺 Lives)`);
-  }
-}
 ipcMain.handle('twitch-estado', () => twitchPorConta);
-ipcMain.on('abrir-live', (_, canal) => {
-  // só nome de canal da Twitch (letras, números, _): o que vai pro navegador é sempre twitch.tv/<canal>
-  if (/^[a-z0-9_]{2,30}$/i.test(String(canal))) shell.openExternal(`https://www.twitch.tv/${canal}`);
+// só nome de canal da Twitch (letras, números, _): o que vai pro navegador é sempre twitch.tv/<canal>
+const abrirLive = (canal) => /^[a-z0-9_]{2,30}$/i.test(String(canal)) && shell.openExternal(`https://www.twitch.tv/${canal}`);
+ipcMain.on('abrir-live', (_, canal) => abrirLive(canal));
+// "Abrir todas": uma aba por live, com um respiro entre elas (o navegador às vezes ignora aberturas coladas)
+ipcMain.on('abrir-lives', (_, canais) => {
+  if (!Array.isArray(canais)) return;
+  canais.slice(0, 20).forEach((c, i) => setTimeout(() => abrirLive(c), i * 400));
 });
+
+// ---- 🎯 HUNT: onde o pokémon em campo ganha mais XP (motor no hunt-motor.js, baseado no do Liang) ----
+// O motor roda dentro da página do jogo da conta (importa as fórmulas do próprio pokeidle.io); daqui vão o
+// estado da conta, as hunts e as constantes do welcome, e a tabela de ritmo dos mapas.
+const MOTOR_HUNT = fs.readFileSync(path.join(__dirname, 'hunt-motor.js'), 'utf8');
+const RITMO_URL = 'https://pokeidle-gg.pages.dev/data/jogo/ritmo-mapas.json';
+const RITMO_SALVO = path.join(app.getPath('userData'), 'ritmo-mapas.json');
+const lerRitmo = (arq) => { try { const r = JSON.parse(fs.readFileSync(arq, 'utf8')); return r?.mapas ? r : null; } catch { return null; } };
+// a cópia que vem no app; a baixada (se for mais nova) vale por cima. Atualiza 1 vez por abertura, em segundo plano.
+let ritmoMapas = [lerRitmo(path.join(__dirname, 'ritmo-mapas.json')), lerRitmo(RITMO_SALVO)]
+  .filter(Boolean).sort((a, b) => String(b.geradoEm).localeCompare(String(a.geradoEm)))[0] ?? null;
+function atualizarRitmo() {
+  fetch(RITMO_URL, { signal: AbortSignal.timeout(15000) }).then((r) => (r.ok ? r.json() : null)).then((r) => {
+    if (!r?.mapas || String(r.geradoEm) < String(ritmoMapas?.geradoEm ?? '')) return;
+    ritmoMapas = r;
+    fs.writeFile(RITMO_SALVO, JSON.stringify(r), () => {});
+  }).catch(() => {});
+}
+const infoPorConta = {};
+ipcMain.handle('hunt', async (_, { conta, comPocao }) => {
+  const info = infoPorConta[conta];
+  const wc = wcPorConta[conta];
+  if (!info || !wc || wc.isDestroyed()) return { ok: false, erro: 'conta não encontrada' };
+  if (!info.logado || !info.huntCtx || !info.eu) return { ok: false, erro: 'a conta ainda não entrou no jogo' };
+  const { pokemons, ...eu } = info.eu;
+  const pk = (pokemons ?? []).find((p) => p.id === eu.activeId);
+  if (!pk) return { ok: false, erro: 'nenhum pokémon em campo' };
+  const entrada = { eu, pk, ...info.huntCtx, ritmo: ritmoMapas, comPocao: comPocao !== false };
+  try {
+    const pronto = await wc.executeJavaScript(`location.host === '${GAME_HOST}' && !!window.__miHunt`);
+    if (!pronto) await wc.executeJavaScript(MOTOR_HUNT);
+    // a rejeição do executeJavaScript perde a mensagem: o erro volta como valor
+    return await wc.executeJavaScript(`window.__miHunt.ranking(${JSON.stringify(entrada)})
+      .then((r) => ({ ok: true, r }), (e) => ({ ok: false, erro: String(e?.message ?? e) }))`);
+  } catch (e) {
+    return { ok: false, erro: 'não consegui calcular na página do jogo: ' + e.message };
+  }
+});
+
+// Ctrl+1..4 foca a conta (o mesmo que o ⛶). Vem de qualquer lugar da janela, inclusive de dentro de
+// uma conta: por isso é lido aqui, antes da página do jogo receber a tecla.
+function atalhoFoco(e, input) {
+  if (input.type !== 'keyDown' || !input.control || input.alt || input.shift || input.meta) return;
+  const n = input.code?.match(/^(?:Digit|Numpad)([1-4])$/)?.[1];
+  if (!n) return;
+  e.preventDefault();
+  enviar('foco', Number(n));
+}
+
+// ---- desempenho: CPU e memória de cada conta e do MultiIdle inteiro ----
+// O Chromium já mede isso sozinho; ler a tabela custa menos de 1 ms. Só lê com a janela aberta na tela
+// (minimizado ou na bandeja não faz nada).
+const wcPorConta = {};
+const NUCLEOS = require('os').cpus().length;
+function medirDesempenho() {
+  if (!win?.isVisible() || win.isMinimized()) return;
+  const metricas = app.getAppMetrics();
+  const porPid = new Map(metricas.map((m) => [m.pid, m]));
+  // CPU em % do PC inteiro (igual ao Gerenciador de Tarefas); memória em MB
+  const medida = (m) => ({ cpu: (m?.cpu.percentCPUUsage ?? 0) / NUCLEOS, mem: (m?.memory.workingSetSize ?? 0) / 1024 });
+  const contas = {};
+  for (const [c, wc] of Object.entries(wcPorConta)) if (!wc.isDestroyed()) contas[c] = medida(porPid.get(wc.getOSProcessId()));
+  const total = { cpu: 0, mem: 0 };
+  for (const m of metricas) { const x = medida(m); total.cpu += x.cpu; total.mem += x.mem; }
+  enviar('desempenho', { contas, total });
+}
 
 const alerta = (conta, tipo, texto) => {
   const a = { conta, tipo, texto, em: Date.now() };
@@ -123,44 +186,74 @@ app.on('web-contents-created', (_, wc) => {
   if (wc.getType() !== 'webview') return;
   const conta = Number(wc.session.storagePath?.match(/conta(\d+)/)?.[1]);
   // logado: só vigia depois do 'welcome' (na tela de login não chega nada mesmo)
-  const info = { conta, nick: null, placar: placarNovo(), logado: false, ultimaMsg: Date.now() };
+  const info = { conta, nick: null, placar: placarNovo(), logado: false, ultimaMsg: Date.now(), ultimoReconhecido: Date.now() };
   remoto.registrarConta(conta, info, wc);
+  wcPorConta[conta] = wc;
+  infoPorConta[conta] = info;
   const atualizar = () => enviar('conta', { conta, nick: info.nick, placar: info.placar });
+  // links que o jogo abre em aba nova (Discord, termos, ChatGPT...) vão pro navegador da pessoa, nunca numa
+  // janela do Electron. O login com Google/Discord é por redirecionamento na própria conta, não passa aqui.
+  wc.setWindowOpenHandler(({ url }) => {
+    if (/^https?:\/\//i.test(url)) shell.openExternal(url);
+    return { action: 'deny' };
+  });
+  wc.on('before-input-event', atalhoFoco);
   let ultimoShiny = 0;
   // aviso de bolas acabando: uma vez ao cruzar o limite, e só rearma quando reabastecer
   let avisouBolas = false;
   const conferirBolas = () => {
     if (!info.eu?.balls) return;
     const total = Object.values(info.eu.balls).reduce((s, q) => s + (Number(q) || 0), 0);
-    if (total < POUCAS_BOLAS && !avisouBolas) alerta(conta, 'poucasBolas', `restam ${total}`);
-    avisouBolas = total < POUCAS_BOLAS;
+    if (total < LIMITES.bolas && !avisouBolas) alerta(conta, 'poucasBolas', `restam ${total}`);
+    avisouBolas = total < LIMITES.bolas;
+  };
+  // Centro Pokémon: conta lá dentro não está caçando. A tela da conta fica vermelha na hora; o alerta
+  // vem se ela ficar mais de 1 min (o vigia confere), pra não avisar a cada cura rápida.
+  const setCentro = (v) => {
+    if (!!info.centroDesde === v) return;
+    info.centroDesde = v ? Date.now() : null;
+    info.avisouCentro = false;
+    enviar('centro', { conta, centro: v });
   };
 
   // Estado do carregamento, pro retry de conta presa (regra no retry.js). 'desde' = última navegação.
-  const carga = { desde: Date.now(), tentativas: 0, falhou: false };
+  const carga = { desde: Date.now(), tentativas: 0, falhou: false, quadros: 0 };
   info.carga = carga;
-  wc.on('did-navigate', () => { carga.desde = Date.now(); carga.falhou = false; });
+  // página nova: até o próximo welcome não se sabe onde a conta está
+  wc.on('did-navigate', () => { carga.desde = Date.now(); carga.falhou = false; carga.quadros = 0; setCentro(false); });
   wc.on('did-fail-load', (_e, codigo, _desc, _url, principal) => {
     if (principal && codigo !== -3) carga.falhou = true; // -3 = navegação cancelada (normal num reload)
   });
 
   const recarregar = (motivo) => {
+    if (wc.isDestroyed()) return;
     info.logado = false; // a partir daqui quem vigia é o retry de carregamento
     alerta(conta, 'travou', motivo);
     wc.reload();
   };
   let ultimoCliqueVersao = 0;
+  // uma volta do vigia por vez: limpar cache + recarregar pode passar do intervalo, e duas voltas juntas
+  // contariam a mesma tentativa de retry duas vezes
+  let vigiando = false;
   const vigia = setInterval(async () => {
-    // bônus da Twitch que acabou (o fim é um horário: não chega mensagem nenhuma quando passa)
-    const acabaram = bonusQueAcabaram((info.bonusTwitchVisto ??= {}), info.eu?.twitch);
-    if (acabaram.length) alerta(conta, 'twitchFim', `${acabaram.join(', ')} · dá pra resgatar mais horas com os pontos do canal`);
+    if (vigiando || wc.isDestroyed()) return;
+    vigiando = true;
+    try { await vigiar(); } finally { vigiando = false; }
+  }, Math.min(30000, TRAVADO_MS / 2));
+  async function vigiar() {
     // O jogo mostra um aviso e PARA de reconectar quando a conta foi aberta em outro aparelho/aba (fechamento
     // 4001, "#sessao-tomada") ou foi bloqueada (ban, rede cheia: "#alerta-conta"). Pelo jogo, "tomar a conta
     // tem de ser sempre um gesto de alguém": aqui o MultiIdle só avisa e espera, sem recarregar.
-    const bloqueio = await wc.executeJavaScript(`(() => {
+    // Na mesma leitura: quais ids que o MultiIdle usa sumiram da página (sinal de que o jogo mudou).
+    const pagina = await wc.executeJavaScript(`(() => {
+      const ids = ${JSON.stringify(IDS)};
       const visivel = (id) => { const e = document.getElementById(id); return !!e && !e.classList.contains('hidden'); };
-      return visivel('sessao-tomada') ? 'tomada' : visivel('alerta-conta') ? 'conta' : null;
+      return {
+        bloqueio: visivel(ids.sessaoTomada) ? 'tomada' : visivel(ids.alertaConta) ? 'conta' : null,
+        faltam: location.host === '${GAME_HOST}' ? Object.values(ids).filter((id) => !document.getElementById(id)) : [],
+      };
     })()`).catch(() => null);
+    const bloqueio = pagina?.bloqueio;
     if (bloqueio) {
       if (info.bloqueio !== bloqueio) {
         alerta(conta, 'pausada', bloqueio === 'tomada'
@@ -170,10 +263,23 @@ app.on('web-contents-created', (_, wc) => {
       info.bloqueio = bloqueio;
       return;
     }
+    // detector de "o jogo mudou": avisa uma vez (rearma quando um welcome é reconhecido de novo)
+    const eu = info.eu;
+    const mudou = protocoloMudou({ logado: info.logado, cacando: !!eu?.huntSlug && !eu.noCentro && !eu.casa?.dentro, quadros: carga.quadros,
+      desde: carga.desde, ultimaMsg: info.ultimaMsg, ultimoReconhecido: info.ultimoReconhecido, agora: Date.now() })
+      ?? (info.logado && pagina?.faltam.length ? `a página do jogo não tem mais: #${pagina.faltam.join(', #')}` : null);
+    if (mudou && !info.avisouProtocolo) {
+      info.avisouProtocolo = true;
+      alerta(conta, 'protocolo', `${mudou}; alguns alertas podem parar de funcionar até o MultiIdle ser atualizado`);
+    }
+    if (info.logado && info.centroDesde && !info.avisouCentro && Date.now() - info.centroDesde > CENTRO_MS) {
+      info.avisouCentro = true;
+      alerta(conta, 'centro', 'está no Centro Pokémon e não está caçando');
+    }
     if (info.logado && Date.now() - info.ultimaMsg > TRAVADO_MS) return recarregar('3 min sem resposta do jogo');
     // Conta presa carregando/reconectando (ex.: depois de um hotfix): tenta de novo, esperando cada vez mais
     if (!info.logado) {
-      const temSessao = await wc.executeJavaScript(`location.host === 'pokeidle.io' && !!localStorage.getItem('sessao')`).catch(() => false);
+      const temSessao = await wc.executeJavaScript(`location.host === '${GAME_HOST}' && !!localStorage.getItem('${LS.sessao}')`).catch(() => false);
       const r = decidirRetry({ logado: info.logado, desde: carga.desde, temSessao, falhou: carga.falhou, tentativas: carga.tentativas, agora: Date.now() });
       if (r) {
         carga.tentativas = r.tentativa;
@@ -188,8 +294,8 @@ app.on('web-contents-created', (_, wc) => {
     // No máximo 1 vez a cada 5 min: durante o deploy o servidor pode oscilar entre versões e virar um ciclo.
     if (Date.now() - ultimoCliqueVersao < 5 * 60 * 1000) return;
     const clicou = await wc.executeJavaScript(`(() => {
-      const aviso = document.getElementById('aviso-versao');
-      const btn = document.getElementById('aviso-versao-btn');
+      const aviso = document.getElementById('${IDS.avisoVersao}');
+      const btn = document.getElementById('${IDS.avisoVersaoBtn}');
       if (!aviso || aviso.classList.contains('hidden') || !btn || btn.disabled) return false;
       btn.click();
       return true;
@@ -199,7 +305,7 @@ app.on('web-contents-created', (_, wc) => {
       info.logado = false;
       alerta(conta, 'atualizou', 'cliquei em "Recarregar agora"');
     }
-  }, Math.min(30000, TRAVADO_MS / 2));
+  }
   wc.on('destroyed', () => clearInterval(vigia));
   // Página do jogo fechando sozinha: recarrega, mas se fechar 3 vezes em 10 min, para e avisa (sem laço infinito)
   const quedas = [];
@@ -224,6 +330,9 @@ app.on('web-contents-created', (_, wc) => {
     compraPendente.resolve(r);
     compraPendente = null;
   };
+  // A resposta 'compra' do jogo traz a quantidade: só encerra a compra pedida se bater (uma compra feita
+  // ao mesmo tempo pela loja do próprio jogo não é confundida com a do celular)
+  const ehMinhaCompra = (e) => compraPendente && (e.qtd == null || Number(e.qtd) === compraPendente.qty);
   info.comprar = async (kind, id, qty) => {
     if (compraPendente) return { ok: false, erro: 'outra compra ainda em andamento' };
     const d = wc.debugger;
@@ -247,7 +356,7 @@ app.on('web-contents-created', (_, wc) => {
       if (lista) d.sendCommand('Runtime.releaseObject', { objectId: lista.objectId }).catch(() => {});
     }
     return new Promise((resolve) => {
-      compraPendente = { resolve, timer: setTimeout(() => fimCompra({ ok: false, erro: 'o jogo não respondeu' }), 8000) };
+      compraPendente = { qty, resolve, timer: setTimeout(() => fimCompra({ ok: false, erro: 'o jogo não respondeu' }), 8000) };
     });
   };
 
@@ -275,8 +384,9 @@ app.on('web-contents-created', (_, wc) => {
     const d = p.response.payloadData;
     if (d.length < 100 && d.includes('"pong"')) return; // o próprio jogo não conta pong como sinal de vida
     info.ultimaMsg = Date.now();
+    carga.quadros++;
     const ehWelcome = d.includes('"t":"welcome"');
-    if (ehWelcome) { info.logado = true; info.bloqueio = null; carga.tentativas = 0; carga.falhou = false; } // entrou: zera o retry
+    if (ehWelcome) { info.logado = true; info.bloqueio = null; info.avisouProtocolo = false; carga.tentativas = 0; carga.falhou = false; } // entrou: zera o retry
     // filtro barato antes do JSON.parse: só interessam batalha, estado, welcome (e erro, se há compra esperando)
     const ehErro = compraPendente && d.includes('"t":"erro"');
     // alto-falante do Mercado (chat ao vivo) e vitrine de itens (resumo + médias) alimentam o aviso de preço
@@ -293,10 +403,16 @@ app.on('web-contents-created', (_, wc) => {
       return;
     }
     if (m.t === 'welcome' || m.t === 'estado') {
+      info.ultimoReconhecido = Date.now();
       if (m.t === 'welcome') {
         info.mesclar = criarMesclador(); // conexão nova = quadro novo
         const catalogo = m.mercado?.catalogo ?? [];
         if (catalogo.length) { mercado.nomes = Object.fromEntries(catalogo.map((i) => [i.id, i.nome])); salvarMercado(); }
+        // o que o 🎯 HUNT precisa do welcome: as hunts (espécies e pontos de spawn) e as constantes do servidor
+        info.huntCtx = {
+          hunts: m.hunts ?? [],
+          consts: { tabelaTipos: m.tabelaTipos, ampliacaoHunt: m.ampliacaoHunt, multHpSelvagem: m.multHpSelvagem, multDanoSelvagem: m.multDanoSelvagem, tiposBoost: m.tiposBoost },
+        };
         info.ctx = {
           hunts: Object.fromEntries((m.hunts ?? []).map((h) => [h.slug, h.nome])),
           bolas: Object.fromEntries((m.catalogoBolas ?? []).map((b) => [b.id, b.nome])),
@@ -307,20 +423,21 @@ app.on('web-contents-created', (_, wc) => {
       }
       info.eu = info.mesclar?.(m.estado) ?? info.eu;
       conferirBolas();
+      setCentro(!!info.eu?.noCentro);
       const tw = info.eu?.twitch ?? null;
       const assinatura = JSON.stringify(tw);
       if (assinatura !== info.twitchAssinatura) {
         info.twitchAssinatura = assinatura;
         twitchPorConta[conta] = tw;
         enviar('twitch', { conta, twitch: tw });
-        conferirLives(conta, tw);
       }
       return;
     }
     if (m.t !== 'batalha') return;
+    info.ultimoReconhecido = Date.now();
     let mudou = false;
     for (const e of m.ev ?? []) {
-      if (e.k === 'compra') fimCompra({ ok: true, nome: e.nome, qtd: e.qtd, gasto: e.gasto });
+      if (e.k === 'compra' && ehMinhaCompra(e)) fimCompra({ ok: true, nome: e.nome, qtd: e.qtd, gasto: e.gasto });
       mudou = contar(info.placar, e) || mudou;
       const a = eventoParaAlerta(e);
       if (!a) continue;
@@ -335,16 +452,14 @@ app.on('web-contents-created', (_, wc) => {
   });
 });
 
-// só uma instância: abrir o .bat de novo só traz a janela de volta (senão seriam 8 contas logadas)
-if (!app.requestSingleInstanceLock()) app.quit();
 app.on('second-instance', () => mostrar());
 
 let tray;
 let saindo = false;
-let avisouBandeja = false;
 const mostrar = () => { win?.show(); win?.focus(); };
 
 app.whenReady().then(() => {
+  atualizarRitmo();
   const icone = `${__dirname}/icon.png`;
   win = new BrowserWindow({
     width: 1600,
@@ -355,22 +470,31 @@ app.whenReady().then(() => {
     // a janela principal só carrega o index.html local; as webviews do jogo não herdam isso
     webPreferences: { webviewTag: true, nodeIntegration: true, contextIsolation: false },
   });
+  // Trava das contas: toda webview é uma página do jogo, sem acesso ao Node nem script extra, venha o
+  // pedido de onde vier (o index.html só cria essas 4, mas um HTML injetado não conseguiria criar outra).
+  win.webContents.on('will-attach-webview', (e, prefs, params) => {
+    delete prefs.preload;
+    prefs.nodeIntegration = false;
+    prefs.nodeIntegrationInSubFrames = false;
+    prefs.contextIsolation = true;
+    if (!String(params.src).startsWith(GAME_URL)) e.preventDefault();
+  });
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' })); // a janela principal nunca abre outra
+  win.webContents.on('will-navigate', (e) => e.preventDefault()); // e nunca sai do index.html
+  win.webContents.on('before-input-event', atalhoFoco);
   win.loadFile(`${__dirname}/index.html`);
   remoto.iniciar(win);
   // janela minimizada/na bandeja = ninguém vendo: o index.html baixa as contas pra 1 quadro por segundo
   const visibilidade = () => enviar('janela-visivel', win.isVisible() && !win.isMinimized());
   for (const ev of ['hide', 'show', 'minimize', 'restore']) win.on(ev, visibilidade);
   iniciarUpdates();
+  setInterval(medirDesempenho, 5000);
 
   // fechar (X) esconde na bandeja; as contas continuam rodando. Sair de verdade é pelo menu da bandeja.
   win.on('close', (e) => {
     if (saindo) return;
     e.preventDefault();
     win.hide();
-    if (!avisouBandeja) {
-      avisouBandeja = true;
-      new Notification({ title: 'MultiIdle continua rodando', body: 'As contas seguem farmando. Clique no ícone perto do relógio para abrir, ou em "Sair" para fechar de vez.', icon: icone }).show();
-    }
   });
 
   tray = new Tray(icone);
@@ -403,13 +527,8 @@ function iniciarUpdates() {
   autoUpdater.on('update-available', (i) => avisarUpdate({ estado: 'baixando', versao: i.version, pct: 0 }));
   autoUpdater.on('update-not-available', () => avisarUpdate({ estado: 'em-dia' }));
   autoUpdater.on('download-progress', (p) => avisarUpdate({ estado: 'baixando', pct: Math.round(p.percent) }));
-  let notificouVersao = null;
-  autoUpdater.on('update-downloaded', (i) => {
-    avisarUpdate({ estado: 'pronto', versao: i.version });
-    if (notificouVersao === i.version) return; // a checagem de 3 em 3 h acha o mesmo download: não repete
-    notificouVersao = i.version;
-    new Notification({ title: `MultiIdle v${i.version} pronto`, body: 'Clique em "Atualizar" no topo do MultiIdle (leva uns segundos e as contas voltam sozinhas).', icon: `${__dirname}/icon.png` }).show();
-  });
+  // sem notificação do Windows: o botão dourado "Atualizar" no topo já avisa
+  autoUpdater.on('update-downloaded', (i) => avisarUpdate({ estado: 'pronto', versao: i.version }));
   autoUpdater.on('error', (e) => avisarUpdate({ estado: 'erro', erro: e.message }));
   ipcMain.handle('update-info', () => ({ ...update, atual: app.getVersion(), instalado: app.isPackaged }));
   ipcMain.on('update-checar', () => checarUpdate(true));

@@ -47,7 +47,9 @@
   nav button.ativo small { color: #eadcf5; }
   nav .ponto { position: absolute; top: 5px; right: 6px; width: 7px; height: 7px; border-radius: 50%; }
   nav .novo::after { content: ""; position: absolute; top: 3px; left: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--amarelo); box-shadow: 0 0 6px var(--amarelo); }
-  .online { background: var(--verde); } .quieto { background: var(--amarelo); } .fora { background: #6d5862; } .pausada { background: #6f7cf2; }
+  .online { background: var(--verde); } .quieto { background: var(--amarelo); } .fora { background: #6d5862; } .pausada { background: #6f7cf2; } .centro { background: var(--vermelho); }
+  /* conta no Centro Pokémon (não está caçando): cartão com borda vermelha na aba Geral e no topo da conta */
+  .conta-g.no-centro, #pgConta.no-centro > section:first-child { box-shadow: inset 0 0 0 2px var(--vermelho); }
 
   /* recursos: sempre visíveis no topo da conta */
   #recursos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
@@ -100,7 +102,7 @@
   .kpis b { display: block; font-size: 17px; }
   .kpis small { color: var(--apagado); font-size: 11px; }
   .kpis em { display: block; font-style: normal; font-size: 11px; color: var(--amarelo); margin-top: 1px; }
-  #btnZerar { width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--borda); color: var(--apagado); }
+  #btnZerar, #btnZerarTudo { width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--borda); color: var(--apagado); }
   .confirmar { background: var(--vermelho) !important; color: #fff !important; border-color: var(--vermelho) !important; }
 
   /* listas simples */
@@ -240,6 +242,7 @@
     <div class="chips" data-filtro></div>
     <div id="g-log" class="lista"></div>
   </details>
+  <button id="btnZerarTudo" class="zerar">↺ Zerar sessão de todas as contas</button>
 </main>
 
 <!-- detalhe de um recurso -->
@@ -286,10 +289,10 @@
     return h ? `${h}h ${doisDig(m % 60)}min` : `${m}min`;
   }
   const porHora = (v, ms) => ms > 60000 ? (v / (ms / 3600000)) : 0;
-  const STATUS = { online: 'caçando', quieto: 'parado', fora: 'fora do jogo', pausada: 'pausada' };
-  const IMPORTANTES = ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas', 'desmaiou', 'atualizou', 'vendido', 'preco', 'pausada', 'live'];
-  // abaixo disso o recurso fica vermelho ("baixo")
-  const LIMITE = { bolas: 50, pocoes: 20, revives: 5 };
+  const STATUS = { online: 'caçando', quieto: 'parado', fora: 'fora do jogo', pausada: 'pausada', centro: '🏥 no Centro, sem caçar' };
+  const IMPORTANTES = ['shinyCap', 'shinyVisto', 'travou', 'poucasBolas', 'desmaiou', 'atualizou', 'vendido', 'preco', 'pausada', 'centro', 'protocolo'];
+  // abaixo disso o recurso fica vermelho ("baixo"); o PC manda os limites dele (protocolo.js) em /api/estado
+  let LIMITE = { bolas: 50, pocoes: 20, revives: 5 };
   const RECURSOS = {
     bolas: { nome: 'Pokébolas', emoji: '🔴', loja: 'bolas' },
     pocoes: { nome: 'Poções', emoji: '🧪', loja: 'heal' },
@@ -396,10 +399,11 @@
   function desenharConta() {
     const c = dados.contas.find((x) => x.conta === atual);
     desenharRecursos(c);
-    if (!c) { $('c-nome').textContent = `Conta ${doisDig(atual)}`; $('c-status').textContent = 'sem dados'; return; }
+    if (!c) { $('c-nome').textContent = `Conta ${doisDig(atual)}`; $('c-status').textContent = 'sem dados'; $('pgConta').classList.remove('no-centro'); return; }
     const j = c.jogo;
     $('c-nome').textContent = c.nome;
     $('c-status').innerHTML = chipStatus(c.status);
+    $('pgConta').classList.toggle('no-centro', c.status === 'centro');
     $('c-local').textContent = j ? j.local : 'Conta não está logada no jogo';
     $('c-sinal').textContent = c.status === 'fora' ? '' : `Última mensagem do jogo há ${Math.round(c.semMsgHa / 1000)} s`;
     $('c-treinador').innerHTML = !j ? '' : `
@@ -444,7 +448,7 @@
       const j = c.jogo, est = c.estoque;
       const cms = dados.agora - c.placar.inicio;
       const caixa = (rec) => `<div class="${baixo(rec, est) ? 'baixo' : ''}"><b>${est ? fmt(est[rec].total) : '—'}</b><small>${RECURSOS[rec].emoji} ${RECURSOS[rec].nome}</small></div>`;
-      return `<section class="cartao conta-g" data-ir="${c.conta}">
+      return `<section class="cartao conta-g${c.status === 'centro' ? ' no-centro' : ''}" data-ir="${c.conta}">
         <div class="linha"><span class="nm">${esc(c.nome)}</span><span class="chip">${chipStatus(c.status)}</span></div>
         <div class="onde">${j ? `${esc(j.local)} · Nv ${j.level}` : 'fora do jogo'}</div>
         <div class="estoque3">${caixa('bolas')}${caixa('pocoes')}${caixa('revives')}</div>
@@ -499,6 +503,7 @@
       const r = await fetch('api/estado' + T, { cache: 'no-store' });
       if (r.status === 403) { $('conexao').textContent = 'link inválido'; $('conexao').className = 'erro'; return; }
       dados = await r.json();
+      if (dados.limites) LIMITE = dados.limites;
       $('conexao').textContent = hora(dados.agora);
       $('conexao').className = 'ok';
       $('cfgVersao').textContent = dados.versao ? 'MultiIdle v' + dados.versao + ' (no PC)' : '';
@@ -565,23 +570,25 @@
     await acao(atual, nome);
     setTimeout(() => { e.target.disabled = false; atualizar(); print(); }, 2500);
   };
-  // zerar pede um segundo toque (sem caixa de diálogo)
+  // zerar pede um segundo toque (sem caixa de diálogo). Zera tudo da sessão: números, capturas, achados e
+  // alertas. O da aba Geral (conta 0) zera todas as contas.
+  const ZERAR = { btnZerar: '↺ Zerar sessão', btnZerarTudo: '↺ Zerar sessão de todas as contas' };
   let zerarArmado = null;
   function zerarConfirm() {
-    clearTimeout(zerarArmado);
+    clearTimeout(zerarArmado?.timer);
     zerarArmado = null;
-    $('btnZerar').textContent = '↺ Zerar sessão';
-    $('btnZerar').classList.remove('confirmar');
+    for (const [id, texto] of Object.entries(ZERAR)) { $(id).textContent = texto; $(id).classList.remove('confirmar'); }
   }
-  $('btnZerar').onclick = async () => {
-    if (!zerarArmado) {
-      $('btnZerar').textContent = 'Toque de novo para zerar';
-      $('btnZerar').classList.add('confirmar');
-      zerarArmado = setTimeout(zerarConfirm, 4000);
+  for (const id of Object.keys(ZERAR)) $(id).onclick = async () => {
+    if (zerarArmado?.id !== id) {
+      zerarConfirm();
+      $(id).textContent = 'Toque de novo para zerar';
+      $(id).classList.add('confirmar');
+      zerarArmado = { id, timer: setTimeout(zerarConfirm, 4000) };
       return;
     }
     zerarConfirm();
-    await acao(atual, 'zerar');
+    await acao(id === 'btnZerarTudo' ? 0 : atual, 'zerar');
     atualizar();
   };
 
