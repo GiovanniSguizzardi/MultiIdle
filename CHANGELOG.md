@@ -3,6 +3,45 @@
 Cada versão nova entra no topo, no formato `## vX.Y.Z — Título`. O texto da seção vira a descrição
 do Release no GitHub. Sem a seção, a publicação não roda.
 
+## v1.4.0 — 🎯 HUNT: a melhor hunt pra XP de cada conta
+
+Contribuição do **[clamenezesbr](https://github.com/clamenezesbr)**. O motor do HUNT é baseado no **[/hunt for PokeIdle](https://chromewebstore.google.com/detail/hunt-for-pokeidle/mhnplloljgchpfpcpbhmcokmnefodjnh)**, de Liang, usado com autorização dele.
+
+### ✨ Novidades
+- **Botão 🎯 HUNT em cada conta.** Ele abre, por cima da tela da conta, o ranking de **todas as hunts** simuladas com os stats reais do Pokémon em campo:
+  - XP/h do Pokémon e do treinador, já com os bônus ativos;
+  - abates por hora, tempo até o próximo nível, risco de morte e o melhor golpe.
+  - As fórmulas vêm do **próprio jogo**, sempre na versão que está no ar. O HUNT só mostra o ranking: quem troca de hunt é você.
+- **O botão HUNT fica vermelho** quando a conta não está na melhor hunt para XP (ele atualiza ao abrir o HUNT).
+- **Novo alerta "🏥 Parada no Centro Pokémon"** quando uma conta fica mais de 1 minuto no Centro, sem caçar. No celular, a conta ganha o status "centro" e uma borda vermelha.
+- **Novo alerta "🧩 O jogo mudou"**, que avisa quando o PokeIdle muda algo que o MultiIdle lê, antes que os alertas parem em silêncio.
+- **Ctrl+1…4 amplia uma conta** (o mesmo que o ⛶), de qualquer lugar da janela.
+- **📺 Lives:** botão **"Abrir todas"**, que abre de uma vez as lives com pontos ativos no seu navegador.
+- **Medidor de CPU e memória** de cada conta e do MultiIdle inteiro.
+- **"Zerar" na aba Geral do celular** zera todas as contas de uma vez, incluindo os alertas.
+
+### 🔧 Correções e segurança
+- **Links que o jogo abre** (Discord, termos etc.) agora vão para o seu navegador, e não para uma janela do MultiIdle.
+- **As páginas das contas ficaram mais isoladas:** nenhuma pode ganhar acesso ao seu computador, e a janela principal não navega para fora do app.
+- **Uma compra feita na loja do próprio jogo** não é mais confundida com a compra pedida pelo celular.
+- **Abrir o MultiIdle de novo com ele já aberto** só traz a janela de volta, sem iniciar nada em paralelo.
+
+### 🧹 Removido
+- O alerta "🔴 Live parceira no ar", o "⏰ Bônus da Twitch acabou" e as notificações do Windows de "continua rodando na bandeja" e de "atualização pronta". O botão dourado de atualizar continua no topo.
+
+## v1.3.1 — 📺 Lives da Twitch adaptadas à regra nova do PokeIdle
+
+### 🔧 Correções
+- **O painel 📺 Lives voltou a funcionar.** Em 04/11 o PokeIdle mudou o bônus da Twitch, e o MultiIdle parou de entender os dados. Agora ele segue a regra nova:
+  - você **assiste na página do canal** (ou no app da Twitch) com o vídeo rodando e ganha os **pontos do canal**;
+  - com os pontos, **resgata no canal** horas de bônus (+15% de XP, Capture Boost ou Secret Lure), e as horas se somam.
+- **Os canais oficiais** mostram o selo roxo **"pontos ativos"** (dá para resgatar ali) ou **"em breve"**, como no jogo.
+- **O bônus de cada conta** mostra o que está valendo e quanto tempo falta. Por exemplo: "+15% XP · 42min".
+- **O ponto vermelho** no botão 📺 Lives acende quando tem live com pontos ativos no ar e alguma conta vinculada está sem bônus.
+
+### ✨ Novidades
+- **Novo alerta "⏰ Bônus da Twitch acabou"**, para você saber a hora de resgatar mais horas.
+
 ## v1.3.0 — 📱 Painel do celular novo, mais limpo
 
 ### ✨ Novidades
